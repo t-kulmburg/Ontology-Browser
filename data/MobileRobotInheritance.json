@@ -1,0 +1,80 @@
+[ {
+  "name" : "Mobile Robot",
+  "comment" : "",
+  "systems" : [ {
+    "name" : "Mobile Robot",
+    "comment" : "",
+    "entities" : [ {
+      "name" : "RobotCommand",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "cmd",
+        "comment" : "",
+        "type" : "ENUM",
+        "value" : [ "left", "straight", "right" ]
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "WheelSurface",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "surface",
+        "comment" : "",
+        "type" : "ENUM",
+        "value" : [ "normal", "slippery" ]
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ "WheelChild" ]
+    }, {
+      "name" : "RobotEnvironment",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "WheelChild",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "WheelSurface",
+      "sub_entities" : [ ]
+    } ],
+    "relations" : [ {
+      "name" : "env has cmd",
+      "comment" : "",
+      "attributes" : [ ],
+      "entities" : [ "RobotEnvironment", "RobotCommand" ],
+      "cardinalities" : "1:3"
+    }, {
+      "name" : "cmd has surface",
+      "comment" : "",
+      "attributes" : [ ],
+      "entities" : [ "RobotCommand", "WheelSurface" ],
+      "cardinalities" : "2:2"
+    } ],
+    "constraints" : [ {
+      "name" : "constr",
+      "comment" : "",
+      "constraint" : {
+        "type" : "simple",
+        "lhs" : {
+          "type" : "parameter",
+          "parameter" : {
+            "type" : "ENUM",
+            "Entity" : "RobotCommand",
+            "Attribute" : "cmd"
+          }
+        },
+        "rhs" : {
+          "type" : "parameter",
+          "parameter" : {
+            "type" : "ENUM",
+            "Entity" : "WheelSurface",
+            "Attribute" : "surface"
+          }
+        },
+        "relationalOperator" : "NOT_EQUAL"
+      }
+    } ]
+  } ]
+} ]

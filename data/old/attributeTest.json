@@ -1,0 +1,53 @@
+[ {
+  "name" : "dadad",
+  "comment" : "",
+  "systems" : [ {
+    "name" : "dadad",
+    "comment" : "",
+    "entities" : [ {
+      "name" : "dddaaa",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "asd",
+        "comment" : "",
+        "type" : "BOOLEAN",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "new",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "dsa",
+        "comment" : "",
+        "type" : "BOOLEAN",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    } ],
+    "relations" : [ {
+      "name" : "relaiti",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "dada",
+        "comment" : "",
+        "type" : "BOOLEAN",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      } ],
+      "entities" : [ "dddaaa", "new" ],
+      "cardinalities" : "0:1"
+    } ],
+    "constraints" : [ ]
+  } ]
+} ]

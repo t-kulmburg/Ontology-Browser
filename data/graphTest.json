@@ -1,0 +1,29 @@
+[ {
+  "name" : "test",
+  "comment" : "",
+  "systems" : [ {
+    "name" : "test",
+    "comment" : "",
+    "entities" : [ {
+      "name" : "one",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "",
+      "sub_entities" : [ "two" ]
+    }, {
+      "name" : "two",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "one",
+      "sub_entities" : [ ]
+    } ],
+    "relations" : [ {
+      "name" : "test",
+      "comment" : "",
+      "attributes" : [ ],
+      "entities" : [ "two", "one" ],
+      "cardinalities" : "1:2"
+    } ],
+    "constraints" : [ ]
+  } ]
+} ]

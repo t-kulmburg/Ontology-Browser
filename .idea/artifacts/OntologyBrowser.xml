@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="OntologyBrowser">
+    <output-path>$PROJECT_DIR$/out/artifacts/OntologyBrowser</output-path>
+    <root id="root">
+      <element id="archive" name="OntologyBrowser.jar">
+        <element id="module-output" name="OntologyBrowser" />
+      </element>
+      <element id="module-source" name="OntologyBrowser" />
+    </root>
+  </artifact>
+</component>

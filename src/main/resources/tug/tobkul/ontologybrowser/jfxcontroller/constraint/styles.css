@@ -1,0 +1,5 @@
+.highlighted {
+    -fx-background-color: rgba(100, 150, 250, 0.4);
+    -fx-background-radius: 5;
+    -fx-padding: 2;
+}

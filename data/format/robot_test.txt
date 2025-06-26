@@ -1,0 +1,46 @@
+(1) Anstelle des '.' im Parameternamen, bitte verwenden Sie '_'.
+(2) Die Typen (int, bool, oder enum) sollten auch noch beim Namen stehen.
+
+BTW hier ist noch die Syntax fuer Contraints im ACTS Tool:
+
+<Constraint> ::= <Simple_Constraint> | <Constraint> <Boolean_Op> <Constraint>
+
+<Simple_Constraint> ::= <Term> <Relational_Op> <Term>
+
+<Term> ::= <Parameter> | <Parameter> <Arithmetic_Op> <Parameter> | <Parameter> <Arithmetic_Op> <Value>
+
+<Boolean_Op> ::= &&, ||, =>
+<Relational_Op> ::= >, <, =, !=, >=, <=
+<Arithmetic_Op> ::= +, -, *, /, %
+
+asdasdasdasdasd
+Klammern () auch moeglich sind.
+
+FILE CONTENT:
+
+[System]
+Name: Mobile Robot Testing
+
+[Parameter]
+RobotEnvironment_3_RobotCommand_cmd (enum): left,straight,right,EPSILON
+RobotEnvironment_1_RobotCommand_cmd (enum): left,straight,right,EPSILON
+RobotEnvironment_2_RobotCommand_cmd (enum): left,straight,right,EPSILON
+RobotEnvironment_2_RobotCommand_2_WheelSurface_surface (enum): normal,slippery,EPSILON
+RobotEnvironment_1_RobotCommand_1_WheelSurface_surface (enum): normal,slippery,EPSILON
+RobotEnvironment_3_RobotCommand_1_WheelSurface_surface (enum): normal,slippery,EPSILON
+RobotEnvironment_3_RobotCommand_2_WheelSurface_surface (enum): normal,slippery,EPSILON
+RobotEnvironment_1_RobotCommand_2_WheelSurface_surface (enum): normal,slippery,EPSILON
+RobotEnvironment_2_RobotCommand_1_WheelSurface_surface (enum): normal,slippery,EPSILON
+
+[Constraint]
+(RobotEnvironment_1_RobotCommand_1_WheelSurface_surface != "EPSILON") && (RobotEnvironment_1_RobotCommand_2_WheelSurface_surface != "EPSILON")
+
+(RobotEnvironment_2_RobotCommand_1_WheelSurface_surface != "EPSILON") && (RobotEnvironment_2_RobotCommand_2_WheelSurface_surface != "EPSILON")
+
+(RobotEnvironment_3_RobotCommand_1_WheelSurface_surface != "EPSILON") && (RobotEnvironment_3_RobotCommand_2_WheelSurface_surface != "EPSILON")
+
+(RobotEnvironment_1_RobotCommand_cmd != "EPSILON") || (RobotEnvironment_2_RobotCommand_cmd != "EPSILON") || (RobotEnvironment_3_RobotCommand_cmd != "EPSILON")
+
+(RobotEnvironment_1_RobotCommand_1_WheelSurface_surface != "EPSILON") ||(RobotEnvironment_2_RobotCommand_1_WheelSurface_surface != "EPSILON")|| (RobotEnvironment_3_RobotCommand_1_WheelSurface_surface != "EPSILON")
+
+(RobotEnvironment_1_RobotCommand_2_WheelSurface_surface != "EPSILON")||(RobotEnvironment_2_RobotCommand_2_WheelSurface_surface != "EPSILON")||(RobotEnvironment_3_RobotCommand_2_WheelSurface_surface != "EPSILON")

@@ -1,0 +1,124 @@
+[ {
+  "name" : "Robot Scenario",
+  "comment" : "",
+  "systems" : [ {
+    "name" : "Robot Scenario",
+    "comment" : "",
+    "entities" : [ {
+      "name" : "Robot",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "x",
+        "comment" : "",
+        "type" : "INT",
+        "value" : {
+          "min" : 1.0,
+          "max" : 5.0,
+          "interval" : 1.0
+        }
+      }, {
+        "name" : "y",
+        "comment" : "",
+        "type" : "INT",
+        "value" : {
+          "min" : 1.0,
+          "max" : 5.0,
+          "interval" : 1.0
+        }
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "Obstacle",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "x",
+        "comment" : "",
+        "type" : "INT",
+        "value" : {
+          "min" : 1.0,
+          "max" : 5.0,
+          "interval" : 1.0
+        }
+      }, {
+        "name" : "y",
+        "comment" : "",
+        "type" : "INT",
+        "value" : {
+          "min" : 1.0,
+          "max" : 5.0,
+          "interval" : 1.0
+        }
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "Scenario",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    } ],
+    "relations" : [ {
+      "name" : "scenario has robot",
+      "comment" : "",
+      "attributes" : [ ],
+      "entities" : [ "Scenario", "Robot" ],
+      "cardinalities" : "1:1"
+    }, {
+      "name" : "scenario has obstacle",
+      "comment" : "",
+      "attributes" : [ ],
+      "entities" : [ "Scenario", "Obstacle" ],
+      "cardinalities" : "0:4"
+    } ],
+    "constraints" : [ {
+      "name" : "robot can't be at obstacle",
+      "comment" : "",
+      "constraint" : {
+        "type" : "composite",
+        "lhs" : {
+          "type" : "simple",
+          "lhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "INT",
+              "Entity" : "Robot",
+              "Attribute" : "x"
+            }
+          },
+          "rhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "INT",
+              "Entity" : "Obstacle",
+              "Attribute" : "x"
+            }
+          },
+          "relationalOperator" : "NOT_EQUAL"
+        },
+        "rhs" : {
+          "type" : "simple",
+          "lhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "INT",
+              "Entity" : "Robot",
+              "Attribute" : "y"
+            }
+          },
+          "rhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "INT",
+              "Entity" : "Obstacle",
+              "Attribute" : "y"
+            }
+          },
+          "relationalOperator" : "NOT_EQUAL"
+        },
+        "booleanOperator" : "AND"
+      }
+    } ]
+  } ]
+} ]

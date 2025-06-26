@@ -1,0 +1,29 @@
+[ {
+  "name" : "My Library",
+  "comment" : "",
+  "systems" : [ {
+    "name" : "My System",
+    "comment" : "",
+    "entities" : [ {
+      "name" : "My Entity",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "My other Entity",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    } ],
+    "relations" : [ {
+      "name" : "My Relation",
+      "comment" : "",
+      "attributes" : [ ],
+      "entities" : [ "My Entity", "My other Entity" ],
+      "cardinalities" : "0:1"
+    } ],
+    "constraints" : [ ]
+  } ]
+} ]

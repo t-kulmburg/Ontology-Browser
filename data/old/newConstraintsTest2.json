@@ -1,0 +1,163 @@
+[ {
+  "name" : "test",
+  "comment" : "",
+  "systems" : [ {
+    "name" : "test",
+    "comment" : "",
+    "entities" : [ {
+      "name" : "test",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "attr1",
+        "comment" : "",
+        "type" : "BOOL",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      }, {
+        "name" : "attr2",
+        "comment" : "",
+        "type" : "BOOL",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      }, {
+        "name" : "attr3",
+        "comment" : "",
+        "type" : "INT",
+        "value" : {
+          "type" : "NUMBER_RANGE",
+          "value" : {
+            "min" : 1.0,
+            "max" : 10.0,
+            "interval" : 1.0
+          }
+        }
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "test2",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "attr21",
+        "comment" : "",
+        "type" : "BOOL",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      }, {
+        "name" : "attr22",
+        "comment" : "",
+        "type" : "BOOL",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ ]
+    } ],
+    "relations" : [ ],
+    "constraints" : [ {
+      "name" : "asd",
+      "comment" : "",
+      "constraint" : {
+        "type" : "simple",
+        "lhs" : {
+          "type" : "parameter",
+          "parameter" : {
+            "type" : "BOOL",
+            "Entity" : "test",
+            "Attribute" : "attr1"
+          }
+        },
+        "rhs" : {
+          "type" : "parameter",
+          "parameter" : {
+            "type" : "BOOL",
+            "Entity" : "test",
+            "Attribute" : "attr2"
+          }
+        },
+        "relationalOperator" : "NOT_EQUAL"
+      }
+    }, {
+      "name" : "fghjkl",
+      "comment" : "",
+      "constraint" : {
+        "type" : "composite",
+        "lhs" : {
+          "type" : "simple",
+          "lhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "BOOL",
+              "Entity" : "test",
+              "Attribute" : "attr1"
+            }
+          },
+          "rhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "BOOL",
+              "Entity" : "test2",
+              "Attribute" : "attr22"
+            }
+          },
+          "relationalOperator" : "GREATER_EQUAL"
+        },
+        "rhs" : {
+          "type" : "composite",
+          "lhs" : {
+            "type" : "simple",
+            "lhs" : {
+              "type" : "parameter",
+              "parameter" : {
+                "type" : "BOOL",
+                "Entity" : "test",
+                "Attribute" : "attr2"
+              }
+            },
+            "rhs" : {
+              "type" : "parameter",
+              "parameter" : {
+                "type" : "BOOL",
+                "Entity" : "test",
+                "Attribute" : "attr1"
+              }
+            },
+            "relationalOperator" : "NOT_EQUAL"
+          },
+          "rhs" : {
+            "type" : "simple",
+            "lhs" : {
+              "type" : "parameter",
+              "parameter" : {
+                "type" : "INT",
+                "Entity" : "test",
+                "Attribute" : "attr3"
+              }
+            },
+            "rhs" : {
+              "type" : "value",
+              "value" : "1"
+            },
+            "relationalOperator" : "GREATER_THAN"
+          },
+          "booleanOperator" : "IMPL"
+        },
+        "booleanOperator" : "OR"
+      }
+    } ]
+  }, {
+    "name" : "test2",
+    "comment" : "",
+    "entities" : [ ],
+    "relations" : [ ],
+    "constraints" : [ ]
+  } ]
+} ]

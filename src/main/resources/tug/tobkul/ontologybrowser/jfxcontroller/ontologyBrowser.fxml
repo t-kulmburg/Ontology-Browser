@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+
+<SplitPane dividerPositions="0.8" orientation="VERTICAL" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.OntologyBrowserController">
+    <items>
+        <BorderPane prefWidth="800.0">
+            <top>
+                <MenuBar nodeOrientation="LEFT_TO_RIGHT" BorderPane.alignment="CENTER_LEFT">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuFileNew" text="New" />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuFileOpen" text="Open..." />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuFileImport" text="Import..." />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuFileSave" text="Save" />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuFileSaveAs" text="Save As..." />
+                            </items>
+                        </Menu>
+                  <Menu mnemonicParsing="false" text="Export">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#onMenuExportInputModel" text="Input Model" />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuExportUml" text="UML Diagram" />
+                    </items>
+                  </Menu>
+                    </menus>
+                </MenuBar>
+            </top>
+            <center>
+                <HBox spacing="5.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <VBox spacing="5.0">
+                            <children>
+                                <BorderPane>
+                                    <left>
+                                        <Label text="Libraries" BorderPane.alignment="CENTER" />
+                                    </left>
+                                    <right>
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddLibrary" text="+" BorderPane.alignment="CENTER" />
+                                    </right>
+                                </BorderPane>
+                                <ListView fx:id="libraryListView" editable="true" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                            <children>
+                                <BorderPane>
+                                    <right>
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddSystem" text="+" BorderPane.alignment="CENTER" />
+                                    </right>
+                                    <left>
+                                        <Label text="Systems" BorderPane.alignment="CENTER" />
+                                    </left>
+                                </BorderPane>
+                                <ListView fx:id="systemListView" editable="true" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                        <Separator orientation="VERTICAL">
+                            <HBox.margin>
+                                <Insets />
+                            </HBox.margin>
+                        </Separator>
+                        <VBox spacing="5.0">
+                            <children>
+                                <BorderPane>
+                                    <left>
+                                        <Label text="Entities" BorderPane.alignment="CENTER" />
+                                    </left>
+                                    <right>
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddEntity" text="+" BorderPane.alignment="CENTER" />
+                                    </right>
+                                </BorderPane>
+                                <ListView fx:id="entityListView" editable="true" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                            <children>
+                                <BorderPane>
+                                    <left>
+                                        <Label text="Relations" BorderPane.alignment="CENTER" />
+                                    </left>
+                                    <right>
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddRelation" text="+" BorderPane.alignment="CENTER" />
+                                    </right>
+                                </BorderPane>
+                                <ListView fx:id="relationListView" editable="true" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                        <VBox spacing="5.0">
+                            <children>
+                                <BorderPane>
+                                    <left>
+                                        <Label text="Constraints" BorderPane.alignment="CENTER" />
+                                    </left>
+                                    <right>
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddConstraint" text="+" BorderPane.alignment="CENTER" />
+                                    </right>
+                                </BorderPane>
+                                <ListView fx:id="constraintListView" editable="true" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                    </children>
+                    <cursor>
+                        <Cursor fx:constant="DEFAULT" />
+                    </cursor>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                    </padding>
+                </HBox>
+            </center>
+            <bottom>
+
+            </bottom>
+        </BorderPane>
+      <SplitPane dividerPositions="0.5">
+         <items>
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0">
+               <content>
+                      <TextFlow fx:id="detailsTextFlow">
+                          <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                          </padding>
+                      </TextFlow>
+               </content>
+            </ScrollPane>
+            <SplitPane fx:id="attributesSplitPane">
+               <items>
+                  <HBox fx:id="attributesHBox" visible="false">
+                     <children>
+                        <BorderPane prefHeight="132.0" prefWidth="125.0">
+                           <top>
+                              <BorderPane BorderPane.alignment="CENTER_LEFT">
+                                 <left>
+                                    <Label text="Attributes" BorderPane.alignment="CENTER" />
+                                 </left>
+                                 <right>
+                                    <Button mnemonicParsing="false" onAction="#onAddAttribute" text="+" BorderPane.alignment="CENTER" />
+                                 </right>
+                                 <padding>
+                                    <Insets bottom="1.0" left="1.0" right="1.0" top="1.0" />
+                                 </padding>
+                              </BorderPane>
+                           </top>
+                           <center>
+                              <ListView fx:id="attributesListView" prefWidth="100.0" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <ScrollPane prefHeight="200.0" prefWidth="296.0">
+                           <content>
+                              <TextFlow fx:id="attributesTextFlow">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                              </TextFlow>
+                           </content>
+                        </ScrollPane>
+                     </children>
+                  </HBox>
+               </items>
+            </SplitPane>
+         </items>
+      </SplitPane>
+    </items>
+</SplitPane>

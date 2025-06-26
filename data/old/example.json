@@ -1,0 +1,103 @@
+[ {
+  "name" : "lib1",
+  "comment" : "",
+  "systems" : [ {
+    "name" : "sys1",
+    "comment" : "",
+    "entities" : [ {
+      "name" : "ent1",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "bool_attr",
+        "comment" : "",
+        "type" : "BOOLEAN",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      }, {
+        "name" : "range_attr",
+        "comment" : "",
+        "type" : "NUMBER_RANGE",
+        "value" : {
+          "type" : "NUMBER_RANGE",
+          "value" : {
+            "min" : 1.5,
+            "max" : 17.0
+          }
+        }
+      }, {
+        "name" : "enum_attr",
+        "comment" : "",
+        "type" : "ENUMERATION",
+        "value" : {
+          "type" : "ENUMERATION",
+          "value" : [ "blue", "red", "green", "orange", "white" ]
+        }
+      } ],
+      "super_entity" : "",
+      "sub_entities" : [ "ent3" ]
+    }, {
+      "name" : "ent2",
+      "comment" : "",
+      "attributes" : [ {
+        "name" : "bool_attr",
+        "comment" : "",
+        "type" : "BOOLEAN",
+        "value" : {
+          "type" : "BOOLEAN",
+          "value" : null
+        }
+      }, {
+        "name" : "range_attr",
+        "comment" : "",
+        "type" : "NUMBER_RANGE",
+        "value" : {
+          "type" : "NUMBER_RANGE",
+          "value" : {
+            "min" : 10.0,
+            "max" : 1000.0
+          }
+        }
+      }, {
+        "name" : "enum_attr",
+        "comment" : "",
+        "type" : "ENUMERATION",
+        "value" : {
+          "type" : "ENUMERATION",
+          "value" : [ "one", "two", "three", "four", "five", "six" ]
+        }
+      } ],
+      "super_entity" : "ent3",
+      "sub_entities" : [ ]
+    }, {
+      "name" : "ent3",
+      "comment" : "",
+      "attributes" : [ ],
+      "super_entity" : "ent1",
+      "sub_entities" : [ "ent2" ]
+    } ],
+    "relations" : [ {
+      "name" : "rel12",
+      "comment" : "",
+      "attributes" : [ ],
+      "entities" : [ "ent1", "ent2" ],
+      "cardinalities" : "0:5"
+    } ],
+    "constraints" : [ {
+      "name" : "constr",
+      "comment" : "",
+      "expression" : "¬( ent1.bool_attr == ent2.bool_attr ∧ ent2.enum_attr != five )"
+    } ]
+  }, {
+    "name" : "sys2",
+    "comment" : "",
+    "entities" : [ ],
+    "relations" : [ ],
+    "constraints" : [ ]
+  } ]
+}, {
+  "name" : "lib2",
+  "comment" : "",
+  "systems" : [ ]
+} ]

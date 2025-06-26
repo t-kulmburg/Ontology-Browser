@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" vgap="10.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.constraint.EditCompositeConstraintPopupController">
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="150.0" />
+        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="120.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="150.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+      <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+      <BorderPane GridPane.rowIndex="1">
+         <left>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <Label style="-fx-font-weight: bold;" text="Constraint A:">
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding></Label>
+               </children>
+            </VBox>
+         </left>
+      </BorderPane>
+      <BorderPane GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <left>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <Label style="-fx-font-weight: bold;" text="Constraint B:">
+                     <padding>
+                        <Insets left="5.0" />
+                     </padding></Label>
+               </children>
+            </VBox>
+         </left>
+      </BorderPane>
+      <VBox prefHeight="200.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <children>
+            <Label text="Boolean Operator:" />
+            <ChoiceBox fx:id="booleanOperatorChoiceBox" prefWidth="120.0">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </ChoiceBox>
+         </children>
+      </VBox>
+        <Button alignment="TOP_LEFT" defaultButton="true" mnemonicParsing="false" onAction="#onConfirm" text="Confirm" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets right="5.0" />
+         </GridPane.margin></Button>
+      <TextFlow fx:id="lhsTextFlow" prefHeight="100.0" prefWidth="150.0" style="-fx-background-color: #FFFFFF;" GridPane.rowIndex="2" GridPane.rowSpan="2">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextFlow>
+      <TextFlow fx:id="rhsTextFlow" prefHeight="100.0" prefWidth="150.0" style="-fx-background-color: #FFFFFF;" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.rowSpan="2">
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextFlow>
+      <Label style="-fx-font-weight: bold;" text="Reduce constraint:" GridPane.rowIndex="4">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin>
+      </Label>
+      <VBox alignment="CENTER_RIGHT" spacing="2.0" GridPane.rowIndex="5">
+         <children>
+            <CheckBox fx:id="keepOnlyACheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Keep only A" />
+            <CheckBox fx:id="keepOnlyBCheckBox" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" text="Keep only B" />
+         </children>
+         <GridPane.margin>
+            <Insets right="5.0" />
+         </GridPane.margin>
+      </VBox>
+    </children>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+</GridPane>
