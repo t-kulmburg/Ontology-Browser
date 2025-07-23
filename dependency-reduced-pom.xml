@@ -4,7 +4,7 @@
   <groupId>tug.tobkul</groupId>
   <artifactId>OntologyBrowser</artifactId>
   <name>OntologyBrowser</name>
-  <version>1.5</version>
+  <version>1.7</version>
   <build>
     <plugins>
       <plugin>
@@ -53,17 +53,29 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>install-jar-lib</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>install-file</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <groupId>net.sourceforge</groupId>
+          <artifactId>plantuml</artifactId>
+          <version>1.2025.3</version>
+          <packaging>jar</packaging>
+          <file>${basedir}/lib/plantuml-1.2025.3.jar</file>
+          <generatePom>true</generatePom>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <dependency>
-      <groupId>net.sourceforge</groupId>
-      <artifactId>plantuml</artifactId>
-      <version>1.2025.3</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/plantuml-1.2025.3.jar</systemPath>
-    </dependency>
-  </dependencies>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <junit.version>5.10.0</junit.version>
