@@ -1,4 +1,4 @@
-# Constraints
+# Creating a Constraint
 
 Custom constraints can be added to restrict values of Attributes of Entities of a System.
 Currently, constraints can be created in a tree structure.
