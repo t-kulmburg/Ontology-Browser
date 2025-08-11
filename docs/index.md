@@ -1,13 +1,14 @@
-# Ontology Browser
+# OntologyBrowser Documentation
 
-This tool provides a graphical user interface that allows the creation of ontologies.
+This tool provides a graphical user interface that allows the creation and editing of ontologies.
 
 Further, it is able to generate an Input Model from an existing ontology,
-that can then be used as input for the combinatorial-testing-tool [ACTS](TODO)
+that can then be used as input for the combinatorial-testing-tool [ACTS](https://csrc.nist.rip/groups/SNS/acts/documents/comparison-report.html#acts)
 
-## Compile & Run
 
-The tool is written in java using maven, and utilizing javafx as frontend-library.
+## Build & Run
+
+The tool is a monolithic application written in java using maven, and utilizing javafx as frontend-library.
 
 To build an executable jar file, run
 
@@ -17,7 +18,7 @@ To build an executable jar file, run
 
 The jar file supports two ways of execution:
 
-### Running the full OntologyBrowser with graphical interface
+### Full OntologyBrowser with GUI
 
 Simply execute the jar without additional parameters by running
 
@@ -25,7 +26,7 @@ Simply execute the jar without additional parameters by running
 java -jar target/OntologyBrowser-1.5.jar
 ```
 
-### Generate Input Model without GUI
+### Export Input Model without GUI
 
 The jar can also be used to directly create an input model from the command line.
 
@@ -39,7 +40,3 @@ Therefore, following 4 parameters need to be passed:
 ```bash
 java -jar ontologybrowser.jar <input> <library> <system> <output>
 ```
-
-## User Documentation
-
-TODO add GitHub pages build and link
