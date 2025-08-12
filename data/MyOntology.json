@@ -7,13 +7,23 @@
     "entities" : [ {
       "name" : "My Entity",
       "comment" : "",
-      "attributes" : [ ],
+      "attributes" : [ {
+        "name" : "entity_attr",
+        "comment" : "",
+        "type" : "BOOL",
+        "value" : null
+      } ],
       "super_entity" : "",
       "sub_entities" : [ ]
     }, {
       "name" : "My other Entity",
       "comment" : "",
-      "attributes" : [ ],
+      "attributes" : [ {
+        "name" : "other_entity_attr",
+        "comment" : "",
+        "type" : "BOOL",
+        "value" : null
+      } ],
       "super_entity" : "",
       "sub_entities" : [ ]
     } ],
