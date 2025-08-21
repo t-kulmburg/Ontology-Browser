@@ -18,4 +18,4 @@ jobs:
         distribution: 'sapmachine'
         cache: maven
     - name: Build with Maven
-      run: ./mvnw clean install package
+      run: ./mvnw clean install:install-file package
