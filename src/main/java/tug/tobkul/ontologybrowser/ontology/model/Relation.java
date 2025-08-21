@@ -194,7 +194,7 @@ public class Relation implements AttributeHolder, PdfContentProvider {
     @JsonIgnore
     public String getPlantUmlString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(A.getName())
+        builder.append(A.getName().replace(" ", "_"))
                 .append(" o-- ")
                 .append("\"");
         if (cardinalityMin.equals(cardinalityMax)) {
@@ -205,9 +205,9 @@ public class Relation implements AttributeHolder, PdfContentProvider {
                     .append(cardinalityMax);
         }
         builder.append("\" ")
-                .append(B.getName())
+                .append(B.getName().replace(" ", "_"))
                 .append(" : ")
-                .append(name)
+                .append(name.replace(" ", "_"))
                 .append("\n");
         return builder.toString();
     }

@@ -161,10 +161,10 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     public String getPlantUmlString() {
         StringBuilder builder = new StringBuilder();
         builder.append("entity ")
-                .append(this.name)
+                .append(this.name.replace(" ", "_"))
                 .append(" {\n");
         for (Attribute a : attributes) {
-            builder.append(a.getName())
+            builder.append(a.getName().replace(" ", "_"))
                     .append(" : ")
                     .append(a.getType())
                     .append("\n");
@@ -177,9 +177,9 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     @JsonIgnore
     public String getPlantUmlStringInheritance() {
         if (superEntity == null) return null;
-        String builder = superEntity.getName() +
+        String builder = superEntity.getName().replace(" ", "_") +
                 " <|-- " +
-                name +
+                name.replace(" ", "_") +
                 "\n";
         return builder;
     }

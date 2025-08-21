@@ -1,7 +1,7 @@
 # Overview
 
 The general interface of the browser looks like the following:
-![Overview](../../images/overview.png)
+![Overview](images/overview.png)
 When an object is selected, all further views will show the respective contained objects.
 
 When for example a Library is selected, the Systems list will show all existing Systems in this Library.

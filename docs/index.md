@@ -3,7 +3,8 @@
 This tool provides a graphical user interface that allows the creation and editing of ontologies.
 
 Further, it is able to generate an Input Model from an existing ontology,
-that can then be used as input for the combinatorial-testing-tool [ACTS](https://csrc.nist.rip/groups/SNS/acts/documents/comparison-report.html#acts)
+that can then be used as input for the combinatorial-testing-tool
+[ACTS](https://csrc.nist.rip/groups/SNS/acts/documents/comparison-report.html#acts)
 
 
 ## Build & Run
