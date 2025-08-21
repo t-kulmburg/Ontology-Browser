@@ -13,8 +13,12 @@ The tool is written in java using maven, and utilizing javafx as frontend-librar
 To build an executable jar file, run
 
 ```bash
- ./mvnw clean compile package
+ ./mvnw clean install:install-file package
 ```
+
+The `install:install-file` is required to install the `plantuml-1.2025.3.jar` located in `lib` to the local maven
+repository, so that it is available for the build. This is required as the dependency is not available in any public
+maven repository.
 
 The jar file supports two ways of execution:
 
