@@ -1,9 +1,0 @@
-[{
-  "name" : string,
-  "comment" : string,
-  "systems" : [{
-    "name" : string,
-    "comment": string
-  }]
-
-}]
