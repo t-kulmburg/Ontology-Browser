@@ -3,7 +3,8 @@
 This tool provides a graphical user interface that allows the creation of ontologies.
 
 Further, it is able to generate an Input Model from an existing ontology,
-that can then be used as input for the combinatorial-testing-tool [ACTS](TODO)
+that can then be used as input for the combinatorial-testing-tool
+[ACTS](https://csrc.nist.rip/groups/SNS/acts/documents/comparison-report.html#acts)
 
 ## Compile & Run
 
@@ -42,4 +43,4 @@ java -jar ontologybrowser.jar <input> <library> <system> <output>
 
 ## User Documentation
 
-TODO add GitHub pages build and link
+The detailed documentation is published using GitHub Pages: https://t-kulmburg.github.io/Ontology-Browser/
