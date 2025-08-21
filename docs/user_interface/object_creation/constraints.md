@@ -9,6 +9,11 @@ When creating a new constraint, the main window looks like the following:
 
 Here, a new constraint can be started by using the `New Root` button bottom left.
 
+!!!note
+
+    Already created constraints can also be edited afterwards using the `Edit` button.
+    For more information, see [**Editing Constraints**](../object_editing/constraints.md#editing-a-constraint)
+
 ## Simple Constraint Creation
 
 This will open the `Add simple Constraint` popup:
