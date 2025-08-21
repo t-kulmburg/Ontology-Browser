@@ -16,7 +16,7 @@ To build an executable jar file, run
  ./mvnw clean compile package
 ```
 
-The jar file supports two ways of execution:
+The jar file supports two ways of exdecution:
 
 ### Full OntologyBrowser with GUI
 

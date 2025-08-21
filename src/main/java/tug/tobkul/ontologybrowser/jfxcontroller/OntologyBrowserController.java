@@ -848,7 +848,7 @@ public class OntologyBrowserController implements Initializable {
 
         Stage stage = new Stage();
         controller.setStage(stage);
-        stage.setTitle("Add Constraint");
+        stage.setTitle("Edit Constraint");
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene(root));

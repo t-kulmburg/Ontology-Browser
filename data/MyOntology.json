@@ -34,6 +34,49 @@
       "entities" : [ "My Entity", "My other Entity" ],
       "cardinalities" : "0:1"
     } ],
-    "constraints" : [ ]
+    "constraints" : [ {
+      "name" : "My Constraint",
+      "comment" : "",
+      "constraint" : {
+        "type" : "composite",
+        "lhs" : {
+          "type" : "simple",
+          "lhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "BOOL",
+              "Entity" : "My Entity",
+              "Attribute" : "entity_attr"
+            }
+          },
+          "rhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "BOOL",
+              "Entity" : "My other Entity",
+              "Attribute" : "other_entity_attr"
+            }
+          },
+          "relationalOperator" : "NOT_EQUAL"
+        },
+        "rhs" : {
+          "type" : "simple",
+          "lhs" : {
+            "type" : "parameter",
+            "parameter" : {
+              "type" : "BOOL",
+              "Entity" : "My Entity",
+              "Attribute" : "entity_attr"
+            }
+          },
+          "rhs" : {
+            "type" : "value",
+            "value" : "true"
+          },
+          "relationalOperator" : "EQUAL"
+        },
+        "booleanOperator" : "IMPL"
+      }
+    } ]
   } ]
 } ]

@@ -1,5 +1,6 @@
 nav:
   - Home: index.md
   - User Interface:
-      - user_interface/overview.md
+      - Overview: user_interface/overview
       - Object Creation: user_interface/object_creation
+      - Editing of Objects: user_interface/object_editing

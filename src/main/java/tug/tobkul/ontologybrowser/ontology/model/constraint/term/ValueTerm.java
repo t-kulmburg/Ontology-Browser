@@ -24,7 +24,7 @@ public class ValueTerm implements Term {
     @Override
     @JsonIgnore
     public String getExpression() {
-        return value;
+        return value.replace(" ", "_");
     }
 
     @Override

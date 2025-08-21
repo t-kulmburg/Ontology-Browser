@@ -11,7 +11,7 @@ attribute types.
 
 ## Attribute Types
 
-There are three different attribute types that can be selected using the "Attribute Type" choice box:
+There are three different attribute types that can be selected using the `Attribute Type` choice box:
 
 ### Boolean
 

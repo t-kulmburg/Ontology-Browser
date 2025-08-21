@@ -50,7 +50,7 @@ public class Parameter {
 
     @JsonIgnore
     public String getExpression() {
-        return entity.getName() + "_" + attribute.getName();
+        return entity.getName().replace(" ", "_") + "." + attribute.getName().replace(" ", "_");
     }
 
 

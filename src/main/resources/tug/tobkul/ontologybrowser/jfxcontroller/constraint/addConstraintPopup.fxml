@@ -60,7 +60,7 @@
             <Label text="(Optional)" />
          </children>
       </VBox>
-      <ScrollPane fitToHeight="true" vbarPolicy="NEVER" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+      <ScrollPane fitToHeight="true" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.rowSpan="2" GridPane.valignment="CENTER">
          <content>
             <HBox fx:id="constraintHBox" alignment="CENTER" />
          </content>

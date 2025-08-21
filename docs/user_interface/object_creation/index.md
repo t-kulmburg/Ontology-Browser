@@ -1,6 +1,8 @@
 # Creation of Objects
 
-Objects can be created using the `+` buttons in the respective column.
+Objects can be created using the `+` buttons in the respective column.  
+In addition, all the five list views have an
+`Add...` button in the context menu, that is equivalent to the `+`.
 
 Depending on the type of object, a specific dialog window asking for properties will appear.
 
