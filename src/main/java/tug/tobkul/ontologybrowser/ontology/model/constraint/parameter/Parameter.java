@@ -92,22 +92,22 @@ public class Parameter {
         this.attribute = attribute;
     }
 
-    @JsonProperty("Entity")
+    @JsonProperty("entity")
     public String getEntityNameForJson() {
         return entity.getName();
     }
 
-    @JsonProperty("Attribute")
+    @JsonProperty("attribute")
     public String getAttributeANameForJson() {
         return attribute.getName();
     }
 
-    @JsonProperty("Entity")
+    @JsonProperty("entity")
     public void setEntityANameFromJson(String entityName) {
         this.entityName = entityName;
     }
 
-    @JsonProperty("Attribute")
+    @JsonProperty("attribute")
     public void setAttributeANameFromJson(String attributeName) {
         this.attributeName = attributeName;
     }

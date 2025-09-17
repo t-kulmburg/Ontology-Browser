@@ -1,0 +1,382 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/schemas/root",
+  "title": "Ontology Browser file schema",
+  "description": "Root is a list of libraries",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "comment": {
+        "type": "string"
+      },
+      "systems": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "comment": {
+              "type": "string"
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "super_entity": {
+                    "type": "string"
+                  },
+                  "sub_entities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "attributes": {
+                    "$ref": "/schemas/attributes"
+                  }
+                }
+              }
+            },
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "attributes": {
+                    "$ref": "/schemas/attributes"
+                  },
+                  "entities": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "uniqueItems": true,
+                    "minItems": 2,
+                    "maxItems": 2
+                  },
+                  "cardinalities": {
+                    "type": "string",
+                    "pattern": "^\\d+:\\d+$"
+                  }
+                }
+              }
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "constraint": {
+                    "$ref": "/schemas/constraint"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "attributes": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://example.com/schemas/attributes",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "ENUM",
+              "BOOL",
+              "INT"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "ENUM"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "value": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "INT"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "value": {
+                  "type": "object",
+                  "properties": {
+                    "min": {
+                      "type": "number"
+                    },
+                    "max": {
+                      "type": "number"
+                    },
+                    "interval": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "BOOL"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "value": {
+                  "type": "null"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "constraint": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://example.com/schemas/constraint",
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "simple",
+            "composite"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "simple"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "lhs": {
+                "$ref": "/schemas/term"
+              },
+              "rhs": {
+                "$ref": "/schemas/term"
+              },
+              "relationalOperator": {
+                "enum": [
+                  "GREATER_THAN",
+                  "LESS_THAN",
+                  "GREATER_EQUAL",
+                  "LESS_EQUAL",
+                  "NOT_EQUAL",
+                  "EQUAL"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "composite"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "lhs": {
+                "$ref": "/schemas/constraint"
+              },
+              "rhs": {
+                "$ref": "/schemas/constraint"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "term": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://example.com/schemas/term",
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "parameter",
+            "value",
+            "arithmeticParameter",
+            "arithmeticValue"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "parameter"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "parameter": {
+                "$ref": "/schemas/parameter"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "value"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "arithmeticParameter"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "lhs": {
+                "$ref": "/schemas/parameter"
+              },
+              "rhs": {
+                "$ref": "/schemas/parameter"
+              },
+              "arithmeticOperator": {
+                "enum": [
+                  "PLUS",
+                  "MINUS",
+                  "MULTIPLY",
+                  "DIVIDE",
+                  "MODULO"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "arithmeticValue"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "lhs": {
+                "$ref": "/schemas/parameter"
+              },
+              "rhs": {
+                "type": "string"
+              },
+              "arithmeticOperator": {
+                "enum": [
+                  "PLUS",
+                  "MINUS",
+                  "MULTIPLY",
+                  "DIVIDE",
+                  "MODULO"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "parameter": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://example.com/schemas/parameter",
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "ENUM",
+            "BOOL",
+            "INT"
+          ]
+        },
+        "entity": {
+          "type": "string"
+        },
+        "attribute": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
