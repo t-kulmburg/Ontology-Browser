@@ -370,10 +370,10 @@ public class OntologyBrowserController implements Initializable {
         setTitle(ontologyManager.getCurrentFileName());
     }
 
-    private void showErrorPopup(String title, String message) {
+    private void showErrorPopup(String title, String header, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
-        alert.setHeaderText(null);
+        alert.setHeaderText(header);
         alert.setContentText(message);
         alert.showAndWait();
     }
@@ -645,17 +645,15 @@ public class OntologyBrowserController implements Initializable {
             try {
                 ontologyManager.openFile(selectedFile);
             } catch (JsonParseException e) {
-                String message = "Error: The JSON structure in the file is invalid.\n" +
-                        e.getLocalizedMessage() +
+                String message =  e.getLocalizedMessage() +
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", message);
+                showErrorPopup("Error opening JSON file","Error: The JSON structure in the file is invalid.", message);
             } catch (JsonMappingException e) {
-                String message = "Error: The file's structure doesn't match the expected format.\n" +
-                        e.getMessage() +
+                String message = e.getOriginalMessage() +
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", message);
+                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected format.", message);
             } catch (IOException e) {
-                showErrorPopup("Error opening JSON file", e.getLocalizedMessage());
+                showErrorPopup("Error opening JSON file", null, e.getLocalizedMessage());
             }
 
             setTitle(selectedFile.getName());
@@ -673,17 +671,15 @@ public class OntologyBrowserController implements Initializable {
             try {
                 ontologyManager.importFile(selectedFile);
             } catch (JsonParseException e) {
-                String message = "Error: The JSON structure in the file is invalid.\n" +
-                        e.getLocalizedMessage() +
+                String message = e.getLocalizedMessage() +
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", message);
+                showErrorPopup("Error opening JSON file", "Error: The JSON structure in the file is invalid.", message);
             } catch (JsonMappingException e) {
-                String message = "Error: The file's structure doesn't match the expected format.\n" +
-                        e.getOriginalMessage() +
+                String message =  e.getOriginalMessage() +
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", message);
+                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected format.", message);
             } catch (IOException e) {
-                showErrorPopup("Error opening JSON file", e.getLocalizedMessage());
+                showErrorPopup("Error opening JSON file", null, e.getLocalizedMessage());
             }
         }
         initializeListViews();
@@ -694,7 +690,7 @@ public class OntologyBrowserController implements Initializable {
             try {
                 ontologyManager.saveFile();
             } catch (IOException e) {
-                showErrorPopup("Error saving JSON file", e.getLocalizedMessage());
+                showErrorPopup("Error saving JSON file", null, e.getLocalizedMessage());
             }
         } else {
             onMenuFileSaveAs();
@@ -715,7 +711,7 @@ public class OntologyBrowserController implements Initializable {
             try {
                 ontologyManager.saveFileAs(selectedFile);
             } catch (IOException e) {
-                showErrorPopup("Error saving JSON file", e.getLocalizedMessage());
+                showErrorPopup("Error saving JSON file", null, e.getLocalizedMessage());
             }
             setTitle(selectedFile.getName());
         }
