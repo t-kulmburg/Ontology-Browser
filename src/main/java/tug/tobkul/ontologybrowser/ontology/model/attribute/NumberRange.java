@@ -1,40 +1,40 @@
 package tug.tobkul.ontologybrowser.ontology.model.attribute;
 
 public class NumberRange {
-    private double min;
-    private double max;
-    private double interval;
+    private int min;
+    private int max;
+    private int interval;
 
     public NumberRange() {
     }
 
-    public NumberRange(double min, double max, double interval) {
+    public NumberRange(int min, int max, int interval) {
         this.min = min;
         this.max = max;
         this.interval = interval;
     }
 
-    public double getMin() {
+    public int getMin() {
         return min;
     }
 
-    public void setMin(double min) {
+    public void setMin(int min) {
         this.min = min;
     }
 
-    public double getMax() {
+    public int getMax() {
         return max;
     }
 
-    public void setMax(double max) {
+    public void setMax(int max) {
         this.max = max;
     }
 
-    public double getInterval() {
+    public int getInterval() {
         return interval;
     }
 
-    public void setInterval(double interval) {
+    public void setInterval(int interval) {
         this.interval = interval;
     }
 

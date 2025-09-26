@@ -77,21 +77,21 @@ public abstract class AttributePopupController {
         });
         minTextField.setTextFormatter(new javafx.scene.control.TextFormatter<>(change -> {
             String newText = change.getControlNewText();
-            if (newText.matches("^-?\\d*([.,]\\d*)?$")) {
+            if (newText.matches("^-?\\d*$")) {
                 return change;
             }
             return null;
         }));
         maxTextField.setTextFormatter(new javafx.scene.control.TextFormatter<>(change -> {
             String newText = change.getControlNewText();
-            if (newText.matches("^-?\\d*([.,]\\d*)?$")) {
+            if (newText.matches("^-?\\d*$")) {
                 return change;
             }
             return null;
         }));
         intervalTextField.setTextFormatter(new javafx.scene.control.TextFormatter<>(change -> {
             String newText = change.getControlNewText();
-            if (newText.matches("^-?\\d*([.,]\\d*)?$")) {
+            if (newText.matches("^-?\\d*$")) {
                 return change;
             }
             return null;
@@ -118,9 +118,9 @@ public abstract class AttributePopupController {
             invalidInputLabel.setVisible(true);
             return false;
         }
-        double min = Double.parseDouble(minTextField.getText());
-        double max = Double.parseDouble(maxTextField.getText());
-        double interval = Double.parseDouble(intervalTextField.getText());
+        int min = Integer.parseInt(minTextField.getText());
+        int max = Integer.parseInt(maxTextField.getText());
+        int interval = Integer.parseInt(intervalTextField.getText());
         if (max < min) {
             invalidInputLabel.setText("Maximum can't be < Minimum");
             invalidInputLabel.setVisible(true);

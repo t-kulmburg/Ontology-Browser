@@ -72,9 +72,9 @@ public class EditAttributePopupController extends AttributePopupController {
                 attribute.setComment(commentField.getText());
                 attribute.setType(AttributeType.INT);
                 attribute.setValue(new NumberRangeValue(
-                        new NumberRange(Double.parseDouble(minTextField.getText()),
-                                Double.parseDouble(maxTextField.getText()),
-                                Double.parseDouble(intervalTextField.getText()))
+                        new NumberRange(Integer.parseInt(minTextField.getText()),
+                                Integer.parseInt(maxTextField.getText()),
+                                Integer.parseInt(intervalTextField.getText()))
                 ));
                 attributeTypeChoiceBox.getScene().getWindow().hide();
             }

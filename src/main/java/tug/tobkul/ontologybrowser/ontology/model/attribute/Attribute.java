@@ -68,7 +68,7 @@ public class Attribute implements PdfContentProvider {
             case BOOL -> this.value = new BooleanValue((Boolean) value);
             case ENUM -> this.value = new EnumValue((List<String>) value);
             case INT -> {
-                LinkedHashMap<String, Double> v = (LinkedHashMap<String, Double>) value;
+                LinkedHashMap<String, Integer> v = (LinkedHashMap<String, Integer>) value;
                 this.value = new NumberRangeValue(new NumberRange(v.get("min"), v.get("max"), v.get("interval")));
             }
         }
