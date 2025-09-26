@@ -387,10 +387,14 @@ public class OntologyBrowserController implements Initializable {
         return result.isPresent() && result.get() == ButtonType.OK;
     }
 
-    public void showExitConfirmationPopup() {
+    public boolean showSaveConfirmationWasCancelled(String operation) throws IOException {
+        if(!ontologyManager.hasUnsavedChanges()){
+            return false;
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Exit Confirmation");
-        alert.setHeaderText("Do you want to save before exiting?");
+        alert.setTitle(operation +  " Confirmation");
+        alert.setHeaderText("You have unsaved changes!\nSave before " + operation.toLowerCase().replaceFirst("e$", "") + "ing?");
 
         ButtonType saveAndExit = new ButtonType("Save");
         ButtonType exitWithoutSaving = new ButtonType("Don't save");
@@ -402,11 +406,12 @@ public class OntologyBrowserController implements Initializable {
         if (result.isPresent()) {
             if (result.get() == saveAndExit) {
                 onMenuFileSave();
-                stage.close();
+                return false;
             } else if (result.get() == exitWithoutSaving) {
-                stage.close();
+                return false;
             }
         }
+        return true;
     }
 
     private void libraryListViewEvent(Library newValue) {
@@ -629,13 +634,19 @@ public class OntologyBrowserController implements Initializable {
         handleAttributes(activeAttributeHolder);
     }
 
-    public void onMenuFileNew() {
+    public void onMenuFileNew() throws IOException {
+        if(showSaveConfirmationWasCancelled("Close")){
+            return;
+        }
         ontologyManager.closeFile();
         setTitle(ontologyManager.getCurrentFileName());
         initializeListViews();
     }
 
-    public void onMenuFileOpen() {
+    public void onMenuFileOpen() throws IOException {
+        if(showSaveConfirmationWasCancelled("Close")){
+            return;
+        }
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Ontology JSON");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON files", "*.json"));

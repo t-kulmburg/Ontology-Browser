@@ -1,6 +1,7 @@
 package tug.tobkul.ontologybrowser.ontology;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.collections.FXCollections;
@@ -8,6 +9,7 @@ import tug.tobkul.ontologybrowser.ontology.model.Library;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +59,18 @@ public class OntologyManager {
         } else {
             return currentFile.getName();
         }
+    }
+
+    public boolean hasUnsavedChanges() throws IOException {
+        if(currentFile == null) {
+            return !libraries.isEmpty();
+        }
+        String fileContent = Files.readString(currentFile.toPath());
+        JsonNode fileJsonTree = mapper.readTree(fileContent);
+
+        JsonNode currentJsonTree = mapper.valueToTree(libraries);
+
+        return !fileJsonTree.equals(currentJsonTree);
     }
 
     public File getCurrentFile() {

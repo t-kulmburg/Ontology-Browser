@@ -36,7 +36,15 @@ public class OntologyBrowserApplication extends Application {
 
         stage.setOnCloseRequest(windowEvent -> {
             windowEvent.consume();
-            controller.showExitConfirmationPopup();
+            boolean cancelled = true;
+            try {
+                cancelled = controller.showSaveConfirmationWasCancelled("Exit");
+            } catch (IOException e) {
+                throw new RuntimeException("Error checking for unsaved changes: " + e);
+            }
+            if(!cancelled) {
+                stage.close();
+            }
         });
 
         stage.setScene(scene);
