@@ -370,6 +370,14 @@ public class OntologyBrowserController implements Initializable {
         setTitle(ontologyManager.getCurrentFileName());
     }
 
+    private void showWarningPopup(String title, String header, String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     private void showErrorPopup(String title, String header, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
@@ -804,9 +812,21 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public void onDeleteEntity() {
-        boolean result = showDeletionConfirmationPopup("Entity", entityListView.getSelectionModel().getSelectedItem().getName());
+        Entity e = entityListView.getSelectionModel().getSelectedItem();
+        List<String> rels = new ArrayList<>();
+        for(Relation r : relationListView.getItems()){
+            if(r.containsEntity(e)){
+                rels.add("• " + r.getName() + "\n");
+            }
+        }
+        if(!rels.isEmpty()){
+            showWarningPopup("Warning","Entity is part of a relation",
+                    "Relations in question must be deleted first:\n" + String.join("", rels));
+            return;
+        }
+        boolean result = showDeletionConfirmationPopup("Entity", e.getName());
         if (result) {
-            entityListView.getItems().remove(entityListView.getSelectionModel().getSelectedItem());
+            entityListView.getItems().remove(e);
         }
     }
 

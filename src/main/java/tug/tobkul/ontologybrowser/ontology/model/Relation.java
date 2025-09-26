@@ -191,6 +191,10 @@ public class Relation implements AttributeHolder, PdfContentProvider {
         this.cardinalityMax = cardinalityMax;
     }
 
+    public boolean containsEntity(Entity e){
+        return A.equals(e) || B.equals(e);
+    }
+
     @JsonIgnore
     public String getPlantUmlString() {
         StringBuilder builder = new StringBuilder();
