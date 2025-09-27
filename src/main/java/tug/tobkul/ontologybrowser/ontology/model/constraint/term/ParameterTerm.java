@@ -1,6 +1,7 @@
 package tug.tobkul.ontologybrowser.ontology.model.constraint.term;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
@@ -32,5 +33,10 @@ public class ParameterTerm implements Term {
     @JsonIgnore
     public void setEntitiesAndAttributesFromOuterSystem(oSystem outerSystem) {
         parameter.setEntitiesAndAttributesFromOuterSystem(outerSystem);
+    }
+
+    @Override
+    public boolean containsEntity(Entity entity) {
+        return parameter.containsEntity(entity);
     }
 }

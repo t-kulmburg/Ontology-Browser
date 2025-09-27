@@ -3,6 +3,7 @@ package tug.tobkul.ontologybrowser.ontology.model.constraint.term;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 @JsonTypeInfo(
@@ -23,4 +24,6 @@ public interface Term {
     String getExpression();
 
     void setEntitiesAndAttributesFromOuterSystem(oSystem outerSystem);
+
+    boolean containsEntity(Entity entity);
 }

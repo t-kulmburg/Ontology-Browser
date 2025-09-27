@@ -111,4 +111,8 @@ public class Parameter {
     public void setAttributeANameFromJson(String attributeName) {
         this.attributeName = attributeName;
     }
+
+    public boolean containsEntity(Entity entity) {
+        return this.entity.equals(entity);
+    }
 }

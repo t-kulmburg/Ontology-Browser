@@ -1,6 +1,7 @@
 package tug.tobkul.ontologybrowser.ontology.model.constraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.relational.RelationalOperator;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.Term;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
@@ -73,5 +74,10 @@ public class SimpleConstraint implements Constraint {
         this.outerSystem = outerSystem;
         lhs.setEntitiesAndAttributesFromOuterSystem(outerSystem);
         rhs.setEntitiesAndAttributesFromOuterSystem(outerSystem);
+    }
+
+    @Override
+    public boolean containsEntity(Entity entity){
+        return lhs.containsEntity(entity) || rhs.containsEntity(entity);
     }
 }

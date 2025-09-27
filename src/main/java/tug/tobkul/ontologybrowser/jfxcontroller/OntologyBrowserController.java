@@ -813,6 +813,7 @@ public class OntologyBrowserController implements Initializable {
 
     public void onDeleteEntity() {
         Entity e = entityListView.getSelectionModel().getSelectedItem();
+        // Check if entity is part of a relation
         List<String> rels = new ArrayList<>();
         for(Relation r : relationListView.getItems()){
             if(r.containsEntity(e)){
@@ -824,6 +825,19 @@ public class OntologyBrowserController implements Initializable {
                     "Relations in question must be deleted first:\n" + String.join("", rels));
             return;
         }
+        // Check if entity is part of a constraint
+        List<String> constrs = new ArrayList<>();
+        for(ConstraintHolder c : constraintListView.getItems()){
+            if(c.containsEntity(e)){
+                constrs.add("• " + c.getName() + "\n");
+            }
+        }
+        if(!constrs.isEmpty()){
+            showWarningPopup("Warning","Entity is part of a constraint",
+                    "Constraints in question must be deleted first:\n" + String.join("", constrs));
+            return;
+        }
+
         boolean result = showDeletionConfirmationPopup("Entity", e.getName());
         if (result) {
             entityListView.getItems().remove(e);

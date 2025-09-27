@@ -1,6 +1,7 @@
 package tug.tobkul.ontologybrowser.ontology.model.constraint.term;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 public class ValueTerm implements Term {
@@ -30,5 +31,10 @@ public class ValueTerm implements Term {
     @Override
     @JsonIgnore
     public void setEntitiesAndAttributesFromOuterSystem(oSystem outerSystem) {
+    }
+
+    @Override
+    public boolean containsEntity(Entity entity) {
+        return false;
     }
 }

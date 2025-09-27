@@ -1,6 +1,7 @@
 package tug.tobkul.ontologybrowser.ontology.model.constraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.BooleanOperator;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
@@ -75,4 +76,8 @@ public class CompositeConstraint implements Constraint {
         rhs.setEntitiesAndAttributesFromOuterSystem(outerSystem);
     }
 
+    @Override
+    public boolean containsEntity(Entity entity){
+        return lhs.containsEntity(entity) || rhs.containsEntity(entity);
+    }
 }

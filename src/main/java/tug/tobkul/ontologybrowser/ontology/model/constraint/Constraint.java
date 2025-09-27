@@ -2,6 +2,7 @@ package tug.tobkul.ontologybrowser.ontology.model.constraint;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 @JsonTypeInfo(
@@ -20,4 +21,6 @@ public interface Constraint {
     void setEntitiesAndAttributesFromOuterSystem(oSystem outerSystem);
 
     oSystem getOuterSystem();
+
+    boolean containsEntity(Entity entity);
 }

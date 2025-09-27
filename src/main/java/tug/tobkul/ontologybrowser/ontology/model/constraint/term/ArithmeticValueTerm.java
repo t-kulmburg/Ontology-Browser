@@ -1,6 +1,8 @@
 package tug.tobkul.ontologybrowser.ontology.model.constraint.term;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.eclipse.emf.ecore.EParameter;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.ArithmeticOperator;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
@@ -53,5 +55,10 @@ public class ArithmeticValueTerm implements Term {
     @JsonIgnore
     public void setEntitiesAndAttributesFromOuterSystem(oSystem outerSystem) {
         lhs.setEntitiesAndAttributesFromOuterSystem(outerSystem);
+    }
+
+    @Override
+    public boolean containsEntity(Entity entity) {
+        return lhs.containsEntity(entity);
     }
 }

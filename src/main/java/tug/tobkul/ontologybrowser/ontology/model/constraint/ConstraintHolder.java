@@ -3,6 +3,7 @@ package tug.tobkul.ontologybrowser.ontology.model.constraint;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.scene.text.TextFlow;
 import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.StringFormatUtil;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
@@ -77,6 +78,10 @@ public class ConstraintHolder implements PdfContentProvider {
             detailsTextFlow.getChildren().add(StringFormatUtil.indent(comment));
         }
         detailsTextFlow.autosize();
+    }
+
+    public boolean containsEntity(Entity entity) {
+        return constraint.containsEntity(entity);
     }
 
     @JsonIgnore
