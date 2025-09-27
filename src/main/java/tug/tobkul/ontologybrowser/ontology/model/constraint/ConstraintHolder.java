@@ -5,6 +5,7 @@ import javafx.scene.text.TextFlow;
 import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.StringFormatUtil;
+import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 import java.util.ArrayList;
@@ -82,6 +83,10 @@ public class ConstraintHolder implements PdfContentProvider {
 
     public boolean containsEntity(Entity entity) {
         return constraint.containsEntity(entity);
+    }
+
+    public boolean containsAttribute(Attribute attribute) {
+        return constraint.containsAttribute(attribute);
     }
 
     @JsonIgnore

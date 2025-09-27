@@ -2,6 +2,7 @@ package tug.tobkul.ontologybrowser.ontology.model.constraint.term;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
+import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
@@ -38,5 +39,10 @@ public class ParameterTerm implements Term {
     @Override
     public boolean containsEntity(Entity entity) {
         return parameter.containsEntity(entity);
+    }
+
+    @Override
+    public boolean containsAttribute(Attribute attribute) {
+        return parameter.containsAttribute(attribute);
     }
 }

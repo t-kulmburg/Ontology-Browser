@@ -115,4 +115,8 @@ public class Parameter {
     public boolean containsEntity(Entity entity) {
         return this.entity.equals(entity);
     }
+
+    public boolean containsAttribute(Attribute attribute) {
+        return this.attribute.equals(attribute);
+    }
 }

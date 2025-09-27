@@ -931,9 +931,24 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public void onDeleteAttribute() {
-        boolean result = showDeletionConfirmationPopup("Attribute", attributesListView.getSelectionModel().getSelectedItem().getName());
+        Attribute a = attributesListView.getSelectionModel().getSelectedItem();
+
+        // Check if entity is part of a constraint
+        List<String> constrs = new ArrayList<>();
+        for(ConstraintHolder c : constraintListView.getItems()){
+            if(c.containsAttribute(a)){
+                constrs.add("• " + c.getName() + "\n");
+            }
+        }
+        if(!constrs.isEmpty()){
+            showWarningPopup("Warning","Attribute is part of a constraint",
+                    "Constraints in question must be deleted first:\n" + String.join("", constrs));
+            return;
+        }
+
+        boolean result = showDeletionConfirmationPopup("Attribute", a.getName());
         if (result) {
-            attributesListView.getItems().remove(attributesListView.getSelectionModel().getSelectedItem());
+            attributesListView.getItems().remove(a);
         }
         attributesListView.getSelectionModel().clearSelection();
         attributesTextFlow.getChildren().clear();

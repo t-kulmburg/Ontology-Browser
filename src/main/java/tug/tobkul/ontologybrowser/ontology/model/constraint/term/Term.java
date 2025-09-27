@@ -4,6 +4,7 @@ package tug.tobkul.ontologybrowser.ontology.model.constraint.term;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
+import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 @JsonTypeInfo(
@@ -26,4 +27,6 @@ public interface Term {
     void setEntitiesAndAttributesFromOuterSystem(oSystem outerSystem);
 
     boolean containsEntity(Entity entity);
+
+    boolean containsAttribute(Attribute attribute);
 }
