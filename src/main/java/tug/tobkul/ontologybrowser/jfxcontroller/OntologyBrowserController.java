@@ -911,12 +911,27 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public void onEditAttribute() throws IOException {
+        Attribute a = attributesListView.getSelectionModel().getSelectedItem();
+
+        // Check if entity is part of a constraint
+        List<String> constrs = new ArrayList<>();
+        for(ConstraintHolder c : constraintListView.getItems()){
+            if(c.containsAttribute(a)){
+                constrs.add("• " + c.getName() + "\n");
+            }
+        }
+        if(!constrs.isEmpty()){
+            showWarningPopup("Warning","Attribute is part of a constraint",
+                    "Ensure the following constraints stay valid after modification:\n"
+                            + String.join("", constrs));
+        }
+
         FXMLLoader loader = new FXMLLoader(EditAttributePopupController.class.getResource("attributePopup.fxml"));
         EditAttributePopupController controller = new EditAttributePopupController();
         loader.setController(controller);
 
         Parent root = loader.load();
-        controller.setAttribute(attributesListView.getSelectionModel().getSelectedItem());
+        controller.setAttribute(a);
         controller.setAttributeHolder(activeAttributeHolder);
 
         Stage stage = new Stage();
