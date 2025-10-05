@@ -19,7 +19,7 @@ import tug.tobkul.ontologybrowser.ontology.model.oSystem;
         @JsonSubTypes.Type(value = ArithmeticValueTerm.class, name = "arithmeticValue")
 })
 public interface Term {
-    String EPSILON = "EPSILON";
+    String EPSILON = "ϵ";
     String EPSILON_INT = "21474836"; // for higher values, ACTS prints. Domains over [-21474836, 21474836] are strongly inadvisable!
 
     String getExpression();
