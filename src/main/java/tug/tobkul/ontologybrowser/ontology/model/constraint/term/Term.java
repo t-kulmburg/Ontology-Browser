@@ -20,7 +20,7 @@ import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 })
 public interface Term {
     String EPSILON = "EPSILON";
-    String EPSILON_INT = String.valueOf(Integer.MAX_VALUE);
+    String EPSILON_INT = "21474836"; // for higher values, ACTS prints. Domains over [-21474836, 21474836] are strongly inadvisable!
 
     String getExpression();
 
