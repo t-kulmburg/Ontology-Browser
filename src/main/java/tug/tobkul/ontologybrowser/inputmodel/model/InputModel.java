@@ -180,7 +180,7 @@ public class InputModel {
     private List<String> getCorrespondingInputParameters(String attribute) {
         List<String> correspondingInputParameters = new ArrayList<>();
         for (String k : V.keySet()) {
-            if (k.endsWith(attribute)) {
+            if (k.endsWith(attribute.replace(".", "_"))) {
                 correspondingInputParameters.add(k);
             }
         }
