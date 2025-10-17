@@ -26,10 +26,9 @@ public class OntologyManager {
     }
 
     public void openFile(File library_json) throws IOException {
-        currentFile = library_json;
-
         List<Library> temp = new ArrayList<>(mapper.readValue(library_json, new TypeReference<>() {
         }));
+        currentFile = library_json;
         setLibraries(temp);
     }
 
@@ -44,8 +43,8 @@ public class OntologyManager {
     }
 
     public void saveFileAs(File library_json) throws IOException {
-        currentFile = library_json;
         mapper.writerWithDefaultPrettyPrinter().writeValue(currentFile, libraries);
+        currentFile = library_json;
     }
 
     public void closeFile() {
