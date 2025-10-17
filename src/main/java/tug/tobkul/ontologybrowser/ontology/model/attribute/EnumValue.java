@@ -1,5 +1,6 @@
 package tug.tobkul.ontologybrowser.ontology.model.attribute;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnumValue extends AttributeValue<List<String>> {
@@ -12,6 +13,6 @@ public class EnumValue extends AttributeValue<List<String>> {
 
     @Override
     public List<String> getPossibleValueList() {
-        return this.value;
+        return new ArrayList<>(this.value);
     }
 }
