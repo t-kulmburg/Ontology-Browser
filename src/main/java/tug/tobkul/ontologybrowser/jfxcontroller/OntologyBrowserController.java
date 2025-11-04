@@ -728,6 +728,7 @@ public class OntologyBrowserController implements Initializable {
                 selectedFile = new File(selectedFile.getAbsolutePath() + ".json");
             }
             try {
+                selectedFile.createNewFile(); // only creates new if not existing yet
                 ontologyManager.saveFileAs(selectedFile);
             } catch (IOException e) {
                 showErrorPopup("Error saving JSON file", null, e.getLocalizedMessage());

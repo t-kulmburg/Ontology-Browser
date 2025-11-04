@@ -36,7 +36,7 @@ public class OntologyBrowserApplication extends Application {
 
         stage.setOnCloseRequest(windowEvent -> {
             windowEvent.consume();
-            boolean cancelled = true;
+            boolean cancelled;
             try {
                 cancelled = controller.showSaveConfirmationWasCancelled("Exit");
             } catch (IOException e) {

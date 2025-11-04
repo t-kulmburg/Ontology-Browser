@@ -43,8 +43,8 @@ public class OntologyManager {
     }
 
     public void saveFileAs(File library_json) throws IOException {
-        mapper.writerWithDefaultPrettyPrinter().writeValue(currentFile, libraries);
         currentFile = library_json;
+        mapper.writerWithDefaultPrettyPrinter().writeValue(currentFile, libraries);
     }
 
     public void closeFile() {
