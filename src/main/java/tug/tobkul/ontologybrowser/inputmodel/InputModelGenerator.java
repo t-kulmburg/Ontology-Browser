@@ -144,8 +144,8 @@ public class InputModelGenerator {
                     }
                 }
                 if (Integer.parseInt(r.getCardinalityMin()) > 0) {
+                    List<List<String>> constraintsForInheritance = new ArrayList<>();
                     for (String attr : modelB.getAttributesList()) {
-
                         String regex = entity.getName().replace(".", "\\.") +
                                 "_\\d+_" +
                                 attr.replace(".", "\\.");
@@ -160,11 +160,60 @@ public class InputModelGenerator {
                                 } else {
                                     matchingAttrConstr.add(addedAttr + " != " + "\"" + Term.EPSILON + "\"");
                                 }
-
                             }
                         }
-                        entityModel.addConstraint(buildCombinationConstraint(matchingAttrConstr, max, min));
+                        if(r.getEntityB().getSubEntities().isEmpty()){
+                            entityModel.addConstraint(buildCombinationConstraint(matchingAttrConstr, max, min));
+                        } else {
+                            constraintsForInheritance.add(matchingAttrConstr);
+                        }
                     }
+                    constraintsForInheritance = transpose(constraintsForInheritance);
+                    List<List<List<String>>> constraintsForInheritance2 = new ArrayList<>();
+                    for (int i = 0; i < constraintsForInheritance.size(); i++) {
+                        List<String> ci = constraintsForInheritance.get(i);
+
+                        constraintsForInheritance2.add(new ArrayList<>());
+                        for (int j = 0; j < r.getEntityB().getSubEntities().size(); j++) {
+                            constraintsForInheritance2.get(i).add(new ArrayList<>());
+                            Entity sub = r.getEntityB().getSubEntities().get(j);
+                            for (String c : ci) {
+                                if(c.contains(sub.getName())) {
+                                    constraintsForInheritance2.get(i).get(j).add(c);
+                                }
+                            }
+                        }
+                    }
+                    List<String> constraintPerIndex = new ArrayList<>();
+                    for(List<List<String>> perIndex : constraintsForInheritance2){
+                        StringBuilder constr = new StringBuilder();
+                        int subIndex = 0;
+                        for (List<String> perSub : perIndex) {
+                            StringBuilder subConstr = new StringBuilder();
+                            int attrIndex = 0;
+                            for  (String attr : perSub) {
+                                if(attrIndex > 0){
+                                    subConstr.append(" ");
+                                    subConstr.append(OperatorUtil.AND);
+                                    subConstr.append(" ");
+                                } else {
+                                    subConstr.append("(");
+                                }
+                                subConstr.append(attr);
+                                attrIndex++;
+                            }
+                            if(subIndex > 0){
+                                constr.append(" ");
+                                constr.append(OperatorUtil.OR);
+                                constr.append(" ");
+                            }
+                            subConstr.append(")");
+                            constr.append(subConstr);
+                            subIndex++;
+                        }
+                        constraintPerIndex.add(constr.toString());
+                    }
+                    entityModel.addConstraint(buildCombinationConstraint(constraintPerIndex, max, min));
                 }
             }
         }
@@ -245,6 +294,23 @@ public class InputModelGenerator {
             return null;
         }
         return root.get();
+    }
+
+    private static List<List<String>> transpose(List<List<String>> matrix) {
+        if (matrix == null || matrix.isEmpty()) return Collections.emptyList();
+
+        int rows = matrix.size();
+        int cols = matrix.getFirst().size();
+        List<List<String>> result = new ArrayList<>();
+
+        for (int col = 0; col < cols; col++) {
+            List<String> newRow = new ArrayList<>();
+            for (int row = 0; row < rows; row++) {
+                newRow.add(matrix.get(row).get(col));
+            }
+            result.add(newRow);
+        }
+        return result;
     }
 
     private void showErrorPopup(String title, String header, String message) {
