@@ -39,4 +39,39 @@ public class ConstraintBuilder {
                 "\"" + Term.EPSILON + "\"" +
                 OperatorUtil.PAREN_CLOSE;
     }
+    public static String buildInheritanceConstrInteger(String entityName, String attributeA, String attributeB) {
+        return OperatorUtil.PAREN_OPEN +
+                entityName +
+                "_" +
+                attributeA +
+                " = " +
+                "\"" + Term.EPSILON_INT + "\"" +
+                " " +
+                OperatorUtil.AND +
+                " " +
+                entityName +
+                "_" +
+                attributeB +
+                " != " +
+                "\"" + Term.EPSILON_INT + "\"" +
+                OperatorUtil.PAREN_CLOSE +
+                " " +
+                OperatorUtil.OR +
+                " " +
+                OperatorUtil.PAREN_OPEN +
+                entityName +
+                "_" +
+                attributeA +
+                " != " +
+                "\"" + Term.EPSILON_INT + "\"" +
+                " " +
+                OperatorUtil.AND +
+                " " +
+                entityName +
+                "_" +
+                attributeB +
+                " = " +
+                "\"" + Term.EPSILON_INT + "\"" +
+                OperatorUtil.PAREN_CLOSE;
+    }
 }

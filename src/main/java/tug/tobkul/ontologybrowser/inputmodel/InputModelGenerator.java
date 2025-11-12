@@ -10,6 +10,7 @@ import tug.tobkul.ontologybrowser.ontology.graph.EntityGraphUtil;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
+import tug.tobkul.ontologybrowser.ontology.model.attribute.AttributeType;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.OperatorUtil;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.Term;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
@@ -65,10 +66,12 @@ public class InputModelGenerator {
 
     private InputModel processEntity(Entity entity) {
         InputModel entityModel = new InputModel();
-        for (Attribute attribute : entity.getAttributes()) {
-            String name = getEntityAttributeName(entity, attribute);
-            entityModel.addInputParameter(name, attribute.getType().toString());
-            entityModel.addDomain(name, attribute.getValue().getPossibleValueList());
+        if(entity.getSubEntities().isEmpty()){
+            for (Attribute attribute : entity.getAttributes()) {
+                String name = getEntityAttributeName(entity, attribute);
+                entityModel.addInputParameter(name, attribute.getType().toString());
+                entityModel.addDomain(name, attribute.getValue().getPossibleValueList());
+            }
         }
         if (checkLeaf(entity)) {
             return entityModel;
@@ -77,11 +80,16 @@ public class InputModelGenerator {
         // first loop of the algorithm - line 8:14
         for (Entity sub : entity.getSubEntities()) {
             InputModel subModel = processEntity(sub);
+            for (Attribute attribute : entity.getAttributes()) {
+                String name = getEntityAttributeName(sub, attribute);
+                subModel.addInputParameter(name, attribute.getType().toString());
+                subModel.addDomain(name, attribute.getValue().getPossibleValueList());
+            }
             entityModel.appendWithPrefix(entity.getName(), subModel);
             subModels.put(sub.getName(), subModel);
         }
         // second loop of the algorithm - line 15:23
-        if (subModels.size() > 1) {
+        if (!subModels.isEmpty()) {
             List<String> keys = new ArrayList<>(subModels.keySet());
             for (int i = 0; i < subModels.size(); i++) {
                 for (int j = i + 1; j < subModels.size(); j++) {
@@ -91,9 +99,16 @@ public class InputModelGenerator {
                     InputModel modelB = subModels.get(entityB);
                     for (String attributeA : modelA.getAttributesList()) {
                         for (String attributeB : modelB.getAttributesList()) {
-                            String constr = ConstraintBuilder.buildInheritanceConstr(
-                                    entity.getName(), attributeA, attributeB
-                            );
+                            String constr;
+                            if(modelA.getTypeOfAttribute(attributeA).equals(AttributeType.INT.toString())){
+                                constr = ConstraintBuilder.buildInheritanceConstrInteger(
+                                        entity.getName(), attributeA, attributeB
+                                );
+                            } else {
+                                constr = ConstraintBuilder.buildInheritanceConstr(
+                                        entity.getName(), attributeA, attributeB
+                                );
+                            }
                             entityModel.addConstraint(constr);
                         }
                     }
