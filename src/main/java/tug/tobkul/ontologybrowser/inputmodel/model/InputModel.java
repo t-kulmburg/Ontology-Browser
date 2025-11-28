@@ -30,6 +30,7 @@ public class InputModel {
     }
 
     public void addConstraint(String constraint) {
+        if(constraint == null) return;
         C.add(constraint);
     }
 

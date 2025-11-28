@@ -221,6 +221,9 @@ public class InputModelGenerator {
     }
 
     private String buildCombinationConstraint(List<String> constraints, int n, int k) {
+        if(constraints.isEmpty()){
+            return null;
+        }
         StringBuilder combinationConstr = new StringBuilder();
         Iterator<int[]> it = new Combinations(n, k).iterator();
         while (it.hasNext()) {
