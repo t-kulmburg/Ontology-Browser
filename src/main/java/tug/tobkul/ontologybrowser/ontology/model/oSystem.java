@@ -2,11 +2,15 @@ package tug.tobkul.ontologybrowser.ontology.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.scene.text.TextFlow;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
+import tug.tobkul.ontologybrowser.ontology.graph.EntityGraphUtil;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 public class oSystem implements PdfContentProvider {
@@ -98,6 +102,53 @@ public class oSystem implements PdfContentProvider {
             builder.append(r.getPlantUmlString());
         }
         return builder.append("@enduml\n").toString();
+    }
+
+    @JsonIgnore
+    public String getTikzUmlString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("\\begin{figure}%[t]\n").append("\\begin{footnotesize}\n").append("\\begin{center}\n").append("\\begin{tikzpicture}[scale=1.0]\n");
+        for  (Entity e : entities){
+            builder.append(e.getTikzUmlString());
+        }
+        for (Relation r : relations){
+            builder.append(r.getTikzUmlString());
+        }
+        builder.append("\\end{tikzpicture}\n")
+                .append("\\end{center}\n")
+                .append("\\end{footnotesize}\n")
+                .append("\\caption{Add caption}\n")
+                .append("\\label{fig:label}\n")
+                .append("\\end{figure}");
+
+        String umlString = builder.toString();
+
+        DefaultDirectedGraph<Entity, DefaultEdge> graph = EntityGraphUtil.buildGraph(this);
+        Optional<Entity> root = EntityGraphUtil.findRootEntity(graph);
+        if(root.isEmpty()){
+            return "Error: Could not determine root entity";
+        }
+        List<List<Entity>> entityMap = EntityGraphUtil.traverseGraph(graph, root.get());
+        System.out.println(entityMap);
+
+        int tikzXOffset = 4;
+        int tikzYOffset = 3;
+
+        int y = 0;
+        for(List<Entity> level : entityMap){
+            int x = 0;
+            for (Entity e : level){
+                String name = "{" + e.getName() + "}";
+                String from = name + "{@coords@}";
+                String to = name + "{" + tikzXOffset*x + ",-" + tikzYOffset*y + "}";
+                umlString = umlString.replace(from, to);
+                x++;
+            }
+            y++;
+        }
+
+
+        return umlString;
     }
 
     @JsonIgnore

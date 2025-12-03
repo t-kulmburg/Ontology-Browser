@@ -212,4 +212,26 @@ public class Entity implements AttributeHolder, PdfContentProvider {
         }
         return strings;
     }
+
+    @JsonIgnore
+    public String getTikzUmlString(){
+        StringBuilder builder = new StringBuilder();
+        builder.append("\\begin{class}[text width = 2.5cm]{")
+                .append(getName().replace("_", "\\_").replace(" ", "\\_"))
+                .append("}{@coords@}\n");
+        for (Attribute attribute : attributes) {
+            builder.append("\\attribute{")
+                    .append(attribute.getName().replace("_", "\\_").replace(" ", "\\_"))
+                    .append(": \\{")
+                    .append(attribute.getValue().getTikzUmlValueString())
+                    .append("\\}}\n");
+        }
+        if (superEntity != null) {
+            builder.append("\\inherit{")
+                    .append(superEntity.getName().replace("_", "\\_").replace(" ", "\\_"))
+                    .append("}\n");
+        }
+        builder.append("\\end{class}\n");
+        return builder.toString();
+    }
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="400.0" vgap="5.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.export.TikzUmlPopupController">
+    <columnConstraints>
+        <ColumnConstraints maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+        <ColumnConstraints maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+      <ColumnConstraints hgrow="ALWAYS" />
+      <ColumnConstraints maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints minHeight="10.0" valignment="CENTER" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <Button alignment="TOP_LEFT" defaultButton="true" mnemonicParsing="false" onAction="#onConfirm" text="Done" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+      <TextArea fx:id="umlTextArea" editable="false" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
+      <VBox prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="2">
+         <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Note: The positioning nd sizing of the nodes is done with constant values." />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="             Manual adaptation of width or coordinates may be required!" />
+         </children>
+      </VBox>
+    </children>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+</GridPane>

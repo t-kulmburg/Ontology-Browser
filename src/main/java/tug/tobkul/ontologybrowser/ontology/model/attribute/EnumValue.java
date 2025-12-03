@@ -15,4 +15,9 @@ public class EnumValue extends AttributeValue<List<String>> {
     public List<String> getPossibleValueList() {
         return new ArrayList<>(this.value);
     }
+
+    @Override
+    public String getTikzUmlValueString() {
+        return String.join(",", this.value);
+    }
 }

@@ -31,4 +31,7 @@ public abstract class AttributeValue<T> {
 
     @JsonIgnore
     public abstract List<String> getPossibleValueList();
+
+    @JsonIgnore
+    public abstract String getTikzUmlValueString();
 }

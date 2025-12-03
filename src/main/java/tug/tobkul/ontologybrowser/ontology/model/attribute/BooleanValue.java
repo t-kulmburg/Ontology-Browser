@@ -15,4 +15,9 @@ public class BooleanValue extends AttributeValue<Boolean> {
     public List<String> getPossibleValueList() {
         return new ArrayList<>(List.of("true", "false"));
     }
+
+    @Override
+    public String getTikzUmlValueString() {
+        return "true,false";
+    }
 }

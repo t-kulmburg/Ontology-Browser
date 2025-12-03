@@ -11,7 +11,8 @@ module tug.tobkul.ontologybrowser {
     requires org.jgrapht.core;
     requires net.sourceforge.plantuml;
     requires org.apache.pdfbox;
-
+    requires java.rmi;
+    requires javafx.graphics;
 
     opens tug.tobkul.ontologybrowser to javafx.fxml;
     opens tug.tobkul.ontologybrowser.ontology to com.fasterxml.jackson.databind;

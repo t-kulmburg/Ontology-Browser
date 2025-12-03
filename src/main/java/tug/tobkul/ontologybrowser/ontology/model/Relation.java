@@ -237,4 +237,23 @@ public class Relation implements AttributeHolder, PdfContentProvider {
         }
         return strings;
     }
+
+    @JsonIgnore
+    public String getTikzUmlString() {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("\\aggregation{")
+                .append(A.getName().replace("_", "\\_").replace(" ", "\\_"))
+                .append("}{")
+                .append(name.replace("_", "\\_").replace(" ", "\\_"))
+                .append("}{")
+                .append(cardinalityMin)
+                .append("..")
+                .append(cardinalityMax)
+                .append("}{")
+                .append(B.getName().replace("_", "\\_").replace(" ", "\\_"))
+                .append("}\n");
+
+        return  builder.toString();
+    }
 }

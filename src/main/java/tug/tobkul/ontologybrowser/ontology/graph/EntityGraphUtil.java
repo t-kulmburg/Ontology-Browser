@@ -1,16 +1,16 @@
 package tug.tobkul.ontologybrowser.ontology.graph;
 
 import org.jgrapht.alg.cycle.CycleDetector;
+import org.jgrapht.alg.shortestpath.BFSShortestPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.*;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class EntityGraphUtil {
     public static DefaultDirectedGraph<Entity, DefaultEdge> buildGraph(oSystem system) {
@@ -68,5 +68,25 @@ public class EntityGraphUtil {
             }
         }
         return Optional.empty();
+    }
+
+    public static List<List<Entity>> traverseGraph(DefaultDirectedGraph<Entity, DefaultEdge> graph, Entity start)
+    {
+        List<List<Entity>> entityMap = new ArrayList<>();
+        System.out.println("In traverseGraph");
+        BFSShortestPath<Entity, DefaultEdge> bfs = new BFSShortestPath<>(graph);
+
+
+        Iterator<Entity> iterator = new BreadthFirstIterator<>(graph, start);
+        while (iterator.hasNext()) {
+            Entity e = iterator.next();
+            int distance = DijkstraShortestPath.findPathBetween(graph, start, e).getLength();
+
+            if(entityMap.size() <= distance) {
+                entityMap.add(new ArrayList<>());
+            }
+            entityMap.get(distance).add(e);
+        }
+        return entityMap;
     }
 }

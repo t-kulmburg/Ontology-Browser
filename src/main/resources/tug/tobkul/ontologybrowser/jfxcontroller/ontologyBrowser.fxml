@@ -34,7 +34,8 @@
                   <Menu mnemonicParsing="false" text="Export">
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#onMenuExportInputModel" text="Input Model" />
-                        <MenuItem mnemonicParsing="false" onAction="#onMenuExportUml" text="UML Diagram" />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuExportPlantUml" text="plantUML (png)" />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuExportTikzUml" text="TikZ UML" />
                     </items>
                   </Menu>
                     </menus>
