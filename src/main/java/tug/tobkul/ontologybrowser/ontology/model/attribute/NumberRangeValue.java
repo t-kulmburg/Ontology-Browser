@@ -32,6 +32,6 @@ public class NumberRangeValue extends AttributeValue<NumberRange> {
         if(possibleValues.size() > 3){
             return value.getMin() + ",\\ldots," + value.getMax();
         }
-        return String.join(",", possibleValues);
+        return String.join(", ", possibleValues);
     }
 }

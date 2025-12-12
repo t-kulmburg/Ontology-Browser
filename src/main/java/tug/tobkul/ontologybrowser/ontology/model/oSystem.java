@@ -20,6 +20,9 @@ public class oSystem implements PdfContentProvider {
     private List<Relation> relations;
     private List<ConstraintHolder> constraintHolderList;
 
+    private final int tikzXOffset = 4;
+    private final int tikzYOffset = 3;
+
     public oSystem() {}
 
     public oSystem(String name, String comment) {
@@ -130,9 +133,6 @@ public class oSystem implements PdfContentProvider {
         }
         List<List<Entity>> entityMap = EntityGraphUtil.traverseGraph(graph, root.get());
         System.out.println(entityMap);
-
-        int tikzXOffset = 4;
-        int tikzYOffset = 3;
 
         int y = 0;
         for(List<Entity> level : entityMap){

@@ -28,10 +28,7 @@ import tug.tobkul.ontologybrowser.jfxcontroller.constraint.AddConstraintPopupCon
 import tug.tobkul.ontologybrowser.jfxcontroller.entity.AddEntityPopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.entity.EditEntityPopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.entity.EntityPopupController;
-import tug.tobkul.ontologybrowser.jfxcontroller.export.ExportInputModelPopupController;
-import tug.tobkul.ontologybrowser.jfxcontroller.export.ExportPlantUmlPopupController;
-import tug.tobkul.ontologybrowser.jfxcontroller.export.ExportTikzUmlPopupController;
-import tug.tobkul.ontologybrowser.jfxcontroller.export.ExportUmlPopupController;
+import tug.tobkul.ontologybrowser.jfxcontroller.export.*;
 import tug.tobkul.ontologybrowser.jfxcontroller.library.AddLibraryPopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.library.EditLibraryPopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.library.LibraryPopupController;
@@ -1044,6 +1041,32 @@ public class OntologyBrowserController implements Initializable {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene(root));
         stage.showAndWait();
+    }
+
+    public void onMenuExportGraphMLUml() throws IOException {
+        FXMLLoader loader = new FXMLLoader(ExportUmlPopupController.class.getResource("exportUmlPopup.fxml"));
+        ExportGraphMLUmlPopupController controller = new ExportGraphMLUmlPopupController();
+        loader.setController(controller);
+
+        Parent root = loader.load();
+        controller.setOntologyManagerAndLibraries(ontologyManager);
+
+        if (libraryListView.getSelectionModel().getSelectedItem() != null) {
+            controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
+            controller.addSystemsAndSetPreselectedSystem(
+                    libraryListView.getSelectionModel().getSelectedItem(),
+                    systemListView.getSelectionModel().getSelectedItem(),
+                    entityListView.getSelectionModel().getSelectedItem());
+        }
+
+        Stage stage = new Stage();
+        controller.setStage(stage);
+        stage.setTitle("Export UML Diagram");
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+
     }
 
     public void onSaveAsPdf(PdfContentProvider provider) throws IOException {

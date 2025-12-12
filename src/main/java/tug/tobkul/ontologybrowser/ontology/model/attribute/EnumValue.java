@@ -18,6 +18,6 @@ public class EnumValue extends AttributeValue<List<String>> {
 
     @Override
     public String getTikzUmlValueString() {
-        return String.join(",", this.value);
+        return String.join(", ", this.value);
     }
 }

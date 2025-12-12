@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.TextFlow?>
 
-<SplitPane dividerPositions="0.8" orientation="VERTICAL" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.OntologyBrowserController">
+<SplitPane dividerPositions="0.8" orientation="VERTICAL" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.OntologyBrowserController">
     <items>
         <BorderPane prefWidth="800.0">
             <top>
@@ -35,7 +35,8 @@
                     <items>
                       <MenuItem mnemonicParsing="false" onAction="#onMenuExportInputModel" text="Input Model" />
                         <MenuItem mnemonicParsing="false" onAction="#onMenuExportPlantUml" text="plantUML (png)" />
-                        <MenuItem mnemonicParsing="false" onAction="#onMenuExportTikzUml" text="TikZ UML" />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuExportTikzUml" text="LaTeX UML (TikZ)" />
+                        <MenuItem mnemonicParsing="false" onAction="#onMenuExportGraphMLUml" text="yED UML (graphml)" />
                     </items>
                   </Menu>
                     </menus>

@@ -215,14 +215,22 @@ public class Entity implements AttributeHolder, PdfContentProvider {
 
     @JsonIgnore
     public String getTikzUmlString(){
+        double width = 2.5;
+        String n = getName().replace("_", "\\_").replace(" ", "\\_");
+        int overflow = n.length() - 13;
+        while (overflow >= 0) {
+            width += 0.5;
+            overflow -= 3;
+        }
+
         StringBuilder builder = new StringBuilder();
-        builder.append("\\begin{class}[text width = 2.5cm]{")
-                .append(getName().replace("_", "\\_").replace(" ", "\\_"))
+        builder.append("\\begin{class}[text width = ").append(width).append("cm]{")
+                .append(n)
                 .append("}{@coords@}\n");
         for (Attribute attribute : attributes) {
-            builder.append("\\attribute{")
+            builder.append("\\attribute{\\textbf{")
                     .append(attribute.getName().replace("_", "\\_").replace(" ", "\\_"))
-                    .append(": \\{")
+                    .append("}: \\{")
                     .append(attribute.getValue().getTikzUmlValueString())
                     .append("\\}}\n");
         }

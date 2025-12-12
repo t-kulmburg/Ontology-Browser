@@ -18,6 +18,6 @@ public class BooleanValue extends AttributeValue<Boolean> {
 
     @Override
     public String getTikzUmlValueString() {
-        return "true,false";
+        return "true, false";
     }
 }

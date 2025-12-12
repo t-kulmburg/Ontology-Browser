@@ -73,9 +73,7 @@ public class EntityGraphUtil {
     public static List<List<Entity>> traverseGraph(DefaultDirectedGraph<Entity, DefaultEdge> graph, Entity start)
     {
         List<List<Entity>> entityMap = new ArrayList<>();
-        System.out.println("In traverseGraph");
         BFSShortestPath<Entity, DefaultEdge> bfs = new BFSShortestPath<>(graph);
-
 
         Iterator<Entity> iterator = new BreadthFirstIterator<>(graph, start);
         while (iterator.hasNext()) {

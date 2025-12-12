@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="400.0" vgap="5.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.export.TikzUmlPopupController">
+<GridPane hgap="5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="400.0" vgap="5.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.export.TikzUmlPopupController">
     <columnConstraints>
         <ColumnConstraints maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
         <ColumnConstraints maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
@@ -26,7 +26,7 @@
       <TextArea fx:id="umlTextArea" editable="false" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
       <VBox prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="2">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Note: The positioning nd sizing of the nodes is done with constant values." />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Note: The positioning and sizing of the nodes is done with constant values." />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="             Manual adaptation of width or coordinates may be required!" />
          </children>
       </VBox>
