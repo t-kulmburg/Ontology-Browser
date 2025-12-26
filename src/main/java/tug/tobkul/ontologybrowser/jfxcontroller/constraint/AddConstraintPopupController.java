@@ -8,26 +8,38 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import tug.tobkul.ontologybrowser.jfxcontroller.constraint.quantifier.AddQuantifierPopupController;
+import tug.tobkul.ontologybrowser.jfxcontroller.constraint.quantifier.view.QuantifierView;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.ConstraintView;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.ConstraintViewFactory;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.HighlightManager;
 import tug.tobkul.ontologybrowser.ontology.OntologyManager;
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Library;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.QuantifierType;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AddConstraintPopupController {
     private Stage stage;
     private OntologyManager ontologyManager;
     private Constraint createdConstraint;
     private ConstraintHolder editConstraintHolder = null;
+    private List<Entity> quantifierUsedEntities = new ArrayList<>();
+    private List<Quantifier> quantifiers = new ArrayList<>();
 
     public final ObjectProperty<ConstraintView> rootConstraintView = new SimpleObjectProperty<>();
 
@@ -44,10 +56,19 @@ public class AddConstraintPopupController {
     private HBox constraintHBox;
 
     @FXML
+    private HBox quantifierHBox;
+
+    @FXML
     private Label invalidInputLabel;
 
     @FXML
     private Button newRootButton;
+
+    @FXML
+    private Button addQuantifierForAllButton;
+
+    @FXML
+    private Button addQuantifierExistsButton;
 
     @FXML
     private void initialize() {
@@ -87,7 +108,9 @@ public class AddConstraintPopupController {
             rootConstraintView.set(rootView);
             constraintHBox.getChildren().clear();
             constraintHBox.getChildren().add(rootView.getView());
-            newRootButton.setStyle("-fx-background-color: lightgrey; -fx-opacity: 0.7;");
+            newRootButton.setDisable(true);
+            addQuantifierExistsButton.setDisable(true);
+            addQuantifierForAllButton.setDisable(true);
         }
     }
 
@@ -139,18 +162,66 @@ public class AddConstraintPopupController {
                 systemChoiceBox.getValue().getConstraints().add(new ConstraintHolder(
                         nameField.getText(),
                         commentField.getText(),
-                        rootConstraintView.get().getConstraint()
+                        rootConstraintView.get().getConstraint(),
+                        quantifiers
                 ));
             } else {
                 editConstraintHolder.setName(nameField.getText());
                 editConstraintHolder.setComment(commentField.getText());
                 editConstraintHolder.setConstraint(rootConstraintView.get().getConstraint());
+                editConstraintHolder.setQuantifiers(quantifiers);
             }
             nameField.getScene().getWindow().hide();
         } else {
             invalidInputLabel.setText("Name must be unique!");
             setInvalidInputLabelVisibleAndFormat();
         }
+    }
+
+    @FXML
+    private void onAddForAll() throws IOException {
+        Entity selectedEntity = getEntityFromQuantifierPopup();
+        if(selectedEntity == null){
+            return;
+        }
+        Quantifier quantifier = new Quantifier(QuantifierType.FOR_ALL, selectedEntity);
+        quantifiers.add(quantifier);
+        quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
+            quantifiers.remove(quantifier);
+            quantifierUsedEntities.remove(quantifier.getEntity());
+        }));
+        quantifierUsedEntities.add(selectedEntity);
+    }
+
+    @FXML
+    private void onAddExists() throws IOException {
+        Entity selectedEntity = getEntityFromQuantifierPopup();
+        if(selectedEntity == null){
+            return;
+        }
+
+        Quantifier quantifier = new Quantifier(QuantifierType.EXISTS, selectedEntity);
+        quantifiers.add(quantifier);
+        quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
+            quantifiers.remove(quantifier);
+            quantifierUsedEntities.remove(quantifier.getEntity());
+        }));
+        quantifierUsedEntities.add(selectedEntity);
+    }
+
+    private Entity getEntityFromQuantifierPopup() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("addQuantifierPopup.fxml"));
+        Parent root = loader.load();
+
+        AddQuantifierPopupController controller = loader.getController();
+        controller.setEntities(systemChoiceBox.getValue().getEntities(), quantifierUsedEntities);
+
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.showAndWait();
+
+        return  controller.getSelectedEntity();
     }
 
     public void setOntologyManagerAndLibraries(OntologyManager ontologyManager) {
@@ -178,6 +249,17 @@ public class AddConstraintPopupController {
         constraintHBox.getChildren().clear();
         constraintHBox.getChildren().add(rootView.getView());
         newRootButton.setStyle("-fx-background-color: lightgrey; -fx-opacity: 0.7;");
+
+        for (Quantifier q : constraintHolder.getQuantifiers()){
+            quantifiers.add(q);
+            quantifierHBox.getChildren().add(new QuantifierView(q, () -> {
+                quantifiers.remove(q);
+                quantifierUsedEntities.remove(q.getEntity());
+            }));
+            quantifierUsedEntities.add(q.getEntity());
+        }
+        addQuantifierForAllButton.setDisable(true);
+        addQuantifierExistsButton.setDisable(true);
     }
 
     public void addSystemsAndSetPreselectedSystem(Library library, oSystem system) {

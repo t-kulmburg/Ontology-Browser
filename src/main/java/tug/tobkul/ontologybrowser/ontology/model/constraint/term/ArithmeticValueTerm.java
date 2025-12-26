@@ -1,7 +1,6 @@
 package tug.tobkul.ontologybrowser.ontology.model.constraint.term;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.eclipse.emf.ecore.EParameter;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.ArithmeticOperator;

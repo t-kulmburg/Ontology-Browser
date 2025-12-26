@@ -32,7 +32,6 @@ public class SimpleConstraintView implements ConstraintView {
         view.setSpacing(5);
         view.setOnMouseClicked(event -> HighlightManager.highlight(view, this));
         setLabel();
-
     }
 
     private void setLabel() {
