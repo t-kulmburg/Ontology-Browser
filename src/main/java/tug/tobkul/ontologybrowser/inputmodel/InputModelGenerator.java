@@ -125,6 +125,7 @@ public class InputModelGenerator {
                 int min = Integer.parseInt(r.getCardinalityMin()); // n
                 int max = Integer.parseInt(r.getCardinalityMax()); // m
 
+                //LINE 28 to 30
                 for (int i = 1; i <= max; i++) {
                     entityModel.appendParametersWithPrefixAndIndex(entity.getName(), i, modelB);
                     entityModel.appendDomainsWithPrefixAndIndex(entity.getName(), i, modelB);
@@ -143,8 +144,10 @@ public class InputModelGenerator {
                         entityModel.addConstraint(constr.toString());
                     }
                 }
+                // LINE 31 to 35
                 if (Integer.parseInt(r.getCardinalityMin()) > 0) {
                     List<List<String>> constraintsForInheritance = new ArrayList<>();
+                    // direct attributes
                     for (String attr : modelB.getAttributesList()) {
                         String regex = entity.getName().replace(".", "\\.") +
                                 "_\\d+_" +
@@ -163,29 +166,42 @@ public class InputModelGenerator {
                             }
                         }
                         if(r.getEntityB().getSubEntities().isEmpty()){
+                            // LINE 33 if no sub entities
                             entityModel.addConstraint(buildCombinationConstraint(matchingAttrConstr, max, min));
                         } else {
+                            // If sub entities, Entity B does not exist, but only sub entities of B
+                            // Thus, attributes of B need to be inherited down to the sub entities
                             constraintsForInheritance.add(matchingAttrConstr);
                         }
                     }
+                    // constraintsForInheritance contains:
+                    // Lists of the same attribute.
+                    // Length of the lists is the number of indices.
+                    // Amount of lists is the number of attributes (already inherited down to sub-entities)
                     constraintsForInheritance = transpose(constraintsForInheritance);
-                    List<List<List<String>>> constraintsForInheritance2 = new ArrayList<>();
+                    // After being transposed, each list contains all attributes of a single index.
+                    // Length of the lists is now the number of attributes
+                    // One list per index
+                    List<List<List<String>>> constraintsForInheritanceSplitPerSub = new ArrayList<>();
                     for (int i = 0; i < constraintsForInheritance.size(); i++) {
                         List<String> ci = constraintsForInheritance.get(i);
 
-                        constraintsForInheritance2.add(new ArrayList<>());
+                        constraintsForInheritanceSplitPerSub.add(new ArrayList<>());
                         for (int j = 0; j < r.getEntityB().getSubEntities().size(); j++) {
-                            constraintsForInheritance2.get(i).add(new ArrayList<>());
+                            constraintsForInheritanceSplitPerSub.get(i).add(new ArrayList<>());
                             Entity sub = r.getEntityB().getSubEntities().get(j);
                             for (String c : ci) {
                                 if(c.contains(sub.getName())) {
-                                    constraintsForInheritance2.get(i).get(j).add(c);
+                                    constraintsForInheritanceSplitPerSub.get(i).get(j).add(c);
                                 }
                             }
                         }
                     }
+                    System.out.println("constraintsForInheritanceSplitPerSub");
+                    constraintsForInheritanceSplitPerSub.forEach(System.out::println);
+                    // constraintsForInheritanceSplitPerSub now has the lists of attributes split up into one list per sub-entity
                     List<String> constraintPerIndex = new ArrayList<>();
-                    for(List<List<String>> perIndex : constraintsForInheritance2){
+                    for(List<List<String>> perIndex : constraintsForInheritanceSplitPerSub){
                         StringBuilder constr = new StringBuilder();
                         int subIndex = 0;
                         for (List<String> perSub : perIndex) {
@@ -213,6 +229,13 @@ public class InputModelGenerator {
                         }
                         constraintPerIndex.add(constr.toString());
                     }
+                    System.out.println("constraintPerIndex");
+                    System.out.println(constraintPerIndex);
+                    // constraintPerIndex now contains one constraint per index
+                    // each constraint ensures that the inherited attributes are set on the same sub entity
+                    // When x,y are attributes of A, and B,C are sub-entities of A:
+                    // (A.i.B.x && A.i.B.y) || (A.i.C.x && B.i.C.y)
+                    // once per index i from 0 to maximum arity of the relation
                     entityModel.addConstraint(buildCombinationConstraint(constraintPerIndex, max, min));
                 }
             }
