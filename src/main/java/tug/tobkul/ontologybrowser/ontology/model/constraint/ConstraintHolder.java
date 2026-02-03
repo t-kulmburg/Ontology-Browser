@@ -42,7 +42,7 @@ public class ConstraintHolder implements PdfContentProvider {
         this.outerSystem = system;
         constraint.setEntitiesAndAttributesFromOuterSystem(system);
         if(quantifiers != null){
-            quantifiers.forEach(quantifier -> quantifier.setEntityFromOuterSystem(system));
+            quantifiers.forEach(quantifier -> quantifier.getRelation().setOuterSystem(system));
         }
     }
 

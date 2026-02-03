@@ -52,7 +52,26 @@ public class InputModelGenerator {
     }
 
     public String generate() {
-        rootEntity = getRootEntity(system);
+        try {
+            rootEntity = system.getRootEntity();
+        } catch (IllegalFormatException e) {
+            if (isCli) {
+                cliError = """
+                        Error: Cycle detected.
+                        Involved Entities:
+                        """ +
+                        e.getMessage();
+            } else {
+                showErrorPopup("Error", "Cycle detected", "Involved Entities:\n" +
+                        e.getMessage());
+            }
+        } catch (RuntimeException e) {
+            if (isCli) {
+                cliError = "Error: Root entity not found!";
+            } else {
+                showErrorPopup("Error", "Root entity not found", null);
+            }
+        }
         if (rootEntity == null) {
             return null;
         }
@@ -66,7 +85,7 @@ public class InputModelGenerator {
 
     private InputModel processEntity(Entity entity) {
         InputModel entityModel = new InputModel();
-        if(entity.getSubEntities().isEmpty()){
+        if (entity.getSubEntities().isEmpty()) {
             for (Attribute attribute : entity.getAttributes()) {
                 String name = getEntityAttributeName(entity, attribute);
                 entityModel.addInputParameter(name, attribute.getType().toString());
@@ -100,7 +119,7 @@ public class InputModelGenerator {
                     for (String attributeA : modelA.getAttributesList()) {
                         for (String attributeB : modelB.getAttributesList()) {
                             String constr;
-                            if(modelA.getTypeOfAttribute(attributeA).equals(AttributeType.INT.toString())){
+                            if (modelA.getTypeOfAttribute(attributeA).equals(AttributeType.INT.toString())) {
                                 constr = ConstraintBuilder.buildInheritanceConstrInteger(
                                         entity.getName(), attributeA, attributeB
                                 );
@@ -165,7 +184,7 @@ public class InputModelGenerator {
                                 }
                             }
                         }
-                        if(r.getEntityB().getSubEntities().isEmpty()){
+                        if (r.getEntityB().getSubEntities().isEmpty()) {
                             // LINE 33 if no sub entities
                             entityModel.addConstraint(buildCombinationConstraint(matchingAttrConstr, max, min));
                         } else {
@@ -191,24 +210,23 @@ public class InputModelGenerator {
                             constraintsForInheritanceSplitPerSub.get(i).add(new ArrayList<>());
                             Entity sub = r.getEntityB().getSubEntities().get(j);
                             for (String c : ci) {
-                                if(c.contains(sub.getName())) {
+                                if (c.contains(sub.getName())) {
                                     constraintsForInheritanceSplitPerSub.get(i).get(j).add(c);
                                 }
                             }
                         }
                     }
-                    System.out.println("constraintsForInheritanceSplitPerSub");
                     constraintsForInheritanceSplitPerSub.forEach(System.out::println);
                     // constraintsForInheritanceSplitPerSub now has the lists of attributes split up into one list per sub-entity
                     List<String> constraintPerIndex = new ArrayList<>();
-                    for(List<List<String>> perIndex : constraintsForInheritanceSplitPerSub){
+                    for (List<List<String>> perIndex : constraintsForInheritanceSplitPerSub) {
                         StringBuilder constr = new StringBuilder();
                         int subIndex = 0;
                         for (List<String> perSub : perIndex) {
                             StringBuilder subConstr = new StringBuilder();
                             int attrIndex = 0;
-                            for  (String attr : perSub) {
-                                if(attrIndex > 0){
+                            for (String attr : perSub) {
+                                if (attrIndex > 0) {
                                     subConstr.append(" ");
                                     subConstr.append(OperatorUtil.AND);
                                     subConstr.append(" ");
@@ -218,7 +236,7 @@ public class InputModelGenerator {
                                 subConstr.append(attr);
                                 attrIndex++;
                             }
-                            if(subIndex > 0){
+                            if (subIndex > 0) {
                                 constr.append(" ");
                                 constr.append(OperatorUtil.OR);
                                 constr.append(" ");
@@ -229,8 +247,6 @@ public class InputModelGenerator {
                         }
                         constraintPerIndex.add(constr.toString());
                     }
-                    System.out.println("constraintPerIndex");
-                    System.out.println(constraintPerIndex);
                     // constraintPerIndex now contains one constraint per index
                     // each constraint ensures that the inherited attributes are set on the same sub entity
                     // When x,y are attributes of A, and B,C are sub-entities of A:
@@ -244,7 +260,7 @@ public class InputModelGenerator {
     }
 
     private String buildCombinationConstraint(List<String> constraints, int n, int k) {
-        if(constraints.isEmpty()){
+        if (constraints.isEmpty()) {
             return null;
         }
         StringBuilder combinationConstr = new StringBuilder();
@@ -287,39 +303,6 @@ public class InputModelGenerator {
 
     private String getEntityAttributeName(Entity entity, Attribute attribute) {
         return entity.getName() + "_" + attribute.getName();
-    }
-
-    private Entity getRootEntity(oSystem system) {
-        DefaultDirectedGraph<Entity, DefaultEdge> graph = EntityGraphUtil.buildGraph(system);
-        Set<Entity> cycle = EntityGraphUtil.detectCycle(graph);
-        if (cycle != null) {
-            if (isCli) {
-                cliError = """
-                        Error: Cycle detected.
-                        Involved Entities:
-                        """ +
-                        String.join(" - ", cycle.stream().map(Entity::getName).toList());
-            } else {
-                showErrorPopup("Error", "Cycle detected", "Involved Entities:\n" +
-                        String.join(" - ", cycle.stream().map(Entity::getName).toList()));
-            }
-            return null;
-        }
-        Set<Entity> orphans = EntityGraphUtil.detectOrphans(graph);
-        if (orphans != null) {
-            System.out.println("orphans found");
-            System.out.println(orphans);
-        }
-        Optional<Entity> root = EntityGraphUtil.findRootEntity(graph);
-        if (root.isEmpty()) {
-            if (isCli) {
-                cliError = "Error: Root entity not found!";
-            } else {
-                showErrorPopup("Error", "Root entity not found", null);
-            }
-            return null;
-        }
-        return root.get();
     }
 
     private static List<List<String>> transpose(List<List<String>> matrix) {

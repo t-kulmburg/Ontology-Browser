@@ -4,44 +4,58 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.util.StringConverter;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
+import tug.tobkul.ontologybrowser.ontology.model.Relation;
 
 import java.util.List;
 
 public class AddQuantifierPopupController {
 
     @FXML
-    private ComboBox<Entity> entityComboBox;
+    private ComboBox<Relation> relationComboBox;
 
     @FXML
     private Label invalidInputLabel;
 
-    public void setEntities(List<Entity> entities, List<Entity> usedEntities) {
-        entityComboBox.getItems().setAll(entities);
+    public void setRelations(List<Relation> relations, List<Relation> usedRelations) {
+        relationComboBox.getItems().setAll(relations);
 
-        entityComboBox.setCellFactory(callback -> new ListCell<>() {
+        relationComboBox.setCellFactory(callback -> new ListCell<>() {
             @Override
-            protected void updateItem(Entity entity, boolean empty) {
-                super.updateItem(entity, empty);
-                if (entity == null || empty) {
+            protected void updateItem(Relation relation, boolean empty) {
+                super.updateItem(relation, empty);
+                if (relation == null || empty) {
                     setText(null);
                 } else {
-                    setText(entity.getName());
+                    setText(relation.getEntityString());
 
-                    if (usedEntities.contains(entity)) {
+                    if (usedRelations.contains(relation)) {
                         setDisable(true);
                         setOpacity(0.4);
                     }
                 }
             }
         });
+
+        relationComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Relation relation) {
+                return relation == null ? "" : relation.getEntityString();
+            }
+
+            @Override
+            public Relation fromString(String string) {
+                return null; // usually not needed
+            }
+        });
     }
 
-    public Entity getSelectedEntity(){
-        return entityComboBox.getSelectionModel().getSelectedItem();
+    public Relation getSelectedRelation(){
+        return relationComboBox.getSelectionModel().getSelectedItem();
     }
 
     public void onConfirm(){
-        entityComboBox.getScene().getWindow().hide();
+        relationComboBox.getScene().getWindow().hide();
     }
 }

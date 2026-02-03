@@ -7,10 +7,11 @@ import org.jgrapht.graph.DefaultEdge;
 import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
 import tug.tobkul.ontologybrowser.ontology.graph.EntityGraphUtil;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 public class oSystem implements PdfContentProvider {
@@ -23,7 +24,8 @@ public class oSystem implements PdfContentProvider {
     private final int tikzXOffset = 4;
     private final int tikzYOffset = 3;
 
-    public oSystem() {}
+    public oSystem() {
+    }
 
     public oSystem(String name, String comment) {
         this.name = name;
@@ -67,7 +69,7 @@ public class oSystem implements PdfContentProvider {
         return this.relations;
     }
 
-    public void setRelations(List<Relation> relations){
+    public void setRelations(List<Relation> relations) {
         this.relations = relations;
         relations.forEach(r -> r.setOuterSystem(this));
     }
@@ -81,7 +83,7 @@ public class oSystem implements PdfContentProvider {
         constraintHolderList.forEach(c -> c.setOuterSystem(this));
     }
 
-    public void printDetails(TextFlow textFlow){
+    public void printDetails(TextFlow textFlow) {
         textFlow.getChildren().clear();
         textFlow.getChildren().add(StringFormatUtil.SYSTEM_HEADER);
         textFlow.getChildren().add(StringFormatUtil.indent(name));
@@ -91,56 +93,50 @@ public class oSystem implements PdfContentProvider {
     }
 
     @JsonIgnore
-    public String getPlantUmlString(){
+    public String getPlantUmlString() {
         StringBuilder builder = new StringBuilder();
         builder.append("@startuml\n").append("!pragma layout smetana\n");
-        for (Entity e : entities){
+        for (Entity e : entities) {
             builder.append(e.getPlantUmlString());
         }
-        for (Entity e : entities){
+        for (Entity e : entities) {
             String i = e.getPlantUmlStringInheritance();
-            if(i != null) builder.append(i);
+            if (i != null) builder.append(i);
         }
-        for (Relation r : relations){
+        for (Relation r : relations) {
             builder.append(r.getPlantUmlString());
         }
         return builder.append("@enduml\n").toString();
     }
 
     @JsonIgnore
-    public String getTikzUmlString(){
+    public String getTikzUmlString() {
         StringBuilder builder = new StringBuilder();
         builder.append("\\begin{figure}%[t]\n").append("\\begin{footnotesize}\n").append("\\begin{center}\n").append("\\begin{tikzpicture}[scale=1.0]\n");
-        for  (Entity e : entities){
+        for (Entity e : entities) {
             builder.append(e.getTikzUmlString());
         }
-        for (Relation r : relations){
+        for (Relation r : relations) {
             builder.append(r.getTikzUmlString());
         }
-        builder.append("\\end{tikzpicture}\n")
-                .append("\\end{center}\n")
-                .append("\\end{footnotesize}\n")
-                .append("\\caption{Add caption}\n")
-                .append("\\label{fig:label}\n")
-                .append("\\end{figure}");
+        builder.append("\\end{tikzpicture}\n").append("\\end{center}\n").append("\\end{footnotesize}\n").append("\\caption{Add caption}\n").append("\\label{fig:label}\n").append("\\end{figure}");
 
         String umlString = builder.toString();
 
         DefaultDirectedGraph<Entity, DefaultEdge> graph = EntityGraphUtil.buildGraph(this);
         Optional<Entity> root = EntityGraphUtil.findRootEntity(graph);
-        if(root.isEmpty()){
+        if (root.isEmpty()) {
             return "Error: Could not determine root entity";
         }
         List<List<Entity>> entityMap = EntityGraphUtil.traverseGraph(graph, root.get());
-        System.out.println(entityMap);
 
         int y = 0;
-        for(List<Entity> level : entityMap){
+        for (List<Entity> level : entityMap) {
             int x = 0;
-            for (Entity e : level){
+            for (Entity e : level) {
                 String name = "{" + e.getName() + "}";
                 String from = name + "{@coords@}";
-                String to = name + "{" + tikzXOffset*x + ",-" + tikzYOffset*y + "}";
+                String to = name + "{" + tikzXOffset * x + ",-" + tikzYOffset * y + "}";
                 umlString = umlString.replace(from, to);
                 x++;
             }
@@ -152,43 +148,37 @@ public class oSystem implements PdfContentProvider {
     }
 
     @JsonIgnore
-    public List<String> getPdfStrings(){
+    public List<String> getPdfStrings() {
         List<String> strings = new ArrayList<>();
         strings.add("Name: " + this.name);
-        if(this.comment != null && !this.comment.isBlank()){
+        if (this.comment != null && !this.comment.isBlank()) {
             strings.add("Comment: " + this.comment);
         }
-        if(this.entities != null && !this.entities.isEmpty()){
+        if (this.entities != null && !this.entities.isEmpty()) {
             strings.add("Entities:");
-            for(Entity e : entities){
+            for (Entity e : entities) {
                 List<String> s = e.getPdfStrings();
-                List<String> temp = IntStream.range(0, s.size())
-                        .mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
-                        .toList();
+                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i)).toList();
                 strings.addAll(temp);
             }
         } else {
             strings.add("Entities: []");
         }
-        if(this.relations != null && !this.relations.isEmpty()){
+        if (this.relations != null && !this.relations.isEmpty()) {
             strings.add("Relations:");
-            for(Relation r : relations){
+            for (Relation r : relations) {
                 List<String> s = r.getPdfStrings();
-                List<String> temp = IntStream.range(0, s.size())
-                        .mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
-                        .toList();
+                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i)).toList();
                 strings.addAll(temp);
             }
         } else {
             strings.add("Relations: []");
         }
-        if(this.constraintHolderList != null && !this.constraintHolderList.isEmpty()){
+        if (this.constraintHolderList != null && !this.constraintHolderList.isEmpty()) {
             strings.add("Constraints:");
-            for(ConstraintHolder c : constraintHolderList){
+            for (ConstraintHolder c : constraintHolderList) {
                 List<String> s = c.getPdfStrings();
-                List<String> temp = IntStream.range(0, s.size())
-                        .mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
-                        .toList();
+                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i)).toList();
                 strings.addAll(temp);
             }
         } else {
@@ -197,4 +187,51 @@ public class oSystem implements PdfContentProvider {
 
         return strings;
     }
+
+    @JsonIgnore
+    public Entity getRootEntity() {
+        if (entities.isEmpty()) return null;
+        if (entities.size() == 1) return entities.getFirst();
+
+        DefaultDirectedGraph<Entity, DefaultEdge> graph = EntityGraphUtil.buildGraph(this);
+        Set<Entity> cycle = EntityGraphUtil.detectCycle(graph);
+        if (cycle != null) {
+            throw new IllegalStateException(String.join(" - ", cycle.stream().map(Entity::getName).toList()));
+        }
+        Set<Entity> orphans = EntityGraphUtil.detectOrphans(graph);
+        if (orphans != null) {
+            System.out.println("orphans found");
+            System.out.println(orphans);
+        }
+        Optional<Entity> root = EntityGraphUtil.findRootEntity(graph);
+        if (root.isEmpty()) {
+            throw new RuntimeException();
+        }
+        return root.get();
+    }
+
+    @JsonIgnore
+    public List<String> getAttributeListForConstraint(List<Quantifier> quantifiers) {
+        List<String> attributes = getRootEntity().getAttributeListForConstraint();
+        Set<String> result = new LinkedHashSet<>();
+
+        for (Quantifier q : quantifiers) {
+            String regex = q.getRelation().getEntityA().getName() + "_\\d+_" + q.getRelation().getEntityB().getName();
+            String replacement = q.getRelation().getEntityA().getName() + "_" + q.getType().getSign() + "_" + q.getRelation().getEntityB().getName();
+            Pattern pattern = Pattern.compile(regex);
+            for (String a : attributes) {
+                Matcher matcher = pattern.matcher(a);
+                if (matcher.find()) {
+                    result.add(matcher.replaceAll(replacement));
+                } else {
+                    result.add(a);
+                }
+            }
+        }
+
+        attributes.forEach(System.out::println);
+
+        return new ArrayList<>();
+    }
+
 }

@@ -214,7 +214,7 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     }
 
     @JsonIgnore
-    public String getTikzUmlString(){
+    public String getTikzUmlString() {
         double width = 2.5;
         String n = getName().replace("_", "\\_").replace(" ", "\\_");
         int overflow = n.length() - 13;
@@ -241,5 +241,50 @@ public class Entity implements AttributeHolder, PdfContentProvider {
         }
         builder.append("\\end{class}\n");
         return builder.toString();
+    }
+
+    @JsonIgnore
+    public List<String> getAttributeListForConstraint() {
+        List<String> attributeList = new ArrayList<>();
+
+        if (getSubEntities().isEmpty()) {
+            for (Attribute attribute : getAttributes()) {
+                attributeList.add(name + "_" + attribute.getName());
+            }
+        }
+        if (checkLeaf()) {
+            return attributeList;
+        }
+        for (Entity sub : getSubEntities()) {
+            for (Attribute attribute : getAttributes()) {
+                attributeList.add(name + "_" + sub.getName() + "_" + attribute.getName());
+            }
+            for (Attribute attribute : sub.getAttributes()) {
+                attributeList.add(name + "_" + sub.getName() + "_" + attribute.getName());
+            }
+        }
+        for (Relation r : outerSystem.getRelations()) {
+            if (r.getEntityA().equals(this)) {
+                List<String> entityBAttributeList = r.getEntityB().getAttributeListForConstraint();
+                for (int i = 1; i <= Integer.parseInt(r.getCardinalityMax()); i++) {
+                    int finalI = i; // to counter error showing up
+                    attributeList.addAll(entityBAttributeList.stream().map(s -> name + "_" + finalI + "_" + s).toList());
+                }
+            }
+        }
+        return attributeList;
+    }
+
+    @JsonIgnore
+    public boolean checkLeaf() {
+        if (getSubEntities() != null && !getSubEntities().isEmpty()) {
+            return false;
+        }
+        for (Relation relation : outerSystem.getRelations()) {
+            if (relation.getEntityA().equals(this)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

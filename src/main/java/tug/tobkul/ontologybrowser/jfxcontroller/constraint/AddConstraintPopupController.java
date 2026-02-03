@@ -23,6 +23,7 @@ import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.HighlightManager
 import tug.tobkul.ontologybrowser.ontology.OntologyManager;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Library;
+import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
@@ -38,8 +39,7 @@ public class AddConstraintPopupController {
     private OntologyManager ontologyManager;
     private Constraint createdConstraint;
     private ConstraintHolder editConstraintHolder = null;
-    private List<Entity> quantifierUsedEntities = new ArrayList<>();
-    private List<Quantifier> quantifiers = new ArrayList<>();
+    private final List<Quantifier> quantifiers = new ArrayList<>();
 
     public final ObjectProperty<ConstraintView> rootConstraintView = new SimpleObjectProperty<>();
 
@@ -85,32 +85,47 @@ public class AddConstraintPopupController {
 
     @FXML
     private void onNewRootConstraint() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("simpleConstraintPopup.fxml"));
-        AddSimpleConstraintPopupController controller = new AddSimpleConstraintPopupController();
-        loader.setController(controller);
+        if(createdConstraint == null){
+            // do newRootConstraint logic
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("simpleConstraintPopup.fxml"));
+            AddSimpleConstraintPopupController controller = new AddSimpleConstraintPopupController();
+            loader.setController(controller);
 
-        Parent root = loader.load();
-        controller.setOuterSystem(systemChoiceBox.getValue());
+            Parent root = loader.load();
+            controller.setOuterSystem(systemChoiceBox.getValue());
 
-        Stage popupStage = new Stage();
-        controller.setStage(popupStage);
-        popupStage.setTitle("Add Simple Constraint");
-        popupStage.setResizable(false);
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setScene(new Scene(root));
-        popupStage.setX(stage.getX() + 20);
-        popupStage.setY(stage.getY() + 20);
+            Stage popupStage = new Stage();
+            controller.setStage(popupStage);
+            popupStage.setTitle("Add Simple Constraint");
+            popupStage.setResizable(false);
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.setScene(new Scene(root));
+            popupStage.setX(stage.getX() + 20);
+            popupStage.setY(stage.getY() + 20);
 
-        popupStage.showAndWait();
-        createdConstraint = controller.getResult();
-        if (createdConstraint != null) {
-            ConstraintView rootView = ConstraintViewFactory.create(this, createdConstraint);
-            rootConstraintView.set(rootView);
+            popupStage.showAndWait();
+            createdConstraint = controller.getResult();
+            if (createdConstraint != null) {
+                ConstraintView rootView = ConstraintViewFactory.create(this, createdConstraint);
+                rootConstraintView.set(rootView);
+                constraintHBox.getChildren().clear();
+                constraintHBox.getChildren().add(rootView.getView());
+                addQuantifierExistsButton.setDisable(true);
+                addQuantifierForAllButton.setDisable(true);
+                quantifierHBox.setMouseTransparent(true);
+                newRootButton.setText("Reset");
+            }
+        } else {
+            // do reset logic
+            rootConstraintView.set(null);
+            createdConstraint = null;
             constraintHBox.getChildren().clear();
-            constraintHBox.getChildren().add(rootView.getView());
-            newRootButton.setDisable(true);
-            addQuantifierExistsButton.setDisable(true);
-            addQuantifierForAllButton.setDisable(true);
+            addQuantifierExistsButton.setDisable(false);
+            addQuantifierForAllButton.setDisable(false);
+            quantifierHBox.getChildren().clear();
+            quantifiers.clear();
+            quantifierHBox.setMouseTransparent(false);
+            newRootButton.setText("New Root");
         }
     }
 
@@ -156,15 +171,9 @@ public class AddConstraintPopupController {
             setInvalidInputLabelVisibleAndFormat();
             return;
         }
-        if (systemChoiceBox.getValue().getConstraints().stream().noneMatch(c -> c.getName().equals(nameField.getText()))
-                || (editConstraintHolder != null && editConstraintHolder.getName().equals(nameField.getText()))) {
+        if (systemChoiceBox.getValue().getConstraints().stream().noneMatch(c -> c.getName().equals(nameField.getText())) || (editConstraintHolder != null && editConstraintHolder.getName().equals(nameField.getText()))) {
             if (editConstraintHolder == null) {
-                systemChoiceBox.getValue().getConstraints().add(new ConstraintHolder(
-                        nameField.getText(),
-                        commentField.getText(),
-                        rootConstraintView.get().getConstraint(),
-                        quantifiers
-                ));
+                systemChoiceBox.getValue().getConstraints().add(new ConstraintHolder(nameField.getText(), commentField.getText(), rootConstraintView.get().getConstraint(), quantifiers));
             } else {
                 editConstraintHolder.setName(nameField.getText());
                 editConstraintHolder.setComment(commentField.getText());
@@ -180,48 +189,45 @@ public class AddConstraintPopupController {
 
     @FXML
     private void onAddForAll() throws IOException {
-        Entity selectedEntity = getEntityFromQuantifierPopup();
-        if(selectedEntity == null){
+        Relation selectedRelation = getRelationFromQuantifierPopup();
+        if (selectedRelation == null) {
             return;
         }
-        Quantifier quantifier = new Quantifier(QuantifierType.FOR_ALL, selectedEntity);
+        Quantifier quantifier = new Quantifier(QuantifierType.FOR_ALL, selectedRelation);
         quantifiers.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
             quantifiers.remove(quantifier);
-            quantifierUsedEntities.remove(quantifier.getEntity());
         }));
-        quantifierUsedEntities.add(selectedEntity);
     }
 
     @FXML
     private void onAddExists() throws IOException {
-        Entity selectedEntity = getEntityFromQuantifierPopup();
-        if(selectedEntity == null){
+        Relation selectedRelation = getRelationFromQuantifierPopup();
+        if (selectedRelation == null) {
             return;
         }
 
-        Quantifier quantifier = new Quantifier(QuantifierType.EXISTS, selectedEntity);
+        Quantifier quantifier = new Quantifier(QuantifierType.EXISTS, selectedRelation);
         quantifiers.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
             quantifiers.remove(quantifier);
-            quantifierUsedEntities.remove(quantifier.getEntity());
         }));
-        quantifierUsedEntities.add(selectedEntity);
     }
 
-    private Entity getEntityFromQuantifierPopup() throws IOException {
+    private Relation getRelationFromQuantifierPopup() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("addQuantifierPopup.fxml"));
         Parent root = loader.load();
 
         AddQuantifierPopupController controller = loader.getController();
-        controller.setEntities(systemChoiceBox.getValue().getEntities(), quantifierUsedEntities);
+        controller.setRelations(systemChoiceBox.getValue().getRelations(),
+                quantifiers.stream().map(Quantifier::getRelation).toList());
 
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
 
-        return  controller.getSelectedEntity();
+        return controller.getSelectedRelation();
     }
 
     public void setOntologyManagerAndLibraries(OntologyManager ontologyManager) {
@@ -249,17 +255,17 @@ public class AddConstraintPopupController {
         constraintHBox.getChildren().clear();
         constraintHBox.getChildren().add(rootView.getView());
         newRootButton.setStyle("-fx-background-color: lightgrey; -fx-opacity: 0.7;");
+        newRootButton.setText("Reset");
 
-        for (Quantifier q : constraintHolder.getQuantifiers()){
+        for (Quantifier q : constraintHolder.getQuantifiers()) {
             quantifiers.add(q);
             quantifierHBox.getChildren().add(new QuantifierView(q, () -> {
                 quantifiers.remove(q);
-                quantifierUsedEntities.remove(q.getEntity());
             }));
-            quantifierUsedEntities.add(q.getEntity());
         }
         addQuantifierForAllButton.setDisable(true);
         addQuantifierExistsButton.setDisable(true);
+        quantifierHBox.setMouseTransparent(true);
     }
 
     public void addSystemsAndSetPreselectedSystem(Library library, oSystem system) {

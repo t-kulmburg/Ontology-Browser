@@ -93,9 +93,6 @@ public class QuantifierView extends HBox {
     }
 
     private String createLabelText() {
-        return switch (quantifier.getType()) {
-            case FOR_ALL -> "∀ " + quantifier.getEntity().getName();
-            case EXISTS -> "∃ " + quantifier.getEntity().getName();
-        };
+        return quantifier.toString();
     }
 }

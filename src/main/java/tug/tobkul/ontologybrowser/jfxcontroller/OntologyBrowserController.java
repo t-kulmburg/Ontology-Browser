@@ -444,6 +444,7 @@ public class OntologyBrowserController implements Initializable {
             relationListView.setItems(null);
             constraintListView.setItems(null);
         }
+
     }
 
     private void entityListViewEvent(Entity newValue) {

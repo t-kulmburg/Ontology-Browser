@@ -256,4 +256,9 @@ public class Relation implements AttributeHolder, PdfContentProvider {
 
         return  builder.toString();
     }
+
+    @JsonIgnore
+    public String getEntityString(){
+        return A.getName() + "." + B.getName();
+    }
 }
