@@ -7,6 +7,7 @@ import org.jgrapht.graph.DefaultEdge;
 import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
 import tug.tobkul.ontologybrowser.ontology.graph.EntityGraphUtil;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 
 import java.util.*;
@@ -112,14 +113,16 @@ public class oSystem implements PdfContentProvider {
     @JsonIgnore
     public String getTikzUmlString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("\\begin{figure}%[t]\n").append("\\begin{footnotesize}\n").append("\\begin{center}\n").append("\\begin{tikzpicture}[scale=1.0]\n");
+        builder.append("\\begin{figure}%[t]\n").append("\\begin{footnotesize}\n").append("\\begin{center}\n")
+                .append("\\begin{tikzpicture}[scale=1.0]\n");
         for (Entity e : entities) {
             builder.append(e.getTikzUmlString());
         }
         for (Relation r : relations) {
             builder.append(r.getTikzUmlString());
         }
-        builder.append("\\end{tikzpicture}\n").append("\\end{center}\n").append("\\end{footnotesize}\n").append("\\caption{Add caption}\n").append("\\label{fig:label}\n").append("\\end{figure}");
+        builder.append("\\end{tikzpicture}\n").append("\\end{center}\n").append("\\end{footnotesize}\n")
+                .append("\\caption{Add caption}\n").append("\\label{fig:label}\n").append("\\end{figure}");
 
         String umlString = builder.toString();
 
@@ -158,7 +161,8 @@ public class oSystem implements PdfContentProvider {
             strings.add("Entities:");
             for (Entity e : entities) {
                 List<String> s = e.getPdfStrings();
-                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i)).toList();
+                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
+                        .toList();
                 strings.addAll(temp);
             }
         } else {
@@ -168,7 +172,8 @@ public class oSystem implements PdfContentProvider {
             strings.add("Relations:");
             for (Relation r : relations) {
                 List<String> s = r.getPdfStrings();
-                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i)).toList();
+                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
+                        .toList();
                 strings.addAll(temp);
             }
         } else {
@@ -178,7 +183,8 @@ public class oSystem implements PdfContentProvider {
             strings.add("Constraints:");
             for (ConstraintHolder c : constraintHolderList) {
                 List<String> s = c.getPdfStrings();
-                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i)).toList();
+                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
+                        .toList();
                 strings.addAll(temp);
             }
         } else {
@@ -211,27 +217,28 @@ public class oSystem implements PdfContentProvider {
     }
 
     @JsonIgnore
-    public List<String> getAttributeListForConstraint(List<Quantifier> quantifiers) {
-        List<String> attributes = getRootEntity().getAttributeListForConstraint();
-        Set<String> result = new LinkedHashSet<>();
+    public List<Parameter> getParameterListForConstraint(List<Quantifier> quantifiers) {
+        List<Parameter> parameters = getRootEntity().getParameterListForConstraint();
 
+        if (quantifiers.isEmpty()) {
+            return parameters;
+        }
+
+        Set<Parameter> result = new LinkedHashSet<>();
         for (Quantifier q : quantifiers) {
             String regex = q.getRelation().getEntityA().getName() + "_\\d+_" + q.getRelation().getEntityB().getName();
-            String replacement = q.getRelation().getEntityA().getName() + "_" + q.getType().getSign() + "_" + q.getRelation().getEntityB().getName();
+            String replacement = q.getRelation().getEntityA().getName() + "_" + q.getType().getSign() + "_" +
+                    q.getRelation().getEntityB().getName();
             Pattern pattern = Pattern.compile(regex);
-            for (String a : attributes) {
-                Matcher matcher = pattern.matcher(a);
+            for (Parameter p : parameters) {
+                Matcher matcher = pattern.matcher(p.getExpression());
                 if (matcher.find()) {
-                    result.add(matcher.replaceAll(replacement));
+                    result.add(new Parameter(p.getEntity(), p.getAttribute(), matcher.replaceAll(replacement)));
                 } else {
-                    result.add(a);
+                    result.add(p);
                 }
             }
         }
-
-        attributes.forEach(System.out::println);
-
-        return new ArrayList<>();
+        return result.stream().toList();
     }
-
 }

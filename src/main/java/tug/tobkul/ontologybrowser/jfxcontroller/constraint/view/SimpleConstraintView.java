@@ -63,7 +63,7 @@ public class SimpleConstraintView implements ConstraintView {
         loader.setController(controller);
 
         Parent root = loader.load();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setConstraintForEdit(constraint);
 
         Stage popupStage = new Stage();
@@ -86,7 +86,7 @@ public class SimpleConstraintView implements ConstraintView {
         Parent root = loader.load();
 
         MakeCompositeConstraintRightPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();
@@ -113,7 +113,7 @@ public class SimpleConstraintView implements ConstraintView {
         Parent root = loader.load();
 
         MakeCompositeConstraintLeftPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();

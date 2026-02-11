@@ -100,14 +100,55 @@ public class InputModel {
     }
 
     public void addExpandedConstrains(oSystem system) {
-        List<String> expandedConstraints = expandConstraints(system);
+        Set<String> expandedConstraints = expandConstraintsQuantifiers(system);
+        System.out.println("Expanded Constraints:" + expandedConstraints);
         C.addAll(expandedConstraints);
     }
 
-    public List<String> expandConstraints(oSystem system) {
-        buildConstraintCorrespondenceMap(system);
+    public Set<String> expandConstraintsQuantifiers(oSystem system){
+        Set<String> expandedConstraints = expandConstraints(system);
         AtomicReference<List<String>> cs = new AtomicReference<>(system.getConstraints().stream().map(c -> c.getConstraint().getExpression()).toList());
+        Set<String> finalConstraints = new LinkedHashSet<>();
+
+        cs.get().forEach(constraint -> {
+            String regex = constraint.replace("∀", "\\d").replace("∃", "\\d");
+            Pattern pattern = Pattern.compile(regex);
+
+            List<String> matched = new ArrayList<>();
+            expandedConstraints.removeIf(s -> {
+                if (pattern.matcher(s).matches()) {
+                    matched.add(s);
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            System.out.println("CS" + constraint);
+            System.out.println("MATCHED" + matched);
+            if(constraint.contains("∀")){
+                finalConstraints.add(String.join(" && ", matched));
+            } else if (constraint.contains("∃")){
+                finalConstraints.add(String.join(" || ", matched));
+            } else {
+                finalConstraints.add(constraint);
+            }
+        });
+        if(!expandedConstraints.isEmpty()) {
+            System.out.println("WARNING: Not all quantifiers could be resolved!");
+        }
+        return finalConstraints;
+    }
+
+    public Set<String> expandConstraints(oSystem system) {
+        System.out.println("In expandConstraints");
+        buildConstraintCorrespondenceMap(system);
+        System.out.println("ConstraintCorrespondenceMap");
+        System.out.println(userDefinedConstraintCorrespondenceMap);
+        AtomicReference<List<String>> cs = new AtomicReference<>(system.getConstraints().stream().map(c -> c.getConstraint().getExpression()).toList());
+        System.out.println("CS:");
+        System.out.println(cs);
         userDefinedConstraintCorrespondenceMap.forEach((entity, attributes) -> {
+            System.out.println(entity);
             List<String> csx = new ArrayList<>();
             cs.get().forEach(constraint -> {
                 List<String> csxSingle = new ArrayList<>();
@@ -124,10 +165,12 @@ public class InputModel {
             });
             cs.set(csx);
         });
-        return cs.get();
+        // Use set to remove duplicates
+        return new LinkedHashSet<>(cs.get());
     }
 
     public void buildConstraintCorrespondenceMap(oSystem system) {
+        System.out.println("In buildConstraintCorrespondenceMap");
         system.getConstraints().forEach(
                 constraint -> {
                     if (constraint.getConstraint().isComposite()) {
@@ -179,9 +222,11 @@ public class InputModel {
     }
 
     private List<String> getCorrespondingInputParameters(String attribute) {
+        System.out.println("In getCorrespondingInputParameters: " + attribute);
         List<String> correspondingInputParameters = new ArrayList<>();
         for (String k : V.keySet()) {
-            if (k.endsWith(attribute.replace(".", "_"))) {
+            System.out.println(k);
+            if (k.endsWith(attribute.replace(".", "_").replaceAll(".*?[∀∃]", ""))) {
                 correspondingInputParameters.add(k);
             }
         }

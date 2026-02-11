@@ -13,15 +13,18 @@ import javafx.stage.Stage;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.CompositeConstraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.BooleanOperator;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 import java.io.IOException;
+import java.util.List;
 
 public abstract class MakeCompositeConstraintPopupController {
     protected Stage stage;
     protected oSystem outerSystem;
     protected Constraint lhs;
     protected Constraint rhs;
+    protected List<Quantifier> quantifierList;
 
     protected CompositeConstraint result;
 
@@ -54,8 +57,9 @@ public abstract class MakeCompositeConstraintPopupController {
         this.stage = stage;
     }
 
-    public void setOuterSystem(oSystem outerSystem) {
+    public void setOuterSystemAndQuantifiers(oSystem outerSystem, List<Quantifier> quantifierList) {
         this.outerSystem = outerSystem;
+        this.quantifierList = quantifierList;
     }
 
     public void onConfirm() {
@@ -70,17 +74,18 @@ public abstract class MakeCompositeConstraintPopupController {
             setInvalidInputLabelVisibleAndFormat();
             return;
         }
-        this.result = new CompositeConstraint(outerSystem, lhs, rhs, booleanOperatorChoiceBox.getValue());
+        this.result = new CompositeConstraint(outerSystem, lhs, rhs, booleanOperatorChoiceBox.getValue(), quantifierList);
         stage.close();
     }
 
     protected Constraint getSimpleConstraintFromPopup() throws IOException {
-        FXMLLoader loader = new FXMLLoader(SimpleConstraintPopupController.class.getResource("simpleConstraintPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(SimpleConstraintPopupController.class.getResource(
+                "simpleConstraintPopup" + ".fxml"));
         AddSimpleConstraintPopupController controller = new AddSimpleConstraintPopupController();
         loader.setController(controller);
 
         Parent root = loader.load();
-        controller.setOuterSystem(outerSystem);
+        controller.setOuterSystemAndQuantifiers(outerSystem, quantifierList);
 
         Stage popupStage = new Stage();
         controller.setStage(popupStage);

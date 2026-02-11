@@ -59,11 +59,9 @@ public class InputModelGenerator {
                 cliError = """
                         Error: Cycle detected.
                         Involved Entities:
-                        """ +
-                        e.getMessage();
+                        """ + e.getMessage();
             } else {
-                showErrorPopup("Error", "Cycle detected", "Involved Entities:\n" +
-                        e.getMessage());
+                showErrorPopup("Error", "Cycle detected", "Involved Entities:\n" + e.getMessage());
             }
         } catch (RuntimeException e) {
             if (isCli) {
@@ -120,13 +118,11 @@ public class InputModelGenerator {
                         for (String attributeB : modelB.getAttributesList()) {
                             String constr;
                             if (modelA.getTypeOfAttribute(attributeA).equals(AttributeType.INT.toString())) {
-                                constr = ConstraintBuilder.buildInheritanceConstrInteger(
-                                        entity.getName(), attributeA, attributeB
-                                );
+                                constr = ConstraintBuilder.buildInheritanceConstrInteger(entity.getName(), attributeA
+                                        , attributeB);
                             } else {
-                                constr = ConstraintBuilder.buildInheritanceConstr(
-                                        entity.getName(), attributeA, attributeB
-                                );
+                                constr = ConstraintBuilder.buildInheritanceConstr(entity.getName(), attributeA,
+                                        attributeB);
                             }
                             entityModel.addConstraint(constr);
                         }
@@ -168,9 +164,7 @@ public class InputModelGenerator {
                     List<List<String>> constraintsForInheritance = new ArrayList<>();
                     // direct attributes
                     for (String attr : modelB.getAttributesList()) {
-                        String regex = entity.getName().replace(".", "\\.") +
-                                "_\\d+_" +
-                                attr.replace(".", "\\.");
+                        String regex = entity.getName().replace(".", "\\.") + "_\\d+_" + attr.replace(".", "\\.");
                         Pattern pattern = Pattern.compile(regex);
 
                         List<String> matchingAttrConstr = new ArrayList<>();
@@ -216,8 +210,8 @@ public class InputModelGenerator {
                             }
                         }
                     }
-                    constraintsForInheritanceSplitPerSub.forEach(System.out::println);
-                    // constraintsForInheritanceSplitPerSub now has the lists of attributes split up into one list per sub-entity
+                    // constraintsForInheritanceSplitPerSub now has the lists of attributes split up into one list
+                    // per sub-entity
                     List<String> constraintPerIndex = new ArrayList<>();
                     for (List<List<String>> perIndex : constraintsForInheritanceSplitPerSub) {
                         StringBuilder constr = new StringBuilder();

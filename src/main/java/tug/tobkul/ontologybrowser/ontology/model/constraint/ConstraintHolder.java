@@ -24,7 +24,7 @@ public class ConstraintHolder implements PdfContentProvider {
 
     private Constraint constraint;
 
-    private List<Quantifier> quantifiers;
+    private List<Quantifier> quantifiers = new ArrayList<>();
 
     public ConstraintHolder() {
     }
@@ -41,6 +41,7 @@ public class ConstraintHolder implements PdfContentProvider {
     public void setOuterSystem(oSystem system) {
         this.outerSystem = system;
         constraint.setEntitiesAndAttributesFromOuterSystem(system);
+        constraint.setQuantifierList(quantifiers);
         if(quantifiers != null){
             quantifiers.forEach(quantifier -> quantifier.getRelation().setOuterSystem(system));
         }

@@ -20,6 +20,7 @@ import tug.tobkul.ontologybrowser.jfxcontroller.term.TermPopupController;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.AttributeType;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.SimpleConstraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.relational.RelationalOperator;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.ArithmeticParameterTerm;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.ArithmeticValueTerm;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.ParameterTerm;
@@ -27,6 +28,7 @@ import tug.tobkul.ontologybrowser.ontology.model.constraint.term.Term;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 import java.io.IOException;
+import java.util.List;
 
 public abstract class SimpleConstraintPopupController {
     protected Stage stage;
@@ -35,6 +37,7 @@ public abstract class SimpleConstraintPopupController {
     protected Term rhs;
     protected SimpleConstraint result;
     protected AttributeType attributeType;
+    protected List<Quantifier> quantifierList;
 
     @FXML
     protected ChoiceBox<RelationalOperator> relationalOperatorChoiceBox;
@@ -97,8 +100,9 @@ public abstract class SimpleConstraintPopupController {
         this.stage = stage;
     }
 
-    public void setOuterSystem(oSystem outerSystem) {
+    public void setOuterSystemAndQuantifiers(oSystem outerSystem, List<Quantifier> quantifierList) {
         this.outerSystem = outerSystem;
+        this.quantifierList = quantifierList;
     }
 
     public SimpleConstraint getResult() {
@@ -203,7 +207,7 @@ public abstract class SimpleConstraintPopupController {
         } else if (!isLhs && this.lhs != null) {
             controller.setAttributeTypeFilter(this.attributeType);
         }
-        controller.setEntitiesFromOuterSystem(outerSystem);
+        controller.setEntitiesFromOuterSystem(outerSystem, quantifierList);
         if (currentTerm != null) {
             ((EditTermPopupController) controller).setTermForEdit(currentTerm);
         }

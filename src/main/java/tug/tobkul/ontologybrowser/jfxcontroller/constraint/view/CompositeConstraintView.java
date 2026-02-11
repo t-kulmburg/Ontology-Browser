@@ -81,7 +81,7 @@ public class CompositeConstraintView implements ConstraintView {
 
     @Override
     public Constraint getConstraint() {
-        return new CompositeConstraint(constraint.getOuterSystem(), leftView.getConstraint(), rightView.getConstraint(), constraint.getBooleanOperator());
+        return new CompositeConstraint(constraint.getOuterSystem(), leftView.getConstraint(), rightView.getConstraint(), constraint.getBooleanOperator(), constraint.getQuantifierList());
     }
 
     @Override
@@ -125,7 +125,7 @@ public class CompositeConstraintView implements ConstraintView {
         Parent root = loader.load();
 
         MakeCompositeConstraintRightPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();
@@ -153,7 +153,7 @@ public class CompositeConstraintView implements ConstraintView {
         Parent root = loader.load();
 
         MakeCompositeConstraintLeftPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();

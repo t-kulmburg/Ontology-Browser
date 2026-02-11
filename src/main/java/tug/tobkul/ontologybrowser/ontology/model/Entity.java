@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.scene.text.TextFlow;
 import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,10 +138,12 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     public void setEntitiesFromOuterSystem() {
         if (this.outerSystem != null) {
             if (!superEntityName.isEmpty()) {
-                this.superEntity = outerSystem.getEntities().stream().filter(e -> e.getName().equals(superEntityName)).toList().getFirst();
+                this.superEntity = outerSystem.getEntities().stream().filter(e -> e.getName().equals(superEntityName))
+                        .toList().getFirst();
 
             }
-            this.subEntities = new ArrayList<>(outerSystem.getEntities().stream().filter(e -> subEntityNames.contains(e.getName())).toList());
+            this.subEntities = new ArrayList<>(outerSystem.getEntities().stream()
+                    .filter(e -> subEntityNames.contains(e.getName())).toList());
         }
     }
 
@@ -160,14 +163,9 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     @JsonIgnore
     public String getPlantUmlString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("entity ")
-                .append(this.name.replace(" ", "_"))
-                .append(" {\n");
+        builder.append("entity ").append(this.name.replace(" ", "_")).append(" {\n");
         for (Attribute a : attributes) {
-            builder.append(a.getName().replace(" ", "_"))
-                    .append(" : ")
-                    .append(a.getType())
-                    .append("\n");
+            builder.append(a.getName().replace(" ", "_")).append(" : ").append(a.getType()).append("\n");
         }
         builder.append("}\n");
 
@@ -177,10 +175,7 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     @JsonIgnore
     public String getPlantUmlStringInheritance() {
         if (superEntity == null) return null;
-        String builder = superEntity.getName().replace(" ", "_") +
-                " <|-- " +
-                name.replace(" ", "_") +
-                "\n";
+        String builder = superEntity.getName().replace(" ", "_") + " <|-- " + name.replace(" ", "_") + "\n";
         return builder;
     }
 
@@ -204,8 +199,7 @@ public class Entity implements AttributeHolder, PdfContentProvider {
             strings.add("Attributes: ");
             for (Attribute a : attributes) {
                 List<String> s = a.getPdfStrings();
-                List<String> temp = IntStream.range(0, s.size())
-                        .mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
+                List<String> temp = IntStream.range(0, s.size()).mapToObj(i -> (i == 0 ? "- " : "  ") + s.get(i))
                         .toList();
                 strings.addAll(temp);
             }
@@ -224,19 +218,13 @@ public class Entity implements AttributeHolder, PdfContentProvider {
         }
 
         StringBuilder builder = new StringBuilder();
-        builder.append("\\begin{class}[text width = ").append(width).append("cm]{")
-                .append(n)
-                .append("}{@coords@}\n");
+        builder.append("\\begin{class}[text width = ").append(width).append("cm]{").append(n).append("}{@coords@}\n");
         for (Attribute attribute : attributes) {
-            builder.append("\\attribute{\\textbf{")
-                    .append(attribute.getName().replace("_", "\\_").replace(" ", "\\_"))
-                    .append("}: \\{")
-                    .append(attribute.getValue().getTikzUmlValueString())
-                    .append("\\}}\n");
+            builder.append("\\attribute{\\textbf{").append(attribute.getName().replace("_", "\\_").replace(" ", "\\_"))
+                    .append("}: \\{").append(attribute.getValue().getTikzUmlValueString()).append("\\}}\n");
         }
         if (superEntity != null) {
-            builder.append("\\inherit{")
-                    .append(superEntity.getName().replace("_", "\\_").replace(" ", "\\_"))
+            builder.append("\\inherit{").append(superEntity.getName().replace("_", "\\_").replace(" ", "\\_"))
                     .append("}\n");
         }
         builder.append("\\end{class}\n");
@@ -244,12 +232,12 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     }
 
     @JsonIgnore
-    public List<String> getAttributeListForConstraint() {
-        List<String> attributeList = new ArrayList<>();
+    public List<Parameter> getParameterListForConstraint() {
+        List<Parameter> attributeList = new ArrayList<>();
 
         if (getSubEntities().isEmpty()) {
             for (Attribute attribute : getAttributes()) {
-                attributeList.add(name + "_" + attribute.getName());
+                attributeList.add(new Parameter(this, attribute, name + "_" + attribute.getName()));
             }
         }
         if (checkLeaf()) {
@@ -257,18 +245,22 @@ public class Entity implements AttributeHolder, PdfContentProvider {
         }
         for (Entity sub : getSubEntities()) {
             for (Attribute attribute : getAttributes()) {
-                attributeList.add(name + "_" + sub.getName() + "_" + attribute.getName());
+                attributeList.add(new Parameter(this, attribute,
+                        name + "_" + sub.getName() + "_" + attribute.getName()));
             }
             for (Attribute attribute : sub.getAttributes()) {
-                attributeList.add(name + "_" + sub.getName() + "_" + attribute.getName());
+                attributeList.add(new Parameter(sub, attribute,
+                        name + "_" + sub.getName() + "_" + attribute.getName()));
             }
         }
         for (Relation r : outerSystem.getRelations()) {
             if (r.getEntityA().equals(this)) {
-                List<String> entityBAttributeList = r.getEntityB().getAttributeListForConstraint();
+                List<Parameter> entityBAttributeList = r.getEntityB().getParameterListForConstraint();
                 for (int i = 1; i <= Integer.parseInt(r.getCardinalityMax()); i++) {
                     int finalI = i; // to counter error showing up
-                    attributeList.addAll(entityBAttributeList.stream().map(s -> name + "_" + finalI + "_" + s).toList());
+                    attributeList.addAll(entityBAttributeList.stream()
+                            .map(p -> new Parameter(p.getEntity(), p.getAttribute(),
+                                    name + "_" + finalI + "_" + p.getExpression())).toList());
                 }
             }
         }

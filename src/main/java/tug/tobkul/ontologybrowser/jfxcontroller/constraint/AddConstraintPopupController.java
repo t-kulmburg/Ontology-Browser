@@ -21,7 +21,6 @@ import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.ConstraintView;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.ConstraintViewFactory;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.HighlightManager;
 import tug.tobkul.ontologybrowser.ontology.OntologyManager;
-import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Library;
 import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
@@ -39,7 +38,7 @@ public class AddConstraintPopupController {
     private OntologyManager ontologyManager;
     private Constraint createdConstraint;
     private ConstraintHolder editConstraintHolder = null;
-    private final List<Quantifier> quantifiers = new ArrayList<>();
+    private final List<Quantifier> quantifierList = new ArrayList<>();
 
     public final ObjectProperty<ConstraintView> rootConstraintView = new SimpleObjectProperty<>();
 
@@ -85,14 +84,14 @@ public class AddConstraintPopupController {
 
     @FXML
     private void onNewRootConstraint() throws IOException {
-        if(createdConstraint == null){
+        if (newRootButton.getText().equals("New Root")) {
             // do newRootConstraint logic
             FXMLLoader loader = new FXMLLoader(getClass().getResource("simpleConstraintPopup.fxml"));
             AddSimpleConstraintPopupController controller = new AddSimpleConstraintPopupController();
             loader.setController(controller);
 
             Parent root = loader.load();
-            controller.setOuterSystem(systemChoiceBox.getValue());
+            controller.setOuterSystemAndQuantifiers(systemChoiceBox.getValue(), quantifierList);
 
             Stage popupStage = new Stage();
             controller.setStage(popupStage);
@@ -123,9 +122,10 @@ public class AddConstraintPopupController {
             addQuantifierExistsButton.setDisable(false);
             addQuantifierForAllButton.setDisable(false);
             quantifierHBox.getChildren().clear();
-            quantifiers.clear();
+            quantifierList.clear();
             quantifierHBox.setMouseTransparent(false);
             newRootButton.setText("New Root");
+            newRootButton.setStyle("");
         }
     }
 
@@ -171,14 +171,18 @@ public class AddConstraintPopupController {
             setInvalidInputLabelVisibleAndFormat();
             return;
         }
-        if (systemChoiceBox.getValue().getConstraints().stream().noneMatch(c -> c.getName().equals(nameField.getText())) || (editConstraintHolder != null && editConstraintHolder.getName().equals(nameField.getText()))) {
+        if (systemChoiceBox.getValue().getConstraints().stream()
+                .noneMatch(c -> c.getName().equals(nameField.getText())) ||
+                (editConstraintHolder != null && editConstraintHolder.getName().equals(nameField.getText()))) {
             if (editConstraintHolder == null) {
-                systemChoiceBox.getValue().getConstraints().add(new ConstraintHolder(nameField.getText(), commentField.getText(), rootConstraintView.get().getConstraint(), quantifiers));
+                systemChoiceBox.getValue().getConstraints()
+                        .add(new ConstraintHolder(nameField.getText(), commentField.getText(), rootConstraintView.get()
+                                .getConstraint(), quantifierList));
             } else {
                 editConstraintHolder.setName(nameField.getText());
                 editConstraintHolder.setComment(commentField.getText());
                 editConstraintHolder.setConstraint(rootConstraintView.get().getConstraint());
-                editConstraintHolder.setQuantifiers(quantifiers);
+                editConstraintHolder.setQuantifiers(quantifierList);
             }
             nameField.getScene().getWindow().hide();
         } else {
@@ -194,9 +198,9 @@ public class AddConstraintPopupController {
             return;
         }
         Quantifier quantifier = new Quantifier(QuantifierType.FOR_ALL, selectedRelation);
-        quantifiers.add(quantifier);
+        quantifierList.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
-            quantifiers.remove(quantifier);
+            quantifierList.remove(quantifier);
         }));
     }
 
@@ -208,9 +212,9 @@ public class AddConstraintPopupController {
         }
 
         Quantifier quantifier = new Quantifier(QuantifierType.EXISTS, selectedRelation);
-        quantifiers.add(quantifier);
+        quantifierList.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
-            quantifiers.remove(quantifier);
+            quantifierList.remove(quantifier);
         }));
     }
 
@@ -219,8 +223,8 @@ public class AddConstraintPopupController {
         Parent root = loader.load();
 
         AddQuantifierPopupController controller = loader.getController();
-        controller.setRelations(systemChoiceBox.getValue().getRelations(),
-                quantifiers.stream().map(Quantifier::getRelation).toList());
+        controller.setRelations(systemChoiceBox.getValue().getRelations(), quantifierList.stream()
+                .map(Quantifier::getRelation).toList());
 
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
@@ -258,9 +262,9 @@ public class AddConstraintPopupController {
         newRootButton.setText("Reset");
 
         for (Quantifier q : constraintHolder.getQuantifiers()) {
-            quantifiers.add(q);
+            quantifierList.add(q);
             quantifierHBox.getChildren().add(new QuantifierView(q, () -> {
-                quantifiers.remove(q);
+                quantifierList.remove(q);
             }));
         }
         addQuantifierForAllButton.setDisable(true);
