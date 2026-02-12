@@ -21,12 +21,14 @@ public class CommandLineInterface {
         String outputFileName = args[3];
 
         ontologyManager.openFile(new File(inputFileName));
-        Library library = ontologyManager.getLibraries().stream().filter(l -> l.getName().equals(libraryName)).findFirst().orElse(null);
+        Library library = ontologyManager.getLibraries().stream().filter(l -> l.getName().equals(libraryName))
+                .findFirst().orElse(null);
         if (library == null) {
             System.out.println("Library not found: " + libraryName);
             return;
         }
-        oSystem system = library.getSystems().stream().filter(s -> s.getName().equals(systemName)).findFirst().orElse(null);
+        oSystem system = library.getSystems().stream().filter(s -> s.getName().equals(systemName)).findFirst()
+                .orElse(null);
         if (system == null) {
             System.out.println("System not found: " + systemName + " in library " + libraryName);
             return;
@@ -44,7 +46,8 @@ public class CommandLineInterface {
         }
 
         try {
-            Files.write(Path.of(outputFileName), model.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(Path.of(outputFileName), model.getBytes(), StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             System.out.println("Error writing output file: " + outputFileName);
             return;

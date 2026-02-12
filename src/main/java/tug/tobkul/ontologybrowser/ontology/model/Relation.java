@@ -40,7 +40,8 @@ public class Relation implements AttributeHolder, PdfContentProvider {
     public Relation() {
     }
 
-    public Relation(oSystem outerSystem, Entity A, Entity B, String cardMin, String cardMax, String name, String comment) {
+    public Relation(oSystem outerSystem, Entity A, Entity B, String cardMin, String cardMax, String name,
+                    String comment) {
         this.outerSystem = outerSystem;
         this.A = A;
         this.B = B;
@@ -125,7 +126,8 @@ public class Relation implements AttributeHolder, PdfContentProvider {
             List<Entity> listA = outerSystem.getEntities().stream().filter(e -> e.getName().equals(AName)).toList();
             List<Entity> listB = outerSystem.getEntities().stream().filter(e -> e.getName().equals(BName)).toList();
             if (listA.size() != listB.size() && listA.size() != 1) {
-                throw new IllegalArgumentException("Entities list contains entities that do not match present entities of this System");
+                throw new IllegalArgumentException("Entities list contains entities that do not match present " +
+                        "entities of this System");
             }
             A = listA.getFirst();
             B = listB.getFirst();
@@ -191,7 +193,7 @@ public class Relation implements AttributeHolder, PdfContentProvider {
         this.cardinalityMax = cardinalityMax;
     }
 
-    public boolean containsEntity(Entity e){
+    public boolean containsEntity(Entity e) {
         return A.equals(e) || B.equals(e);
     }
 
@@ -240,25 +242,21 @@ public class Relation implements AttributeHolder, PdfContentProvider {
 
     @JsonIgnore
     public String getTikzUmlString() {
-        StringBuilder builder = new StringBuilder();
-
-        builder.append("\\aggregation{")
-                .append(A.getName().replace("_", "\\_").replace(" ", "\\_"))
-                .append("}{")
-                .append(name.replace("_", "\\_").replace(" ", "\\_"))
-                .append("}{")
-                .append(cardinalityMin)
-                .append("..")
-                .append(cardinalityMax)
-                .append("}{")
-                .append(B.getName().replace("_", "\\_").replace(" ", "\\_"))
-                .append("}\n");
-
-        return  builder.toString();
+        return "\\aggregation{" +
+                A.getName().replace("_", "\\_").replace(" ", "\\_") +
+                "}{" +
+                name.replace("_", "\\_").replace(" ", "\\_") +
+                "}{" +
+                cardinalityMin +
+                ".." +
+                cardinalityMax +
+                "}{" +
+                B.getName().replace("_", "\\_").replace(" ", "\\_") +
+                "}\n";
     }
 
     @JsonIgnore
-    public String getEntityString(){
+    public String getEntityString() {
         return A.getName() + "." + B.getName();
     }
 }

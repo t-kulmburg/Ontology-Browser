@@ -81,6 +81,29 @@ public class OntologyBrowserController implements Initializable {
     @FXML
     private ListView<Attribute> attributesListView;
 
+    private static List<String> splitLine(String str, int limit) {
+        List<String> substr = new ArrayList<>();
+        int start = 0;
+        while (start < str.length()) {
+            int end = Math.min(start + limit, str.length());
+            int split = end;
+
+            if (end < str.length()) {
+                int lastSpace = str.lastIndexOf(' ', end - 1);
+                if (lastSpace > start) {
+                    split = lastSpace;
+                }
+            }
+            if (start == 0) {
+                substr.add(str.substring(start, split));
+            } else {
+                substr.add(str.substring(start, split).trim());
+            }
+            start = split;
+        }
+        return substr;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initLibraryContextEvents();
@@ -121,7 +144,8 @@ public class OntologyBrowserController implements Initializable {
         libraryListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             Library selectedItem = libraryListView.getSelectionModel().getSelectedItem();
             libraryListViewEvent(selectedItem);
-            if (event.getButton() == MouseButton.SECONDARY && libraryListView.getSelectionModel().getSelectedItem() != null) {
+            if (event.getButton() == MouseButton.SECONDARY &&
+                    libraryListView.getSelectionModel().getSelectedItem() != null) {
                 libraryListViewContextMenu.show(libraryListView, event.getScreenX(), event.getScreenY());
             } else {
                 libraryListViewContextMenu.hide();
@@ -168,7 +192,8 @@ public class OntologyBrowserController implements Initializable {
         systemListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             oSystem selectedItem = systemListView.getSelectionModel().getSelectedItem();
             systemListViewEvent(selectedItem);
-            if (event.getButton() == MouseButton.SECONDARY && systemListView.getSelectionModel().getSelectedItem() != null) {
+            if (event.getButton() == MouseButton.SECONDARY &&
+                    systemListView.getSelectionModel().getSelectedItem() != null) {
                 systemListViewContextMenu.show(systemListView, event.getScreenX(), event.getScreenY());
             } else {
                 systemListViewContextMenu.hide();
@@ -216,7 +241,8 @@ public class OntologyBrowserController implements Initializable {
         entityListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             Entity selectedItem = entityListView.getSelectionModel().getSelectedItem();
             entityListViewEvent(selectedItem);
-            if (event.getButton() == MouseButton.SECONDARY && entityListView.getSelectionModel().getSelectedItem() != null) {
+            if (event.getButton() == MouseButton.SECONDARY &&
+                    entityListView.getSelectionModel().getSelectedItem() != null) {
                 entityListViewContextMenu.show(entityListView, event.getScreenX(), event.getScreenY());
             } else {
                 entityListViewContextMenu.hide();
@@ -264,7 +290,8 @@ public class OntologyBrowserController implements Initializable {
         relationListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             Relation selectedItem = relationListView.getSelectionModel().getSelectedItem();
             relationListViewEvent(selectedItem);
-            if (event.getButton() == MouseButton.SECONDARY && relationListView.getSelectionModel().getSelectedItem() != null) {
+            if (event.getButton() == MouseButton.SECONDARY &&
+                    relationListView.getSelectionModel().getSelectedItem() != null) {
                 relationListViewContextMenu.show(relationListView, event.getScreenX(), event.getScreenY());
             } else {
                 relationListViewContextMenu.hide();
@@ -311,7 +338,8 @@ public class OntologyBrowserController implements Initializable {
         constraintListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             ConstraintHolder selectedItem = constraintListView.getSelectionModel().getSelectedItem();
             constraintListViewEvent(selectedItem);
-            if (event.getButton() == MouseButton.SECONDARY && constraintListView.getSelectionModel().getSelectedItem() != null) {
+            if (event.getButton() == MouseButton.SECONDARY &&
+                    constraintListView.getSelectionModel().getSelectedItem() != null) {
                 constraintListViewContextMenu.show(constraintListView, event.getScreenX(), event.getScreenY());
             } else {
                 constraintListViewContextMenu.hide();
@@ -340,7 +368,8 @@ public class OntologyBrowserController implements Initializable {
         attributesListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             Attribute selectedItem = attributesListView.getSelectionModel().getSelectedItem();
             attributeListViewEvent(selectedItem);
-            if (event.getButton() == MouseButton.SECONDARY && attributesListView.getSelectionModel().getSelectedItem() != null) {
+            if (event.getButton() == MouseButton.SECONDARY &&
+                    attributesListView.getSelectionModel().getSelectedItem() != null) {
                 attributeListViewContextMenu.show(attributesListView, event.getScreenX(), event.getScreenY());
             } else {
                 attributeListViewContextMenu.hide();
@@ -395,13 +424,14 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public boolean showSaveConfirmationWasCancelled(String operation) throws IOException {
-        if(!ontologyManager.hasUnsavedChanges()){
+        if (!ontologyManager.hasUnsavedChanges()) {
             return false;
         }
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(operation +  " Confirmation");
-        alert.setHeaderText("You have unsaved changes!\nSave before " + operation.toLowerCase().replaceFirst("e$", "") + "ing?");
+        alert.setTitle(operation + " Confirmation");
+        alert.setHeaderText(
+                "You have unsaved changes!\nSave before " + operation.toLowerCase().replaceFirst("e$", "") + "ing?");
 
         ButtonType saveAndExit = new ButtonType("Save");
         ButtonType exitWithoutSaving = new ButtonType("Don't save");
@@ -414,9 +444,7 @@ public class OntologyBrowserController implements Initializable {
             if (result.get() == saveAndExit) {
                 onMenuFileSave();
                 return false;
-            } else if (result.get() == exitWithoutSaving) {
-                return false;
-            }
+            } else return result.get() != exitWithoutSaving;
         }
         return true;
     }
@@ -531,7 +559,8 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
-            systemListView.setItems(FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem().getSystems()));
+            systemListView.setItems(FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem()
+                    .getSystems()));
         }
     }
 
@@ -558,7 +587,8 @@ public class OntologyBrowserController implements Initializable {
         stage.showAndWait();
 
         if (systemListView.getSelectionModel().getSelectedItem() != null) {
-            entityListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getEntities()));
+            entityListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
+                    .getEntities()));
         }
     }
 
@@ -589,7 +619,8 @@ public class OntologyBrowserController implements Initializable {
         stage.showAndWait();
 
         if (systemListView.getSelectionModel().getSelectedItem() != null) {
-            relationListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getRelations()));
+            relationListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
+                    .getRelations()));
         }
     }
 
@@ -620,7 +651,8 @@ public class OntologyBrowserController implements Initializable {
         stage.showAndWait();
 
         if (systemListView.getSelectionModel().getSelectedItem() != null) {
-            constraintListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getConstraints()));
+            constraintListView.setItems(FXCollections.observableList(systemListView.getSelectionModel()
+                    .getSelectedItem().getConstraints()));
         }
     }
 
@@ -643,7 +675,7 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public void onMenuFileNew() throws IOException {
-        if(showSaveConfirmationWasCancelled("Close")){
+        if (showSaveConfirmationWasCancelled("Close")) {
             return;
         }
         ontologyManager.closeFile();
@@ -652,7 +684,7 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public void onMenuFileOpen() throws IOException {
-        if(showSaveConfirmationWasCancelled("Close")){
+        if (showSaveConfirmationWasCancelled("Close")) {
             return;
         }
         FileChooser fileChooser = new FileChooser();
@@ -664,13 +696,14 @@ public class OntologyBrowserController implements Initializable {
             try {
                 ontologyManager.openFile(selectedFile);
             } catch (JsonParseException e) {
-                String message =  e.getLocalizedMessage() +
+                String message = e.getLocalizedMessage() +
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file","Error: The JSON structure in the file is invalid.", message);
+                showErrorPopup("Error opening JSON file", "Error: The JSON structure in the file is invalid.", message);
             } catch (JsonMappingException e) {
                 String message = e.getOriginalMessage() +
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected format.", message);
+                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected " +
+                        "format.", message);
             } catch (IOException e) {
                 showErrorPopup("Error opening JSON file", null, e.getLocalizedMessage());
             }
@@ -694,9 +727,10 @@ public class OntologyBrowserController implements Initializable {
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
                 showErrorPopup("Error opening JSON file", "Error: The JSON structure in the file is invalid.", message);
             } catch (JsonMappingException e) {
-                String message =  e.getOriginalMessage() +
+                String message = e.getOriginalMessage() +
                         "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected format.", message);
+                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected " +
+                        "format.", message);
             } catch (IOException e) {
                 showErrorPopup("Error opening JSON file", null, e.getLocalizedMessage());
             }
@@ -758,7 +792,8 @@ public class OntologyBrowserController implements Initializable {
     }
 
     private void onDeleteLibrary() {
-        boolean result = showDeletionConfirmationPopup("Library", libraryListView.getSelectionModel().getSelectedItem().getName());
+        boolean result = showDeletionConfirmationPopup("Library", libraryListView.getSelectionModel().getSelectedItem()
+                .getName());
         if (result) {
             libraryListView.getItems().remove(libraryListView.getSelectionModel().getSelectedItem());
         }
@@ -780,12 +815,14 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        systemListView.setItems(FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem().getSystems()));
+        systemListView.setItems(FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem()
+                .getSystems()));
         systemListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
     }
 
     public void onDeleteSystem() {
-        boolean result = showDeletionConfirmationPopup("System", systemListView.getSelectionModel().getSelectedItem().getName());
+        boolean result = showDeletionConfirmationPopup("System", systemListView.getSelectionModel().getSelectedItem()
+                .getName());
         if (result) {
             systemListView.getItems().remove(systemListView.getSelectionModel().getSelectedItem());
         }
@@ -808,7 +845,8 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        entityListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getEntities()));
+        entityListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
+                .getEntities()));
         entityListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
     }
 
@@ -816,25 +854,25 @@ public class OntologyBrowserController implements Initializable {
         Entity e = entityListView.getSelectionModel().getSelectedItem();
         // Check if entity is part of a relation
         List<String> rels = new ArrayList<>();
-        for(Relation r : relationListView.getItems()){
-            if(r.containsEntity(e)){
+        for (Relation r : relationListView.getItems()) {
+            if (r.containsEntity(e)) {
                 rels.add("• " + r.getName() + "\n");
             }
         }
-        if(!rels.isEmpty()){
-            showWarningPopup("Warning","Entity is part of a relation",
+        if (!rels.isEmpty()) {
+            showWarningPopup("Warning", "Entity is part of a relation",
                     "Relations in question must be deleted first:\n" + String.join("", rels));
             return;
         }
         // Check if entity is part of a constraint
         List<String> constrs = new ArrayList<>();
-        for(ConstraintHolder c : constraintListView.getItems()){
-            if(c.containsEntity(e)){
+        for (ConstraintHolder c : constraintListView.getItems()) {
+            if (c.containsEntity(e)) {
                 constrs.add("• " + c.getName() + "\n");
             }
         }
-        if(!constrs.isEmpty()){
-            showWarningPopup("Warning","Entity is part of a constraint",
+        if (!constrs.isEmpty()) {
+            showWarningPopup("Warning", "Entity is part of a constraint",
                     "Constraints in question must be deleted first:\n" + String.join("", constrs));
             return;
         }
@@ -862,12 +900,14 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        relationListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getRelations()));
+        relationListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
+                .getRelations()));
         relationListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
     }
 
     public void onDeleteRelation() {
-        boolean result = showDeletionConfirmationPopup("Relation", relationListView.getSelectionModel().getSelectedItem().getName());
+        boolean result = showDeletionConfirmationPopup("Relation", relationListView.getSelectionModel()
+                .getSelectedItem().getName());
         if (result) {
             relationListView.getItems().remove(relationListView.getSelectionModel().getSelectedItem());
         }
@@ -900,12 +940,14 @@ public class OntologyBrowserController implements Initializable {
 
         stage.showAndWait();
 
-        constraintListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getConstraints()));
+        constraintListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
+                .getConstraints()));
         constraintListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
     }
 
     public void onDeleteConstraint() {
-        boolean result = showDeletionConfirmationPopup("Constraint", constraintListView.getSelectionModel().getSelectedItem().getName());
+        boolean result = showDeletionConfirmationPopup("Constraint", constraintListView.getSelectionModel()
+                .getSelectedItem().getName());
         if (result) {
             constraintListView.getItems().remove(constraintListView.getSelectionModel().getSelectedItem());
         }
@@ -916,13 +958,13 @@ public class OntologyBrowserController implements Initializable {
 
         // Check if entity is part of a constraint
         List<String> constrs = new ArrayList<>();
-        for(ConstraintHolder c : constraintListView.getItems()){
-            if(c.containsAttribute(a)){
+        for (ConstraintHolder c : constraintListView.getItems()) {
+            if (c.containsAttribute(a)) {
                 constrs.add("• " + c.getName() + "\n");
             }
         }
-        if(!constrs.isEmpty()){
-            showWarningPopup("Warning","Attribute is part of a constraint",
+        if (!constrs.isEmpty()) {
+            showWarningPopup("Warning", "Attribute is part of a constraint",
                     "Ensure the following constraints stay valid after modification:\n"
                             + String.join("", constrs));
         }
@@ -951,13 +993,13 @@ public class OntologyBrowserController implements Initializable {
 
         // Check if entity is part of a constraint
         List<String> constrs = new ArrayList<>();
-        for(ConstraintHolder c : constraintListView.getItems()){
-            if(c.containsAttribute(a)){
+        for (ConstraintHolder c : constraintListView.getItems()) {
+            if (c.containsAttribute(a)) {
                 constrs.add("• " + c.getName() + "\n");
             }
         }
-        if(!constrs.isEmpty()){
-            showWarningPopup("Warning","Attribute is part of a constraint",
+        if (!constrs.isEmpty()) {
+            showWarningPopup("Warning", "Attribute is part of a constraint",
                     "Constraints in question must be deleted first:\n" + String.join("", constrs));
             return;
         }
@@ -971,7 +1013,8 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public void onMenuExportInputModel() throws IOException {
-        FXMLLoader loader = new FXMLLoader(ExportInputModelPopupController.class.getResource("exportInputModelPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(ExportInputModelPopupController.class.getResource("exportInputModelPopup" +
+                ".fxml"));
         Parent root = loader.load();
 
         ExportInputModelPopupController controller = loader.getController();
@@ -1126,28 +1169,5 @@ public class OntologyBrowserController implements Initializable {
             }
             pdf.save(selectedFile.getAbsolutePath());
         }
-    }
-
-    private static List<String> splitLine(String str, int limit) {
-        List<String> substr = new ArrayList<>();
-        int start = 0;
-        while (start < str.length()) {
-            int end = Math.min(start + limit, str.length());
-            int split = end;
-
-            if (end < str.length()) {
-                int lastSpace = str.lastIndexOf(' ', end - 1);
-                if (lastSpace > start) {
-                    split = lastSpace;
-                }
-            }
-            if (start == 0) {
-                substr.add(str.substring(start, split));
-            } else {
-                substr.add(str.substring(start, split).trim());
-            }
-            start = split;
-        }
-        return substr;
     }
 }

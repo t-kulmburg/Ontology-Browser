@@ -54,9 +54,11 @@ public class AddEntityPopupController extends EntityPopupController {
             return;
         }
 
-        if (systemChoiceBox.getValue().getEntities().stream().noneMatch(entity -> entity.getName().equals(nameField.getText()))) {
+        if (systemChoiceBox.getValue().getEntities().stream()
+                .noneMatch(entity -> entity.getName().equals(nameField.getText()))) {
             Entity newEntity = new Entity(nameField.getText(), commentField.getText(),
-                    superEntityCheckComboBox.getCheckModel().getCheckedItems().isEmpty() ? null : superEntityCheckComboBox.getCheckModel().getCheckedItems().getFirst());
+                    superEntityCheckComboBox.getCheckModel().getCheckedItems().isEmpty() ? null :
+                            superEntityCheckComboBox.getCheckModel().getCheckedItems().getFirst());
             systemChoiceBox.getValue().getEntities().add(newEntity);
             if (!superEntityCheckComboBox.getCheckModel().getCheckedItems().isEmpty()) {
                 superEntityCheckComboBox.getCheckModel().getCheckedItems().getFirst().addSubEntity(newEntity);

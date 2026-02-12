@@ -48,7 +48,7 @@ public class ArithmeticValueTerm implements Term {
     @Override
     @JsonIgnore
     public String getExpression() {
-        return lhs.getExpression() + " " + arithmeticOperator.getSign() + " " + rhs.replace(" ","_");
+        return lhs.getExpression() + " " + arithmeticOperator.getSign() + " " + rhs.replace(" ", "_");
     }
 
     @Override

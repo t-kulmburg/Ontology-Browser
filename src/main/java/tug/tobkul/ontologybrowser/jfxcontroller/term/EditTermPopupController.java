@@ -12,8 +12,10 @@ public class EditTermPopupController extends TermPopupController {
             valueTypeValueField.setText(((ValueTerm) term).getValue());
         } else if (term instanceof ArithmeticParameterTerm) {
             termTypeChoiceBox.getSelectionModel().select(TermType.A_PARAMETER);
-            arithmeticParameterTypeParameterChoiceBoxLhs.getSelectionModel().select(((ArithmeticParameterTerm) term).getLhs());
-            arithmeticParameterTypeParameterChoiceBoxRhs.getSelectionModel().select(((ArithmeticParameterTerm) term).getRhs());
+            arithmeticParameterTypeParameterChoiceBoxLhs.getSelectionModel()
+                    .select(((ArithmeticParameterTerm) term).getLhs());
+            arithmeticParameterTypeParameterChoiceBoxRhs.getSelectionModel()
+                    .select(((ArithmeticParameterTerm) term).getRhs());
         } else if (term instanceof ArithmeticValueTerm) {
             termTypeChoiceBox.getSelectionModel().select(TermType.A_VALUE);
             arithmeticValueTypeParameterChoiceBox.getSelectionModel().select(((ArithmeticValueTerm) term).getLhs());

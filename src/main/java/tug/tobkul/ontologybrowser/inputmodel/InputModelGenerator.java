@@ -2,11 +2,8 @@ package tug.tobkul.ontologybrowser.inputmodel;
 
 import javafx.scene.control.Alert;
 import org.apache.commons.math3.util.Combinations;
-import org.jgrapht.graph.DefaultDirectedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import tug.tobkul.ontologybrowser.inputmodel.model.ConstraintBuilder;
 import tug.tobkul.ontologybrowser.inputmodel.model.InputModel;
-import tug.tobkul.ontologybrowser.ontology.graph.EntityGraphUtil;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
@@ -24,11 +21,8 @@ public class InputModelGenerator {
 
     private final oSystem system;
     private final String name;
-
-    private Entity rootEntity;
-
     private final boolean isCli;
-
+    private Entity rootEntity;
     private String cliError = "";
 
     public InputModelGenerator(String name, oSystem system) {
@@ -41,6 +35,23 @@ public class InputModelGenerator {
         this.name = name;
         this.system = system;
         this.isCli = isCli;
+    }
+
+    private static List<List<String>> transpose(List<List<String>> matrix) {
+        if (matrix == null || matrix.isEmpty()) return Collections.emptyList();
+
+        int rows = matrix.size();
+        int cols = matrix.getFirst().size();
+        List<List<String>> result = new ArrayList<>();
+
+        for (int col = 0; col < cols; col++) {
+            List<String> newRow = new ArrayList<>();
+            for (int row = 0; row < rows; row++) {
+                newRow.add(matrix.get(row).get(col));
+            }
+            result.add(newRow);
+        }
+        return result;
     }
 
     public Entity getRootEntity() {
@@ -297,23 +308,6 @@ public class InputModelGenerator {
 
     private String getEntityAttributeName(Entity entity, Attribute attribute) {
         return entity.getName() + "_" + attribute.getName();
-    }
-
-    private static List<List<String>> transpose(List<List<String>> matrix) {
-        if (matrix == null || matrix.isEmpty()) return Collections.emptyList();
-
-        int rows = matrix.size();
-        int cols = matrix.getFirst().size();
-        List<List<String>> result = new ArrayList<>();
-
-        for (int col = 0; col < cols; col++) {
-            List<String> newRow = new ArrayList<>();
-            for (int row = 0; row < rows; row++) {
-                newRow.add(matrix.get(row).get(col));
-            }
-            result.add(newRow);
-        }
-        return result;
     }
 
     private void showErrorPopup(String title, String header, String message) {

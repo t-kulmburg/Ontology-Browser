@@ -57,24 +57,25 @@ public abstract class AttributePopupController {
                 .collect(Collectors.toList())
         );
         attributeTypeChoiceBox.getSelectionModel().selectFirst();
-        attributeTypeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                switch (newValue) {
-                    case BOOL -> {
-                        setNumberRangeSettersActive(false);
-                        setEnumerationSettersActive(false);
+        attributeTypeChoiceBox.getSelectionModel().selectedItemProperty()
+                .addListener((observable, oldValue, newValue) -> {
+                    if (newValue != null) {
+                        switch (newValue) {
+                            case BOOL -> {
+                                setNumberRangeSettersActive(false);
+                                setEnumerationSettersActive(false);
+                            }
+                            case ENUM -> {
+                                setNumberRangeSettersActive(false);
+                                setEnumerationSettersActive(true);
+                            }
+                            case INT -> {
+                                setEnumerationSettersActive(false);
+                                setNumberRangeSettersActive(true);
+                            }
+                        }
                     }
-                    case ENUM -> {
-                        setNumberRangeSettersActive(false);
-                        setEnumerationSettersActive(true);
-                    }
-                    case INT -> {
-                        setEnumerationSettersActive(false);
-                        setNumberRangeSettersActive(true);
-                    }
-                }
-            }
-        });
+                });
         minTextField.setTextFormatter(new javafx.scene.control.TextFormatter<>(change -> {
             String newText = change.getControlNewText();
             if (newText.matches("^-?\\d*$")) {

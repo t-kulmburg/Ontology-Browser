@@ -52,16 +52,16 @@ public class Parameter {
         return getExpression();
     }
 
-    public void setExpression(String expression) {
-        this.expression = expression;
-    }
-
     public String getExpression() {
         if (expression == null) {
             // TODO REMOVE - JUST FOR COMPATIBILITY
             return entity.getName().replace(" ", "_") + "." + attribute.getName().replace(" ", "_");
         }
         return expression;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 
     @JsonIgnore

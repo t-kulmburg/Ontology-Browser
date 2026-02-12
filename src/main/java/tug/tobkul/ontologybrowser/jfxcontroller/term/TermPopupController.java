@@ -8,8 +8,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import tug.tobkul.ontologybrowser.ontology.model.Entity;
-import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.AttributeType;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.ArithmeticOperator;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
@@ -17,7 +15,6 @@ import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifie
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.*;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class TermPopupController {

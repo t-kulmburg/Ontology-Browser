@@ -52,11 +52,6 @@ public class CompositeConstraint implements Constraint {
         this.booleanOperator = booleanOperator;
     }
 
-    @JsonIgnore
-    public void setOuterSystem(oSystem outerSystem) {
-        this.outerSystem = outerSystem;
-    }
-
     @Override
     @JsonIgnore
     public oSystem getOuterSystem() {
@@ -64,15 +59,20 @@ public class CompositeConstraint implements Constraint {
     }
 
     @JsonIgnore
-    public void setQuantifierList(List<Quantifier> quantifierList) {
-        this.quantifierList = quantifierList;
-        lhs.setQuantifierList(quantifierList);
-        rhs.setQuantifierList(quantifierList);
+    public void setOuterSystem(oSystem outerSystem) {
+        this.outerSystem = outerSystem;
     }
 
     @JsonIgnore
     public List<Quantifier> getQuantifierList() {
         return quantifierList;
+    }
+
+    @JsonIgnore
+    public void setQuantifierList(List<Quantifier> quantifierList) {
+        this.quantifierList = quantifierList;
+        lhs.setQuantifierList(quantifierList);
+        rhs.setQuantifierList(quantifierList);
     }
 
     @Override

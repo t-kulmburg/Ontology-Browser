@@ -5,7 +5,7 @@ import org.jgrapht.alg.shortestpath.BFSShortestPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.traverse.*;
+import org.jgrapht.traverse.BreadthFirstIterator;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
@@ -70,8 +70,7 @@ public class EntityGraphUtil {
         return Optional.empty();
     }
 
-    public static List<List<Entity>> traverseGraph(DefaultDirectedGraph<Entity, DefaultEdge> graph, Entity start)
-    {
+    public static List<List<Entity>> traverseGraph(DefaultDirectedGraph<Entity, DefaultEdge> graph, Entity start) {
         List<List<Entity>> entityMap = new ArrayList<>();
         BFSShortestPath<Entity, DefaultEdge> bfs = new BFSShortestPath<>(graph);
 
@@ -80,7 +79,7 @@ public class EntityGraphUtil {
             Entity e = iterator.next();
             int distance = DijkstraShortestPath.findPathBetween(graph, start, e).getLength();
 
-            if(entityMap.size() <= distance) {
+            if (entityMap.size() <= distance) {
                 entityMap.add(new ArrayList<>());
             }
             entityMap.get(distance).add(e);

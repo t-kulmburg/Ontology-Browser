@@ -214,7 +214,7 @@ public abstract class SimpleConstraintPopupController {
 
         Stage popupStage = new Stage();
         controller.setStage(popupStage);
-        if((currentTerm != null)){
+        if ((currentTerm != null)) {
             popupStage.setTitle("Edit Term");
         } else {
             popupStage.setTitle("Add Term");

@@ -16,14 +16,13 @@ import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 public class oSystem implements PdfContentProvider {
+    private final int tikzXOffset = 4;
+    private final int tikzYOffset = 3;
     private String name;
     private String comment;
     private List<Entity> entities;
     private List<Relation> relations;
     private List<ConstraintHolder> constraintHolderList;
-
-    private final int tikzXOffset = 4;
-    private final int tikzYOffset = 3;
 
     public oSystem() {
     }

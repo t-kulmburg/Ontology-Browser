@@ -24,10 +24,10 @@ public class ExportGraphMLUmlPopupController extends ExportUmlPopupController {
         }
         GraphMLBuilder builder;
         String uml;
-        try{
+        try {
             builder = new GraphMLBuilder(systemChoiceBox.getValue());
             uml = builder.build();
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             invalidInputLabel.setText("Could not determine root!");
             setInvalidInputLabelVisibleAndFormat();
@@ -45,7 +45,8 @@ public class ExportGraphMLUmlPopupController extends ExportUmlPopupController {
                 selectedFile = new File(selectedFile.getAbsolutePath() + ".graphml");
             }
             try {
-                Files.write(selectedFile.toPath(), uml.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.write(selectedFile.toPath(), uml.getBytes(), StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
             } catch (IOException e) {
                 showErrorPopup("Error saving graphml file", null, e.getLocalizedMessage());
                 return;
@@ -54,7 +55,8 @@ public class ExportGraphMLUmlPopupController extends ExportUmlPopupController {
             Alert info = new Alert(Alert.AlertType.INFORMATION);
             info.setTitle("Information");
             info.setHeaderText("GraphML file generated");
-            info.setContentText("Note:\nThe positioning and sizing of the nodes is done with constant values. Manual adaptation of width or coordinates may be required!");
+            info.setContentText("Note:\nThe positioning and sizing of the nodes is done with constant values. Manual " +
+                    "adaptation of width or coordinates may be required!");
             info.showAndWait();
             stage.close();
         }

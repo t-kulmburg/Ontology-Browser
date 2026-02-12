@@ -23,7 +23,8 @@ public class AddSystemPopupController extends SystemPopupController {
             invalidInputLabel.setText("Name missing!");
             invalidInputLabel.setVisible(true);
         } else {
-            if (libraryChoiceBox.getValue().getSystems().stream().noneMatch(s -> s.getName().equals(nameField.getText()))) {
+            if (libraryChoiceBox.getValue().getSystems().stream()
+                    .noneMatch(s -> s.getName().equals(nameField.getText()))) {
                 libraryChoiceBox.getValue().getSystems().add(new oSystem(nameField.getText(), commentField.getText()));
                 nameField.getScene().getWindow().hide();
             } else {

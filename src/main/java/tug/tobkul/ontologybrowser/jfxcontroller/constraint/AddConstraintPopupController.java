@@ -8,10 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -22,7 +18,6 @@ import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.ConstraintViewFa
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.HighlightManager;
 import tug.tobkul.ontologybrowser.ontology.OntologyManager;
 import tug.tobkul.ontologybrowser.ontology.model.Library;
-import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
@@ -34,14 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddConstraintPopupController {
+    public final ObjectProperty<ConstraintView> rootConstraintView = new SimpleObjectProperty<>();
+    private final List<Quantifier> quantifierList = new ArrayList<>();
     private Stage stage;
     private OntologyManager ontologyManager;
     private Constraint createdConstraint;
     private ConstraintHolder editConstraintHolder = null;
-    private final List<Quantifier> quantifierList = new ArrayList<>();
-
-    public final ObjectProperty<ConstraintView> rootConstraintView = new SimpleObjectProperty<>();
-
     @FXML
     private ChoiceBox<Library> libraryChoiceBox;
     @FXML

@@ -19,13 +19,33 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class InputModel {
-    private final Map<String, String> V = new LinkedHashMap<>(); // Each key is am input parameters, value is the type.
-    private final Map<String, List<String>> D = new LinkedHashMap<>(); // Domains. Each V is a Key with List of
-    // possible values as value.
-    private final List<String> C = new ArrayList<>(); // Set of constraints
+    // Each key is an input parameters, value is the type.
+    private final Map<String, String> V = new LinkedHashMap<>();
+    // Domains. Each V is a Key with List of possible values as value.
+    private final Map<String, List<String>> D = new LinkedHashMap<>();
+    // Set of constraints
+    private final List<String> C = new ArrayList<>();
 
     private final Map<String, List<String>> userDefinedConstraintCorrespondenceMap = new LinkedHashMap<>();
 
+    public static List<String> getConstraintsWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
+        Map<String, String> tempV = new LinkedHashMap<>(inputModel.V.entrySet().stream()
+                .collect(Collectors.toMap(entry -> prefix + "_" + index + "_" + entry.getKey(), Map.Entry::getValue)));
+        Map<String, String> replacements = new LinkedHashMap<>();
+        for (String k : inputModel.V.keySet()) {
+            for (String tempK : tempV.keySet()) {
+                if (tempK.endsWith(k)) {
+                    replacements.put(k, tempK);
+                    break;
+                }
+            }
+        }
+        String regex = String.join("|", replacements.keySet());
+
+        return inputModel.C.stream()
+                .map(s -> Pattern.compile(regex).matcher(s).replaceAll(match -> replacements.get(match.group())))
+                .toList();
+    }
 
     public void addInputParameter(String inputParameter, String type) {
         V.put(inputParameter, type);
@@ -62,25 +82,6 @@ public class InputModel {
     public void appendDomainsWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
         D.putAll(inputModel.D.entrySet().stream()
                 .collect(Collectors.toMap(entry -> prefix + "_" + index + "_" + entry.getKey(), Map.Entry::getValue)));
-    }
-
-    public static List<String> getConstraintsWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
-        Map<String, String> tempV = new LinkedHashMap<>(inputModel.V.entrySet().stream()
-                .collect(Collectors.toMap(entry -> prefix + "_" + index + "_" + entry.getKey(), Map.Entry::getValue)));
-        Map<String, String> replacements = new LinkedHashMap<>();
-        for (String k : inputModel.V.keySet()) {
-            for (String tempK : tempV.keySet()) {
-                if (tempK.endsWith(k)) {
-                    replacements.put(k, tempK);
-                    break;
-                }
-            }
-        }
-        String regex = String.join("|", replacements.keySet());
-
-        return inputModel.C.stream()
-                .map(s -> Pattern.compile(regex).matcher(s).replaceAll(match -> replacements.get(match.group())))
-                .toList();
     }
 
     public void addEpsilonToDomains() {

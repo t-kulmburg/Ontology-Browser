@@ -14,7 +14,7 @@ import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifie
 
 public class QuantifierView extends HBox {
 
-    private Quantifier quantifier;
+    private final Quantifier quantifier;
 
     public QuantifierView(Quantifier quantifier, Runnable onDelete) {
         this.quantifier = quantifier;
@@ -78,10 +78,10 @@ public class QuantifierView extends HBox {
 
         MenuItem deleteItem = new MenuItem("Delete");
         deleteItem.setOnAction(e -> {
-            if (getParent() instanceof HBox parent){
+            if (getParent() instanceof HBox parent) {
                 parent.getChildren().remove(this);
             }
-            if (onDelete != null){
+            if (onDelete != null) {
                 onDelete.run();
             }
         });

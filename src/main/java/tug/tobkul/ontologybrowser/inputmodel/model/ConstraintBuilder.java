@@ -5,73 +5,18 @@ import tug.tobkul.ontologybrowser.ontology.model.constraint.term.Term;
 
 public class ConstraintBuilder {
     public static String buildInheritanceConstr(String entityName, String attributeA, String attributeB) {
-        return OperatorUtil.PAREN_OPEN +
-                entityName +
-                "_" +
-                attributeA +
-                " = " +
-                "\"" + Term.EPSILON + "\"" +
-                " " +
-                OperatorUtil.AND +
-                " " +
-                entityName +
-                "_" +
-                attributeB +
-                " != " +
-                "\"" + Term.EPSILON + "\"" +
-                OperatorUtil.PAREN_CLOSE +
-                " " +
-                OperatorUtil.OR +
-                " " +
-                OperatorUtil.PAREN_OPEN +
-                entityName +
-                "_" +
-                attributeA +
-                " != " +
-                "\"" + Term.EPSILON + "\"" +
-                " " +
-                OperatorUtil.AND +
-                " " +
-                entityName +
-                "_" +
-                attributeB +
-                " = " +
-                "\"" + Term.EPSILON + "\"" +
-                OperatorUtil.PAREN_CLOSE;
+        return OperatorUtil.PAREN_OPEN + entityName + "_" + attributeA + " = " + "\"" + Term.EPSILON + "\"" + " " +
+                OperatorUtil.AND + " " + entityName + "_" + attributeB + " != " + "\"" + Term.EPSILON + "\"" +
+                OperatorUtil.PAREN_CLOSE + " " + OperatorUtil.OR + " " + OperatorUtil.PAREN_OPEN + entityName + "_" +
+                attributeA + " != " + "\"" + Term.EPSILON + "\"" + " " + OperatorUtil.AND + " " + entityName + "_" +
+                attributeB + " = " + "\"" + Term.EPSILON + "\"" + OperatorUtil.PAREN_CLOSE;
     }
+
     public static String buildInheritanceConstrInteger(String entityName, String attributeA, String attributeB) {
-        return OperatorUtil.PAREN_OPEN +
-                entityName +
-                "_" +
-                attributeA +
-                " = " +
-                "\"" + Term.EPSILON_INT + "\"" +
-                " " +
-                OperatorUtil.AND +
-                " " +
-                entityName +
-                "_" +
-                attributeB +
-                " != " +
-                "\"" + Term.EPSILON_INT + "\"" +
-                OperatorUtil.PAREN_CLOSE +
-                " " +
-                OperatorUtil.OR +
-                " " +
-                OperatorUtil.PAREN_OPEN +
-                entityName +
-                "_" +
-                attributeA +
-                " != " +
-                "\"" + Term.EPSILON_INT + "\"" +
-                " " +
-                OperatorUtil.AND +
-                " " +
-                entityName +
-                "_" +
-                attributeB +
-                " = " +
-                "\"" + Term.EPSILON_INT + "\"" +
-                OperatorUtil.PAREN_CLOSE;
+        return OperatorUtil.PAREN_OPEN + entityName + "_" + attributeA + " = " + "\"" + Term.EPSILON_INT + "\"" + " " +
+                OperatorUtil.AND + " " + entityName + "_" + attributeB + " != " + "\"" + Term.EPSILON_INT + "\"" +
+                OperatorUtil.PAREN_CLOSE + " " + OperatorUtil.OR + " " + OperatorUtil.PAREN_OPEN + entityName + "_" +
+                attributeA + " != " + "\"" + Term.EPSILON_INT + "\"" + " " + OperatorUtil.AND + " " + entityName + "_" +
+                attributeB + " = " + "\"" + Term.EPSILON_INT + "\"" + OperatorUtil.PAREN_CLOSE;
     }
 }

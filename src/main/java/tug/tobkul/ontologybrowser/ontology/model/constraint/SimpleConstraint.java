@@ -20,7 +20,8 @@ public class SimpleConstraint implements Constraint {
     public SimpleConstraint() {
     }
 
-    public SimpleConstraint(oSystem system, Term lhs, Term rhs, RelationalOperator op, List<Quantifier> quantifierList) {
+    public SimpleConstraint(oSystem system, Term lhs, Term rhs, RelationalOperator op,
+                            List<Quantifier> quantifierList) {
         this.outerSystem = system;
         this.lhs = lhs;
         this.relationalOperator = op;
@@ -53,23 +54,23 @@ public class SimpleConstraint implements Constraint {
     }
 
     @JsonIgnore
-    public void setOuterSystem(oSystem outerSystem) {
-        this.outerSystem = outerSystem;
-    }
-
-    @JsonIgnore
     public oSystem getOuterSystem() {
         return outerSystem;
     }
 
     @JsonIgnore
-    public void setQuantifierList(List<Quantifier> quantifierList) {
-        this.quantifierList = quantifierList;
+    public void setOuterSystem(oSystem outerSystem) {
+        this.outerSystem = outerSystem;
     }
 
     @JsonIgnore
-    public List<Quantifier> getQuantifierList(){
-        return  quantifierList;
+    public List<Quantifier> getQuantifierList() {
+        return quantifierList;
+    }
+
+    @JsonIgnore
+    public void setQuantifierList(List<Quantifier> quantifierList) {
+        this.quantifierList = quantifierList;
     }
 
     @Override
@@ -93,12 +94,12 @@ public class SimpleConstraint implements Constraint {
     }
 
     @Override
-    public boolean containsEntity(Entity entity){
+    public boolean containsEntity(Entity entity) {
         return lhs.containsEntity(entity) || rhs.containsEntity(entity);
     }
 
     @Override
-    public boolean containsAttribute(Attribute attribute){
+    public boolean containsAttribute(Attribute attribute) {
         return lhs.containsAttribute(attribute) || rhs.containsAttribute(attribute);
     }
 }

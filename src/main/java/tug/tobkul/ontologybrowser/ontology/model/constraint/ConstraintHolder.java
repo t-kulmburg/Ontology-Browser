@@ -42,7 +42,7 @@ public class ConstraintHolder implements PdfContentProvider {
         this.outerSystem = system;
         constraint.setEntitiesAndAttributesFromOuterSystem(system);
         constraint.setQuantifierList(quantifiers);
-        if(quantifiers != null){
+        if (quantifiers != null) {
             quantifiers.forEach(quantifier -> quantifier.getRelation().setOuterSystem(system));
         }
     }
@@ -52,12 +52,12 @@ public class ConstraintHolder implements PdfContentProvider {
         return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getComment() {
@@ -76,7 +76,7 @@ public class ConstraintHolder implements PdfContentProvider {
         this.constraint = constraint;
     }
 
-    public  List<Quantifier> getQuantifiers() {
+    public List<Quantifier> getQuantifiers() {
         return quantifiers;
     }
 

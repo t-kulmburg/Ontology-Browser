@@ -74,7 +74,8 @@ public abstract class MakeCompositeConstraintPopupController {
             setInvalidInputLabelVisibleAndFormat();
             return;
         }
-        this.result = new CompositeConstraint(outerSystem, lhs, rhs, booleanOperatorChoiceBox.getValue(), quantifierList);
+        this.result = new CompositeConstraint(outerSystem, lhs, rhs, booleanOperatorChoiceBox.getValue(),
+                quantifierList);
         stage.close();
     }
 

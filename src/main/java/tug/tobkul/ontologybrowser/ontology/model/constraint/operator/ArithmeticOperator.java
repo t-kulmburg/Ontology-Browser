@@ -13,15 +13,6 @@ public enum ArithmeticOperator {
         this.sign = sign;
     }
 
-    public String getSign() {
-        return sign;
-    }
-
-    @Override
-    public String toString() {
-        return sign;
-    }
-
     public static ArithmeticOperator fromSign(String sign) {
         for (ArithmeticOperator operator : ArithmeticOperator.values()) {
             if (operator.getSign().equals(sign)) {
@@ -29,5 +20,14 @@ public enum ArithmeticOperator {
             }
         }
         throw new IllegalArgumentException("No enum constant with sign: " + sign);
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    @Override
+    public String toString() {
+        return sign;
     }
 }

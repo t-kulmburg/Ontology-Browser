@@ -69,18 +69,13 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     }
 
     @JsonProperty("super_entity")
-    public void setSuperEntityName(String superEntityName) {
-        this.superEntityName = superEntityName;
-    }
-
-    @JsonProperty("super_entity")
     public String getSuperEntityName() {
         return this.superEntity == null ? "" : this.superEntity.getName();
     }
 
-    @JsonProperty("sub_entities")
-    public void setSubEntityNames(List<String> subEntityNames) {
-        this.subEntityNames = subEntityNames;
+    @JsonProperty("super_entity")
+    public void setSuperEntityName(String superEntityName) {
+        this.superEntityName = superEntityName;
     }
 
     @JsonProperty("sub_entities")
@@ -88,9 +83,9 @@ public class Entity implements AttributeHolder, PdfContentProvider {
         return this.subEntities.stream().map(Entity::getName).toList();
     }
 
-    @JsonIgnore
-    public void setSuperEntity(Entity superEntity) {
-        this.superEntity = superEntity;
+    @JsonProperty("sub_entities")
+    public void setSubEntityNames(List<String> subEntityNames) {
+        this.subEntityNames = subEntityNames;
     }
 
     @JsonIgnore
@@ -99,13 +94,18 @@ public class Entity implements AttributeHolder, PdfContentProvider {
     }
 
     @JsonIgnore
-    public void setSubEntities(ArrayList<Entity> subEntities) {
-        this.subEntities = subEntities;
+    public void setSuperEntity(Entity superEntity) {
+        this.superEntity = superEntity;
     }
 
     @JsonIgnore
     public List<Entity> getSubEntities() {
         return this.subEntities;
+    }
+
+    @JsonIgnore
+    public void setSubEntities(ArrayList<Entity> subEntities) {
+        this.subEntities = subEntities;
     }
 
     public void printDetails(TextFlow textFlow) {
