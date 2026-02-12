@@ -27,16 +27,15 @@ import java.util.Random;
 
 public class CompositeConstraintView implements ConstraintView {
     private final HBox view;
-    private CompositeConstraint constraint;
     private final AddConstraintPopupController controller;
-    private ConstraintView leftView;
-    private ConstraintView rightView;
-    private CompositeConstraintView parent;
     private final List<Node> highlightGroup;
-
     private final Label openBracketLabel = new Label("(");
     private final Label closeBracketLabel = new Label(")");
     private final Label opLabel = new Label();
+    private CompositeConstraint constraint;
+    private ConstraintView leftView;
+    private ConstraintView rightView;
+    private CompositeConstraintView parent;
 
     public CompositeConstraintView(AddConstraintPopupController controller, CompositeConstraint constraint) {
         this.constraint = constraint;
@@ -75,13 +74,22 @@ public class CompositeConstraintView implements ConstraintView {
         closeBracketLabel.setOnMouseClicked(highlightHandler);
     }
 
+    private static String getRandomColor() {
+        Random rand = new Random();
+        int r = rand.nextInt(180) + 70;
+        int g = rand.nextInt(180) + 70;
+        int b = rand.nextInt(180) + 70;
+        return String.format("#%02x%02x%02x", r, g, b);
+    }
+
     private void setOpLabel() {
         opLabel.setText(" " + constraint.getBooleanOperator().getSign() + " ");
     }
 
     @Override
     public Constraint getConstraint() {
-        return new CompositeConstraint(constraint.getOuterSystem(), leftView.getConstraint(), rightView.getConstraint(), constraint.getBooleanOperator());
+        return new CompositeConstraint(constraint.getOuterSystem(), leftView.getConstraint(),
+                rightView.getConstraint(), constraint.getBooleanOperator(), constraint.getQuantifierList());
     }
 
     @Override
@@ -91,7 +99,8 @@ public class CompositeConstraintView implements ConstraintView {
 
     @Override
     public void openEditPopup() throws IOException {
-        FXMLLoader loader = new FXMLLoader(EditCompositeConstraintPopupController.class.getResource("editCompositeConstraintPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(EditCompositeConstraintPopupController.class.getResource(
+                "editCompositeConstraintPopup.fxml"));
         Parent root = loader.load();
 
         EditCompositeConstraintPopupController controller = loader.getController();
@@ -121,11 +130,12 @@ public class CompositeConstraintView implements ConstraintView {
 
     @Override
     public void makeCompositeRight() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintRightPopupController.class.getResource("makeCompositeConstraintRightPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintRightPopupController.class.getResource(
+                "makeCompositeConstraintRightPopup.fxml"));
         Parent root = loader.load();
 
         MakeCompositeConstraintRightPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();
@@ -149,11 +159,12 @@ public class CompositeConstraintView implements ConstraintView {
 
     @Override
     public void makeCompositeLeft() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintLeftPopupController.class.getResource("makeCompositeConstraintLeftPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintLeftPopupController.class.getResource(
+                "makeCompositeConstraintLeftPopup.fxml"));
         Parent root = loader.load();
 
         MakeCompositeConstraintLeftPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();
@@ -191,14 +202,6 @@ public class CompositeConstraintView implements ConstraintView {
         }
 
         view.getChildren().set(index, newChild.getView());
-    }
-
-    private static String getRandomColor() {
-        Random rand = new Random();
-        int r = rand.nextInt(180) + 70;
-        int g = rand.nextInt(180) + 70;
-        int b = rand.nextInt(180) + 70;
-        return String.format("#%02x%02x%02x", r, g, b);
     }
 
     private void replaceInParent(Node oldView, ConstraintView newView) {

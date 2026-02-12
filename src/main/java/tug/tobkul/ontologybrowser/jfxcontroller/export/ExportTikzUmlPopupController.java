@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class ExportTikzUmlPopupController extends ExportUmlPopupController{
+public class ExportTikzUmlPopupController extends ExportUmlPopupController {
     public void onConfirm() throws IOException {
         invalidInputLabel.setVisible(false);
         if (libraryChoiceBox.getValue() == null) {

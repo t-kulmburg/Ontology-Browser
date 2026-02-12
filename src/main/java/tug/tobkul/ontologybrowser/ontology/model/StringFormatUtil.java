@@ -18,6 +18,7 @@ public class StringFormatUtil {
     public static final Text CARDINALITY_HEADER = createBoldText("Cardinality:\n");
 
     public static final Text CONSTRAINT_HEADER = createBoldText("Constraint:\n");
+    public static final Text QUANTIFIER_HEADER = createBoldText("Quantifiers:\n");
     public static final Text EXPRESSION_HEADER = createBoldText("Expression:\n");
     public static final Text TYPE_HEADER = createBoldText("Type:\n");
 

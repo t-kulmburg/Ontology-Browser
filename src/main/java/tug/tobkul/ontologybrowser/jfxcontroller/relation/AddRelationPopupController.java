@@ -65,7 +65,8 @@ public class AddRelationPopupController extends RelationPopupController {
             setInvalidInputLabelVisible();
             return;
         }
-        if (systemChoiceBox.getValue().getRelations().stream().noneMatch(r -> r.getName().equals(nameField.getText()))) {
+        if (systemChoiceBox.getValue().getRelations().stream()
+                .noneMatch(r -> r.getName().equals(nameField.getText()))) {
             systemChoiceBox.getValue().getRelations().add(new Relation(
                     systemChoiceBox.getValue(),
                     entityAChoiceBox.getValue(),

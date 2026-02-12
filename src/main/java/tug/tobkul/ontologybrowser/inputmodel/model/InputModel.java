@@ -1,8 +1,12 @@
 package tug.tobkul.ontologybrowser.inputmodel.model;
 
 import tug.tobkul.ontologybrowser.ontology.model.constraint.CompositeConstraint;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.SimpleConstraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.QuantifierType;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.ArithmeticParameterTerm;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.ArithmeticValueTerm;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.ParameterTerm;
@@ -15,61 +19,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class InputModel {
-    private final Map<String, String> V = new LinkedHashMap<>(); // Each key is am input parameters, value is the type.
-    private final Map<String, List<String>> D = new LinkedHashMap<>(); // Domains. Each V is a Key with List of possible values as value.
-    private final List<String> C = new ArrayList<>(); // Set of constraints
+    // Each key is an input parameters, value is the type.
+    private final Map<String, String> V = new LinkedHashMap<>();
+    // Domains. Each V is a Key with List of possible values as value.
+    private final Map<String, List<String>> D = new LinkedHashMap<>();
+    // Set of constraints
+    private final List<String> C = new ArrayList<>();
 
-    private final Map<String, Map<String, List<String>>> userDefinedConstraintCorrespondenceMap = new LinkedHashMap<>();
-
-    public void addInputParameter(String inputParameter, String type) {
-        V.put(inputParameter, type);
-    }
-
-    public void addDomain(String inputParameter, List<String> domain) {
-        D.put(inputParameter, domain);
-    }
-
-    public void addConstraint(String constraint) {
-        if(constraint == null) return;
-        C.add(constraint);
-    }
-
-    public void append(InputModel inputModel) {
-        V.putAll(inputModel.V);
-        D.putAll(inputModel.D);
-        C.addAll(inputModel.C);
-    }
-
-    public void appendWithPrefix(String prefix, InputModel inputModel) {
-        V.putAll(inputModel.V.entrySet().stream().collect(Collectors.toMap(
-                entry -> prefix + "_" + entry.getKey(),
-                Map.Entry::getValue)));
-        D.putAll(inputModel.D.entrySet().stream().collect(Collectors.toMap(
-                entry -> prefix + "_" + entry.getKey(),
-                Map.Entry::getValue
-        )));
-        C.addAll(inputModel.C);
-    }
-
-    public void appendParametersWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
-        V.putAll(inputModel.V.entrySet().stream().collect(Collectors.toMap(
-                entry -> prefix + "_" + index + "_" + entry.getKey(),
-                Map.Entry::getValue
-        )));
-    }
-
-    public void appendDomainsWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
-        D.putAll(inputModel.D.entrySet().stream().collect(Collectors.toMap(
-                entry -> prefix + "_" + index + "_" + entry.getKey(),
-                Map.Entry::getValue
-        )));
-    }
+    private final Map<String, List<String>> userDefinedConstraintCorrespondenceMap = new LinkedHashMap<>();
 
     public static List<String> getConstraintsWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
-        Map<String, String> tempV = new LinkedHashMap<>(inputModel.V.entrySet().stream().collect(Collectors.toMap(
-                entry -> prefix + "_" + index + "_" + entry.getKey(),
-                Map.Entry::getValue
-        )));
+        Map<String, String> tempV = new LinkedHashMap<>(inputModel.V.entrySet().stream()
+                .collect(Collectors.toMap(entry -> prefix + "_" + index + "_" + entry.getKey(), Map.Entry::getValue)));
         Map<String, String> replacements = new LinkedHashMap<>();
         for (String k : inputModel.V.keySet()) {
             for (String tempK : tempV.keySet()) {
@@ -81,8 +42,46 @@ public class InputModel {
         }
         String regex = String.join("|", replacements.keySet());
 
-        return inputModel.C.stream().map(s -> Pattern.compile(regex).matcher(s)
-                .replaceAll(match -> replacements.get(match.group()))).toList();
+        return inputModel.C.stream()
+                .map(s -> Pattern.compile(regex).matcher(s).replaceAll(match -> replacements.get(match.group())))
+                .toList();
+    }
+
+    public void addInputParameter(String inputParameter, String type) {
+        V.put(inputParameter, type);
+    }
+
+    public void addDomain(String inputParameter, List<String> domain) {
+        D.put(inputParameter, domain);
+    }
+
+    public void addConstraint(String constraint) {
+        if (constraint == null) return;
+        C.add(constraint);
+    }
+
+    public void append(InputModel inputModel) {
+        V.putAll(inputModel.V);
+        D.putAll(inputModel.D);
+        C.addAll(inputModel.C);
+    }
+
+    public void appendWithPrefix(String prefix, InputModel inputModel) {
+        V.putAll(inputModel.V.entrySet().stream()
+                .collect(Collectors.toMap(entry -> prefix + "_" + entry.getKey(), Map.Entry::getValue)));
+        D.putAll(inputModel.D.entrySet().stream()
+                .collect(Collectors.toMap(entry -> prefix + "_" + entry.getKey(), Map.Entry::getValue)));
+        C.addAll(inputModel.C);
+    }
+
+    public void appendParametersWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
+        V.putAll(inputModel.V.entrySet().stream()
+                .collect(Collectors.toMap(entry -> prefix + "_" + index + "_" + entry.getKey(), Map.Entry::getValue)));
+    }
+
+    public void appendDomainsWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
+        D.putAll(inputModel.D.entrySet().stream()
+                .collect(Collectors.toMap(entry -> prefix + "_" + index + "_" + entry.getKey(), Map.Entry::getValue)));
     }
 
     public void addEpsilonToDomains() {
@@ -100,43 +99,54 @@ public class InputModel {
     }
 
     public void addExpandedConstrains(oSystem system) {
-        List<String> expandedConstraints = expandConstraints(system);
+        Set<String> expandedConstraints = expandConstraintsQuantifiers(system);
+        System.out.println("Expanded Constraints:" + expandedConstraints);
         C.addAll(expandedConstraints);
     }
 
-    public List<String> expandConstraints(oSystem system) {
+    public Set<String> expandConstraintsQuantifiers(oSystem system) {
         buildConstraintCorrespondenceMap(system);
-        AtomicReference<List<String>> cs = new AtomicReference<>(system.getConstraints().stream().map(c -> c.getConstraint().getExpression()).toList());
-        userDefinedConstraintCorrespondenceMap.forEach((entity, attributes) -> {
-            List<String> csx = new ArrayList<>();
-            cs.get().forEach(constraint -> {
-                List<String> csxSingle = new ArrayList<>();
-                for (String attribute : attributes.keySet()) {
-                    for (int i = 0; i < attributes.get(attribute).size(); i++) {
-                        if (csxSingle.size() <= i) {
-                            csxSingle.add(constraint.replace(attribute, attributes.get(attribute).get(i)));
-                        } else {
-                            csxSingle.set(i, csxSingle.get(i).replace(attribute, attributes.get(attribute).get(i)));
-                        }
-                    }
+        AtomicReference<List<Constraint>> cs = new AtomicReference<>(system.getConstraints().stream()
+                .map(ConstraintHolder::getConstraint).collect(Collectors.toList()));
+        Set<String> finalConstraints = new LinkedHashSet<>();
+
+        cs.get().forEach(constraint -> {
+            if (constraint.getQuantifierList().isEmpty()) {
+                finalConstraints.add(constraint.getExpression());
+                return;
+            }
+            String constraintAfterQuantifiers = constraint.getExpression();
+            for (Quantifier quantifier : constraint.getQuantifierList().reversed()) {
+                String quantifierRegex = "\\S*" + quantifier.getType().getSign() + quantifier.getIdentifier() + "\\S*";
+                String key = userDefinedConstraintCorrespondenceMap.keySet().stream()
+                        .filter(s -> s.matches(quantifierRegex)).findFirst().get();
+
+                List<String> tempConstraints = new ArrayList<>();
+                for (String attr : userDefinedConstraintCorrespondenceMap.get(key)) {
+                    tempConstraints.add(constraintAfterQuantifiers.replaceAll(quantifierRegex, attr));
                 }
-                csx.addAll(csxSingle);
-            });
-            cs.set(csx);
+                if (quantifier.getType().equals(QuantifierType.FOR_ALL)) {
+                    constraintAfterQuantifiers = "(" + String.join(" && ", tempConstraints) + " )";
+                } else if (quantifier.getType().equals(QuantifierType.EXISTS)) {
+                    constraintAfterQuantifiers = String.join(" || ", tempConstraints);
+                }
+            }
+            finalConstraints.add(constraintAfterQuantifiers);
         });
-        return cs.get();
+        System.out.println("Final Constraints:");
+        System.out.println(finalConstraints);
+        return finalConstraints;
     }
 
     public void buildConstraintCorrespondenceMap(oSystem system) {
-        system.getConstraints().forEach(
-                constraint -> {
-                    if (constraint.getConstraint().isComposite()) {
-                        expandCompositeConstraint((CompositeConstraint) constraint.getConstraint());
-                    } else {
-                        expandSimpleConstraint((SimpleConstraint) constraint.getConstraint());
-                    }
-                }
-        );
+        System.out.println("In buildConstraintCorrespondenceMap");
+        system.getConstraints().forEach(constraint -> {
+            if (constraint.getConstraint().isComposite()) {
+                expandCompositeConstraint((CompositeConstraint) constraint.getConstraint());
+            } else {
+                expandSimpleConstraint((SimpleConstraint) constraint.getConstraint());
+            }
+        });
     }
 
     private void expandCompositeConstraint(CompositeConstraint constraint) {
@@ -170,18 +180,15 @@ public class InputModel {
 
     private void expandParameter(Parameter parameter) {
         List<String> correspondingParameters = getCorrespondingInputParameters(parameter.getExpression());
-        if (!userDefinedConstraintCorrespondenceMap.containsKey(parameter.getEntity().getName())) {
-            userDefinedConstraintCorrespondenceMap.put(parameter.getEntity().getName(), new HashMap<>());
-        }
-        userDefinedConstraintCorrespondenceMap.get(parameter.getEntity().getName()).put(
-                parameter.getExpression(), correspondingParameters
-        );
+        userDefinedConstraintCorrespondenceMap.put(parameter.getExpression(), correspondingParameters);
     }
 
     private List<String> getCorrespondingInputParameters(String attribute) {
+        System.out.println("In getCorrespondingInputParameters: " + attribute);
         List<String> correspondingInputParameters = new ArrayList<>();
         for (String k : V.keySet()) {
-            if (k.endsWith(attribute.replace(".", "_"))) {
+            System.out.println(k);
+            if (k.endsWith(attribute.replace(".", "_").replaceAll(".*?[∀∃][a-z]", ""))) {
                 correspondingInputParameters.add(k);
             }
         }

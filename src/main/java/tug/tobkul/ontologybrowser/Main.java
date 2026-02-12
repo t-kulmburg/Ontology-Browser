@@ -6,11 +6,11 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        if(args.length == 0) {
+        if (args.length == 0) {
             OntologyBrowserApplication.main();
             return;
         }
-        if(args.length != 4){
+        if (args.length != 4) {
             System.out.println("Invalid number of arguments");
             printHelp();
             return;
@@ -18,7 +18,7 @@ public class Main {
         CommandLineInterface.run(args);
     }
 
-    private static void printHelp(){
+    private static void printHelp() {
         System.out.println("Usage:");
         System.out.println("\tjava -jar ontologybrowser.jar <input> <library> <system> <output>");
         System.out.println();

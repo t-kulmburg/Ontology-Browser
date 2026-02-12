@@ -3,17 +3,16 @@ package tug.tobkul.ontologybrowser;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import tug.tobkul.ontologybrowser.jfxcontroller.OntologyBrowserController;
 
 import java.io.IOException;
-import java.util.Objects;
-import java.awt.Taskbar;
-import java.awt.Toolkit;
-import java.awt.Taskbar.Feature;
 
 public class OntologyBrowserApplication extends Application {
+
+    public static void main() {
+        launch();
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -42,16 +41,12 @@ public class OntologyBrowserApplication extends Application {
             } catch (IOException e) {
                 throw new RuntimeException("Error checking for unsaved changes: " + e);
             }
-            if(!cancelled) {
+            if (!cancelled) {
                 stage.close();
             }
         });
 
         stage.setScene(scene);
         stage.show();
-    }
-
-    public static void main() {
-        launch();
     }
 }

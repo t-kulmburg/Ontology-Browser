@@ -29,7 +29,7 @@ public class NumberRangeValue extends AttributeValue<NumberRange> {
     @Override
     public String getTikzUmlValueString() {
         List<String> possibleValues = getPossibleValueList();
-        if(possibleValues.size() > 3){
+        if (possibleValues.size() > 3) {
             return value.getMin() + ",\\ldots," + value.getMax();
         }
         return String.join(", ", possibleValues);

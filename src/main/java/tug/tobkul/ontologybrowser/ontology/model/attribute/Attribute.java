@@ -18,11 +18,6 @@ public class Attribute implements PdfContentProvider {
     private AttributeType type;
     private AttributeValue<?> value;
 
-    @Override
-    public String toString() {
-        return this.name;
-    }
-
     public Attribute() {
     }
 
@@ -33,8 +28,17 @@ public class Attribute implements PdfContentProvider {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
     public String getName() {
         return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getComment() {
@@ -43,10 +47,6 @@ public class Attribute implements PdfContentProvider {
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public AttributeType getType() {

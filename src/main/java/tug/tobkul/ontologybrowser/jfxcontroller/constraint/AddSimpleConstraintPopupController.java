@@ -16,7 +16,7 @@ public class AddSimpleConstraintPopupController extends SimpleConstraintPopupCon
             setInvalidInputLabelVisibleAndFormat();
             return;
         }
-        result = new SimpleConstraint(outerSystem, lhs, rhs, relationalOperatorChoiceBox.getValue());
+        result = new SimpleConstraint(outerSystem, lhs, rhs, relationalOperatorChoiceBox.getValue(), quantifierList);
         stage.close();
     }
 }

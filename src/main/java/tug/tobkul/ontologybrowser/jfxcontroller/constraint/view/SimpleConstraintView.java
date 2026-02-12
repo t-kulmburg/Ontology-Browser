@@ -19,9 +19,9 @@ import tug.tobkul.ontologybrowser.ontology.model.constraint.SimpleConstraint;
 import java.io.IOException;
 
 public class SimpleConstraintView implements ConstraintView {
-    private SimpleConstraint constraint;
     private final HBox view;
     private final AddConstraintPopupController controller;
+    private SimpleConstraint constraint;
     private CompositeConstraintView parent;
 
     public SimpleConstraintView(AddConstraintPopupController controller, SimpleConstraint constraint) {
@@ -32,7 +32,6 @@ public class SimpleConstraintView implements ConstraintView {
         view.setSpacing(5);
         view.setOnMouseClicked(event -> HighlightManager.highlight(view, this));
         setLabel();
-
     }
 
     private void setLabel() {
@@ -59,12 +58,13 @@ public class SimpleConstraintView implements ConstraintView {
 
 
     public void openEditPopup() throws IOException {
-        FXMLLoader loader = new FXMLLoader(SimpleConstraintPopupController.class.getResource("simpleConstraintPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(SimpleConstraintPopupController.class.getResource("simpleConstraintPopup" +
+                ".fxml"));
         EditSimpleConstraintPopupController controller = new EditSimpleConstraintPopupController();
         loader.setController(controller);
 
         Parent root = loader.load();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setConstraintForEdit(constraint);
 
         Stage popupStage = new Stage();
@@ -83,11 +83,12 @@ public class SimpleConstraintView implements ConstraintView {
     }
 
     public void makeCompositeRight() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintRightPopupController.class.getResource("makeCompositeConstraintRightPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintRightPopupController.class.getResource(
+                "makeCompositeConstraintRightPopup.fxml"));
         Parent root = loader.load();
 
         MakeCompositeConstraintRightPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();
@@ -110,11 +111,12 @@ public class SimpleConstraintView implements ConstraintView {
     }
 
     public void makeCompositeLeft() throws IOException {
-        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintLeftPopupController.class.getResource("makeCompositeConstraintLeftPopup.fxml"));
+        FXMLLoader loader = new FXMLLoader(MakeCompositeConstraintLeftPopupController.class.getResource(
+                "makeCompositeConstraintLeftPopup.fxml"));
         Parent root = loader.load();
 
         MakeCompositeConstraintLeftPopupController controller = loader.getController();
-        controller.setOuterSystem(constraint.getOuterSystem());
+        controller.setOuterSystemAndQuantifiers(constraint.getOuterSystem(), constraint.getQuantifierList());
         controller.setExistingConstraint(constraint);
 
         Stage popupStage = new Stage();

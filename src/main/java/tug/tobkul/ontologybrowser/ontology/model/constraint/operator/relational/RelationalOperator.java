@@ -21,15 +21,6 @@ public enum RelationalOperator {
         this.sign = sign;
     }
 
-    public String getSign() {
-        return sign;
-    }
-
-    @Override
-    public String toString() {
-        return sign;
-    }
-
     public static List<RelationalOperator> getOperators(AttributeType type) {
         switch (type) {
             case BOOL, ENUM -> {
@@ -49,5 +40,14 @@ public enum RelationalOperator {
             }
         }
         throw new IllegalArgumentException("No enum constant with sign: " + sign);
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    @Override
+    public String toString() {
+        return sign;
     }
 }

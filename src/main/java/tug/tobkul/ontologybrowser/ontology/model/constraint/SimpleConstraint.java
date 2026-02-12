@@ -4,23 +4,29 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.relational.RelationalOperator;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.term.Term;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
+
+import java.util.List;
 
 public class SimpleConstraint implements Constraint {
     private oSystem outerSystem;
     private Term lhs;
     private Term rhs;
     private RelationalOperator relationalOperator;
+    private List<Quantifier> quantifierList;
 
     public SimpleConstraint() {
     }
 
-    public SimpleConstraint(oSystem system, Term lhs, Term rhs, RelationalOperator op) {
+    public SimpleConstraint(oSystem system, Term lhs, Term rhs, RelationalOperator op,
+                            List<Quantifier> quantifierList) {
         this.outerSystem = system;
         this.lhs = lhs;
         this.relationalOperator = op;
         this.rhs = rhs;
+        this.quantifierList = quantifierList;
     }
 
     public Term getLhs() {
@@ -48,13 +54,23 @@ public class SimpleConstraint implements Constraint {
     }
 
     @JsonIgnore
+    public oSystem getOuterSystem() {
+        return outerSystem;
+    }
+
+    @JsonIgnore
     public void setOuterSystem(oSystem outerSystem) {
         this.outerSystem = outerSystem;
     }
 
     @JsonIgnore
-    public oSystem getOuterSystem() {
-        return outerSystem;
+    public List<Quantifier> getQuantifierList() {
+        return quantifierList;
+    }
+
+    @JsonIgnore
+    public void setQuantifierList(List<Quantifier> quantifierList) {
+        this.quantifierList = quantifierList;
     }
 
     @Override
@@ -78,12 +94,12 @@ public class SimpleConstraint implements Constraint {
     }
 
     @Override
-    public boolean containsEntity(Entity entity){
+    public boolean containsEntity(Entity entity) {
         return lhs.containsEntity(entity) || rhs.containsEntity(entity);
     }
 
     @Override
-    public boolean containsAttribute(Attribute attribute){
+    public boolean containsAttribute(Attribute attribute) {
         return lhs.containsAttribute(attribute) || rhs.containsAttribute(attribute);
     }
 }

@@ -89,7 +89,8 @@ public class ExportInputModelPopupController {
             return;
         }
 
-        InputModelGenerator inputModelGenerator = new InputModelGenerator(nameField.getText(), systemChoiceBox.getValue());
+        InputModelGenerator inputModelGenerator = new InputModelGenerator(nameField.getText(),
+                systemChoiceBox.getValue());
 
         long startTime = System.nanoTime();
         String model = inputModelGenerator.generate();
@@ -113,7 +114,8 @@ public class ExportInputModelPopupController {
                 selectedFile = new File(selectedFile.getAbsolutePath() + ".txt");
             }
             try {
-                Files.write(selectedFile.toPath(), model.getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.write(selectedFile.toPath(), model.getBytes(), StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
             } catch (IOException e) {
                 showErrorPopup("Error saving text file", null, e.getLocalizedMessage());
                 return;
@@ -121,7 +123,9 @@ public class ExportInputModelPopupController {
             Alert info = new Alert(Alert.AlertType.INFORMATION);
             info.setTitle("Information");
             info.setHeaderText("InputModel generated");
-            String message = String.format("Root Entity:\t\t%s\nRuntime:\t\t%.2f ms (%d ns)", inputModelGenerator.getRootEntity().getName(), durationMs, durationNs);
+            String message = String.format("Root Entity:\t\t%s\nRuntime:\t\t%.2f ms (%d ns)",
+                    inputModelGenerator.getRootEntity()
+                    .getName(), durationMs, durationNs);
             info.setContentText(message);
             info.showAndWait();
             stage.close();

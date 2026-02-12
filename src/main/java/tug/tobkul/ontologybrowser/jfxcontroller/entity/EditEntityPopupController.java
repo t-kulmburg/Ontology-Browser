@@ -24,7 +24,8 @@ public class EditEntityPopupController extends EntityPopupController {
         systemChoiceBox.getSelectionModel().select(system);
         systemChoiceBox.setDisable(true);
 
-        superEntityCheckComboBox.getItems().setAll(system.getEntities().stream().filter(e -> !e.getName().equals(entity.getName())).toList());
+        superEntityCheckComboBox.getItems()
+                .setAll(system.getEntities().stream().filter(e -> !e.getName().equals(entity.getName())).toList());
 
         this.entity = entity;
         nameField.setText(entity.getName());

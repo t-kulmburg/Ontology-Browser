@@ -14,9 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OntologyManager {
-    private List<Library> libraries;
     ObjectMapper mapper = new ObjectMapper();
-
+    private List<Library> libraries;
     private File currentFile;
 
     public OntologyManager() {
@@ -61,7 +60,7 @@ public class OntologyManager {
     }
 
     public boolean hasUnsavedChanges() throws IOException {
-        if(currentFile == null) {
+        if (currentFile == null) {
             return !libraries.isEmpty();
         }
         String fileContent = Files.readString(currentFile.toPath());

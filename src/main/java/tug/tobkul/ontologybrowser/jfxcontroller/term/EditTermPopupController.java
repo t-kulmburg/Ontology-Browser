@@ -6,21 +6,19 @@ public class EditTermPopupController extends TermPopupController {
     public void setTermForEdit(Term term) {
         if (term instanceof ParameterTerm) {
             termTypeChoiceBox.getSelectionModel().select(TermType.PARAMETER);
-            parameterTypeEntityChoiceBox.getSelectionModel().select(((ParameterTerm) term).getParameter().getEntity());
-            parameterTypeAttributeChoiceBox.getSelectionModel().select(((ParameterTerm) term).getParameter().getAttribute());
+            parameterTypeParameterChoiceBox.getSelectionModel().select(((ParameterTerm) term).getParameter());
         } else if (term instanceof ValueTerm) {
             termTypeChoiceBox.getSelectionModel().select(TermType.VALUE);
             valueTypeValueField.setText(((ValueTerm) term).getValue());
         } else if (term instanceof ArithmeticParameterTerm) {
             termTypeChoiceBox.getSelectionModel().select(TermType.A_PARAMETER);
-            arithmeticParameterTypeEntityChoiceBoxLhs.getSelectionModel().select(((ArithmeticParameterTerm) term).getLhs().getEntity());
-            arithmeticParameterTypeAttributeChoiceBoxLhs.getSelectionModel().select(((ArithmeticParameterTerm) term).getLhs().getAttribute());
-            arithmeticParameterTypeEntityChoiceBoxRhs.getSelectionModel().select(((ArithmeticParameterTerm) term).getRhs().getEntity());
-            arithmeticParameterTypeAttributeChoiceBoxRhs.getSelectionModel().select(((ArithmeticParameterTerm) term).getRhs().getAttribute());
+            arithmeticParameterTypeParameterChoiceBoxLhs.getSelectionModel()
+                    .select(((ArithmeticParameterTerm) term).getLhs());
+            arithmeticParameterTypeParameterChoiceBoxRhs.getSelectionModel()
+                    .select(((ArithmeticParameterTerm) term).getRhs());
         } else if (term instanceof ArithmeticValueTerm) {
             termTypeChoiceBox.getSelectionModel().select(TermType.A_VALUE);
-            arithmeticValueTypeEntityChoiceBox.getSelectionModel().select(((ArithmeticValueTerm) term).getLhs().getEntity());
-            arithmeticValueTypeAttributeChoiceBox.getSelectionModel().select(((ArithmeticValueTerm) term).getLhs().getAttribute());
+            arithmeticValueTypeParameterChoiceBox.getSelectionModel().select(((ArithmeticValueTerm) term).getLhs());
             arithmeticValueTypeValueField.setText(((ArithmeticValueTerm) term).getRhs());
         }
     }

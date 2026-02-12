@@ -3,3 +3,17 @@
     -fx-background-radius: 5;
     -fx-padding: 2;
 }
+
+.quantifier {
+    -fx-background-color: derive(-fx-control-inner-background, 80%);
+    -fx-background-radius: 5;
+    -fx-padding: 2;
+}
+
+.quantifier:hover {
+    -fx-background-color: derive(-fx-control-inner-background, 10%);
+}
+
+.quantifier.drag-over {
+    -fx-background-color: -fx-faint-focus-color;
+}
