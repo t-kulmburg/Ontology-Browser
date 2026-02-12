@@ -225,20 +225,23 @@ public class oSystem implements PdfContentProvider {
         }
 
         Set<Parameter> result = new LinkedHashSet<>();
+        Set<Parameter> resultNoQuant = new LinkedHashSet<>();
         for (Quantifier q : quantifiers) {
             String regex = q.getRelation().getEntityA().getName() + "_\\d+_" + q.getRelation().getEntityB().getName();
-            String replacement = q.getRelation().getEntityA().getName() + "_" + q.getType().getSign() + "_" +
-                    q.getRelation().getEntityB().getName();
+            String replacement =
+                    q.getRelation().getEntityA().getName() + "_" + q.getType().getSign() + q.getIdentifier() + "_" +
+                            q.getRelation().getEntityB().getName();
             Pattern pattern = Pattern.compile(regex);
             for (Parameter p : parameters) {
                 Matcher matcher = pattern.matcher(p.getExpression());
                 if (matcher.find()) {
                     result.add(new Parameter(p.getEntity(), p.getAttribute(), matcher.replaceAll(replacement)));
                 } else {
-                    result.add(p);
+                    resultNoQuant.add(p);
                 }
             }
         }
+        result.addAll(resultNoQuant);
         return result.stream().toList();
     }
 }

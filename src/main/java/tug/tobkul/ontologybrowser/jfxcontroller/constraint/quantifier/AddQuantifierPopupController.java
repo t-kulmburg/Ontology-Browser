@@ -9,6 +9,7 @@ import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Relation;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class AddQuantifierPopupController {
 
@@ -16,21 +17,27 @@ public class AddQuantifierPopupController {
     private ComboBox<Relation> relationComboBox;
 
     @FXML
+    private ComboBox<String> identifierComboBox;
+
+    @FXML
     private Label invalidInputLabel;
 
-    public void setRelations(List<Relation> relations, List<Relation> usedRelations) {
+    public void setLists(List<Relation> relations, List<String> usedIdentifiers) {
         relationComboBox.getItems().setAll(relations);
 
-        relationComboBox.setCellFactory(callback -> new ListCell<>() {
+        identifierComboBox.getItems()
+                .addAll(IntStream.rangeClosed('a', 'z').mapToObj(i -> String.valueOf((char) i)).toList());
+
+        identifierComboBox.setCellFactory(callback -> new ListCell<>() {
             @Override
-            protected void updateItem(Relation relation, boolean empty) {
-                super.updateItem(relation, empty);
-                if (relation == null || empty) {
+            protected void updateItem(String identifier, boolean empty) {
+                super.updateItem(identifier, empty);
+                if (identifier == null || empty) {
                     setText(null);
                 } else {
-                    setText(relation.getEntityString());
+                    setText(identifier);
 
-                    if (usedRelations.contains(relation)) {
+                    if (usedIdentifiers.contains(identifier)) {
                         setDisable(true);
                         setOpacity(0.4);
                     }
@@ -51,11 +58,17 @@ public class AddQuantifierPopupController {
         });
     }
 
-    public Relation getSelectedRelation(){
+    public Relation getSelectedRelation() {
         return relationComboBox.getSelectionModel().getSelectedItem();
     }
 
-    public void onConfirm(){
+    public String getSelectedIdentifier() {
+        return identifierComboBox.getSelectionModel().getSelectedItem();
+    }
+
+    @FXML
+
+    public void onConfirm() {
         relationComboBox.getScene().getWindow().hide();
     }
 }

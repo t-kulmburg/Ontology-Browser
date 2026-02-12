@@ -111,7 +111,6 @@ public class AddConstraintPopupController {
                 constraintHBox.getChildren().add(rootView.getView());
                 addQuantifierExistsButton.setDisable(true);
                 addQuantifierForAllButton.setDisable(true);
-                quantifierHBox.setMouseTransparent(true);
                 newRootButton.setText("Reset");
             }
         } else {
@@ -123,7 +122,6 @@ public class AddConstraintPopupController {
             addQuantifierForAllButton.setDisable(false);
             quantifierHBox.getChildren().clear();
             quantifierList.clear();
-            quantifierHBox.setMouseTransparent(false);
             newRootButton.setText("New Root");
             newRootButton.setStyle("");
         }
@@ -193,11 +191,7 @@ public class AddConstraintPopupController {
 
     @FXML
     private void onAddForAll() throws IOException {
-        Relation selectedRelation = getRelationFromQuantifierPopup();
-        if (selectedRelation == null) {
-            return;
-        }
-        Quantifier quantifier = new Quantifier(QuantifierType.FOR_ALL, selectedRelation);
+        Quantifier quantifier = getQuantifierFromQuantifierPopup(QuantifierType.FOR_ALL);
         quantifierList.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
             quantifierList.remove(quantifier);
@@ -206,32 +200,27 @@ public class AddConstraintPopupController {
 
     @FXML
     private void onAddExists() throws IOException {
-        Relation selectedRelation = getRelationFromQuantifierPopup();
-        if (selectedRelation == null) {
-            return;
-        }
-
-        Quantifier quantifier = new Quantifier(QuantifierType.EXISTS, selectedRelation);
+        Quantifier quantifier = getQuantifierFromQuantifierPopup(QuantifierType.EXISTS);
         quantifierList.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
             quantifierList.remove(quantifier);
         }));
     }
 
-    private Relation getRelationFromQuantifierPopup() throws IOException {
+    private Quantifier getQuantifierFromQuantifierPopup(QuantifierType type) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("addQuantifierPopup.fxml"));
         Parent root = loader.load();
 
         AddQuantifierPopupController controller = loader.getController();
-        controller.setRelations(systemChoiceBox.getValue().getRelations(), quantifierList.stream()
-                .map(Quantifier::getRelation).toList());
+        controller.setLists(systemChoiceBox.getValue().getRelations(), quantifierList.stream()
+                .map(Quantifier::getIdentifier).toList());
 
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
 
-        return controller.getSelectedRelation();
+        return new Quantifier(type, controller.getSelectedRelation(), controller.getSelectedIdentifier());
     }
 
     public void setOntologyManagerAndLibraries(OntologyManager ontologyManager) {

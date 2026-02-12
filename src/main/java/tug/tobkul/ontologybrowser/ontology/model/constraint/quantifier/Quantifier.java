@@ -9,12 +9,15 @@ public class Quantifier {
 
     private Relation relation;
 
+    private String identifier;
+
     public Quantifier() {
     }
 
-    public Quantifier(QuantifierType type, Relation relation) {
+    public Quantifier(QuantifierType type, Relation relation, String identifier) {
         this.type = type;
         this.relation = relation;
+        this.identifier = identifier;
     }
 
     public QuantifierType getType() {
@@ -33,8 +36,16 @@ public class Quantifier {
         this.relation = relation;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
     @Override
     public String toString() {
-        return type.getSign() + " " + relation.getEntityString();
+        return type.getSign() + identifier + "∈" + relation.getEntityString();
     }
 }
