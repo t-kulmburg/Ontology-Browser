@@ -68,6 +68,23 @@ public class AddQuantifierPopupController {
     @FXML
 
     public void onConfirm() {
+        invalidInputLabel.setVisible(false);
+        if(relationComboBox.getValue() == null){
+            invalidInputLabel.setText("Relation missing!");
+            setInvalidInputLabelVisibleAndFormat();
+            return;
+        }
+        if(identifierComboBox.getValue() == null){
+            invalidInputLabel.setText("Identifier missing!");
+            setInvalidInputLabelVisibleAndFormat();
+            return;
+        }
         relationComboBox.getScene().getWindow().hide();
+    }
+
+    public void setInvalidInputLabelVisibleAndFormat() {
+        invalidInputLabel.setVisible(true);
+        invalidInputLabel.applyCss();
+        invalidInputLabel.layout();
     }
 }
