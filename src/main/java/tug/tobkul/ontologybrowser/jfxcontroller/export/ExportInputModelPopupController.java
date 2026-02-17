@@ -123,9 +123,9 @@ public class ExportInputModelPopupController {
             Alert info = new Alert(Alert.AlertType.INFORMATION);
             info.setTitle("Information");
             info.setHeaderText("InputModel generated");
-            String message = String.format("Root Entity:\t\t%s\nRuntime:\t\t%.2f ms (%d ns)",
+            String message = String.format("Root Entity:\t\t%s\nInteger ϵ:\t\t%s\nRuntime:\t\t%.2f ms (%d ns)",
                     inputModelGenerator.getRootEntity()
-                    .getName(), durationMs, durationNs);
+                    .getName(), inputModelGenerator.getEpsilonInt(), durationMs, durationNs);
             info.setContentText(message);
             info.showAndWait();
             stage.close();

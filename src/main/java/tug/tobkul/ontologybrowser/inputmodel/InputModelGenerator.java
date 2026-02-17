@@ -9,7 +9,6 @@ import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.AttributeType;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.OperatorUtil;
-import tug.tobkul.ontologybrowser.ontology.model.constraint.term.Term;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 import java.util.*;
@@ -17,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class InputModelGenerator {
-    private final InputModel inputModel = new InputModel();
+    private final InputModel inputModel;
 
     private final oSystem system;
     private final String name;
@@ -29,12 +28,14 @@ public class InputModelGenerator {
         this.name = name;
         this.system = system;
         this.isCli = false;
+        this.inputModel = new InputModel(system);
     }
 
     public InputModelGenerator(String name, oSystem system, boolean isCli) {
         this.name = name;
         this.system = system;
         this.isCli = isCli;
+        this.inputModel = new InputModel(system);
     }
 
     private static List<List<String>> transpose(List<List<String>> matrix) {
@@ -92,8 +93,12 @@ public class InputModelGenerator {
         return ret;
     }
 
+    public String getEpsilonInt(){
+        return inputModel.EPSILON_INT;
+    }
+
     private InputModel processEntity(Entity entity) {
-        InputModel entityModel = new InputModel();
+        InputModel entityModel = new InputModel(system);
         if (entity.getSubEntities().isEmpty()) {
             for (Attribute attribute : entity.getAttributes()) {
                 String name = getEntityAttributeName(entity, attribute);
@@ -129,11 +134,11 @@ public class InputModelGenerator {
                         for (String attributeB : modelB.getAttributesList()) {
                             String constr;
                             if (modelA.getTypeOfAttribute(attributeA).equals(AttributeType.INT.toString())) {
-                                constr = ConstraintBuilder.buildInheritanceConstrInteger(entity.getName(), attributeA
-                                        , attributeB);
+                                constr = ConstraintBuilder.buildInheritanceConstr(entity.getName(), attributeA
+                                        , attributeB, entityModel.EPSILON_INT);
                             } else {
                                 constr = ConstraintBuilder.buildInheritanceConstr(entity.getName(), attributeA,
-                                        attributeB);
+                                        attributeB, entityModel.EPSILON);
                             }
                             entityModel.addConstraint(constr);
                         }
@@ -183,9 +188,9 @@ public class InputModelGenerator {
                             Matcher matcher = pattern.matcher(addedAttr);
                             if (matcher.matches()) {
                                 if (entityModel.getTypeOfAttribute(addedAttr).equals("INT")) {
-                                    matchingAttrConstr.add(addedAttr + " != " + Term.EPSILON_INT);
+                                    matchingAttrConstr.add(addedAttr + " != " + entityModel.EPSILON_INT);
                                 } else {
-                                    matchingAttrConstr.add(addedAttr + " != " + "\"" + Term.EPSILON + "\"");
+                                    matchingAttrConstr.add(addedAttr + " != " + "\"" + entityModel.EPSILON + "\"");
                                 }
                             }
                         }

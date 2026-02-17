@@ -1,5 +1,8 @@
 package tug.tobkul.ontologybrowser.inputmodel.model;
 
+import tug.tobkul.ontologybrowser.ontology.model.Entity;
+import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
+import tug.tobkul.ontologybrowser.ontology.model.attribute.AttributeType;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.CompositeConstraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
@@ -26,7 +29,24 @@ public class InputModel {
     // Set of constraints
     private final List<String> C = new ArrayList<>();
 
+    public String EPSILON = "ϵ";
+    public String EPSILON_INT; // for higher values, ACTS prints. Domains over [-21474836, 21474836] are
+    // strongly inadvisable!
+
     private final Map<String, List<String>> userDefinedConstraintCorrespondenceMap = new LinkedHashMap<>();
+
+    public InputModel(oSystem system) {
+        int largestValue = Integer.MIN_VALUE;
+        for (Entity entity : system.getEntities()) {
+            int max = entity.getAttributes().stream().filter(attribute -> attribute.getType().equals(AttributeType.INT))
+                    .map(Attribute::getValue).flatMap(attributeValue -> attributeValue.getPossibleValueList().stream())
+                    .mapToInt(Integer::parseInt).max().orElse(Integer.MIN_VALUE);
+            if (max > largestValue) {
+                largestValue = max;
+            }
+        }
+        EPSILON_INT = String.valueOf(largestValue + 2);
+    }
 
     public static List<String> getConstraintsWithPrefixAndIndex(String prefix, int index, InputModel inputModel) {
         Map<String, String> tempV = new LinkedHashMap<>(inputModel.V.entrySet().stream()
@@ -56,7 +76,9 @@ public class InputModel {
     }
 
     public void addConstraint(String constraint) {
-        if (constraint == null) return;
+        if (constraint == null) {
+            return;
+        }
         C.add(constraint);
     }
 
@@ -87,12 +109,12 @@ public class InputModel {
     public void addEpsilonToDomains() {
         D.forEach((key, value) -> {
             if (V.get(key).equals("INT")) {
-                if (!value.contains(Term.EPSILON_INT)) {
-                    value.add(Term.EPSILON_INT);
+                if (!value.contains(EPSILON_INT)) {
+                    value.add(EPSILON_INT);
                 }
             } else {
-                if (!value.contains(Term.EPSILON)) {
-                    value.add(Term.EPSILON);
+                if (!value.contains(EPSILON)) {
+                    value.add(EPSILON);
                 }
             }
         });
@@ -106,8 +128,9 @@ public class InputModel {
 
     public Set<String> expandConstraintsQuantifiers(oSystem system) {
         buildConstraintCorrespondenceMap(system);
-        AtomicReference<List<Constraint>> cs = new AtomicReference<>(system.getConstraints().stream()
-                .map(ConstraintHolder::getConstraint).collect(Collectors.toList()));
+        AtomicReference<List<Constraint>> cs =
+                new AtomicReference<>(system.getConstraints().stream().map(ConstraintHolder::getConstraint)
+                        .collect(Collectors.toList()));
         Set<String> finalConstraints = new LinkedHashSet<>();
 
         cs.get().forEach(constraint -> {
@@ -118,8 +141,9 @@ public class InputModel {
             String constraintAfterQuantifiers = constraint.getExpression();
             for (Quantifier quantifier : constraint.getQuantifierList().reversed()) {
                 String quantifierRegex = "\\S*" + quantifier.getType().getSign() + quantifier.getIdentifier() + "\\S*";
-                String key = userDefinedConstraintCorrespondenceMap.keySet().stream()
-                        .filter(s -> s.matches(quantifierRegex)).findFirst().get();
+                String key =
+                        userDefinedConstraintCorrespondenceMap.keySet().stream().filter(s -> s.matches(quantifierRegex))
+                                .findFirst().get();
 
                 List<String> tempConstraints = new ArrayList<>();
                 for (String attr : userDefinedConstraintCorrespondenceMap.get(key)) {

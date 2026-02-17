@@ -185,6 +185,9 @@ public class AddConstraintPopupController {
     @FXML
     private void onAddForAll() throws IOException {
         Quantifier quantifier = getQuantifierFromQuantifierPopup(QuantifierType.FOR_ALL);
+        if(quantifier == null){
+            return;
+        }
         quantifierList.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
             quantifierList.remove(quantifier);
@@ -194,6 +197,9 @@ public class AddConstraintPopupController {
     @FXML
     private void onAddExists() throws IOException {
         Quantifier quantifier = getQuantifierFromQuantifierPopup(QuantifierType.EXISTS);
+        if(quantifier == null){
+            return;
+        }
         quantifierList.add(quantifier);
         quantifierHBox.getChildren().add(new QuantifierView(quantifier, () -> {
             quantifierList.remove(quantifier);
@@ -212,6 +218,10 @@ public class AddConstraintPopupController {
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
+
+        if(controller.getSelectedRelation() == null || controller.getSelectedIdentifier() == null){
+            return null;
+        }
 
         return new Quantifier(type, controller.getSelectedRelation(), controller.getSelectedIdentifier());
     }
