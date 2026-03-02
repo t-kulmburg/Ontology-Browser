@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import javafx.collections.FXCollections;
 import tug.tobkul.ontologybrowser.ontology.model.Library;
+import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,12 +30,16 @@ public class OntologyManager {
         }));
         currentFile = library_json;
         setLibraries(temp);
+        // TODO REMOVE temporary solution to migrate json to scenario schema
+        libraries.forEach(library -> library.getSystems().forEach(oSystem::migrateToScenarios));
     }
 
     public void importFile(File library_json) throws IOException {
         List<Library> temp = new ArrayList<>(mapper.readValue(library_json, new TypeReference<>() {
         }));
         temp.forEach(this::addLibrary);
+        // TODO REMOVE temporary solution to migrate json to scenario schema
+        libraries.forEach(library -> library.getSystems().forEach(oSystem::migrateToScenarios));
     }
 
     public void saveFile() throws IOException {

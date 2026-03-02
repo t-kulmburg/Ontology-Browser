@@ -2,12 +2,14 @@ package tug.tobkul.ontologybrowser.jfxcontroller.constraint;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -16,10 +18,10 @@ import tug.tobkul.ontologybrowser.jfxcontroller.constraint.quantifier.view.Quant
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.ConstraintView;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.ConstraintViewFactory;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.view.HighlightManager;
-import tug.tobkul.ontologybrowser.ontology.OntologyManager;
 import tug.tobkul.ontologybrowser.ontology.model.Library;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.Scenario;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.QuantifierType;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
@@ -32,13 +34,11 @@ public class AddConstraintPopupController {
     public final ObjectProperty<ConstraintView> rootConstraintView = new SimpleObjectProperty<>();
     private final List<Quantifier> quantifierList = new ArrayList<>();
     private Stage stage;
-    private OntologyManager ontologyManager;
+    private oSystem system;
+    private Scenario scenario;
     private Constraint createdConstraint;
     private ConstraintHolder editConstraintHolder = null;
-    @FXML
-    private ChoiceBox<Library> libraryChoiceBox;
-    @FXML
-    private ChoiceBox<oSystem> systemChoiceBox;
+
     @FXML
     private TextField nameField;
     @FXML
@@ -64,14 +64,6 @@ public class AddConstraintPopupController {
 
     @FXML
     private void initialize() {
-        libraryChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                systemChoiceBox.getItems().setAll(FXCollections.observableList(newValue.getSystems()));
-            } else {
-                systemChoiceBox.getItems().setAll(new ArrayList<>());
-            }
-            systemChoiceBox.getSelectionModel().select(null);
-        });
         HighlightManager.clearCurrent();
     }
 
@@ -84,7 +76,7 @@ public class AddConstraintPopupController {
             loader.setController(controller);
 
             Parent root = loader.load();
-            controller.setOuterSystemAndQuantifiers(systemChoiceBox.getValue(), quantifierList);
+            controller.setOuterSystemAndQuantifiers(system, quantifierList);
 
             Stage popupStage = new Stage();
             controller.setStage(popupStage);
@@ -147,28 +139,19 @@ public class AddConstraintPopupController {
     @FXML
     private void onConfirm() {
         invalidInputLabel.setVisible(false);
-        if (libraryChoiceBox.getValue() == null) {
-            invalidInputLabel.setText("Library missing!");
-            setInvalidInputLabelVisibleAndFormat();
-            return;
-        }
-        if (systemChoiceBox.getValue() == null) {
-            invalidInputLabel.setText("System missing!");
-            setInvalidInputLabelVisibleAndFormat();
-            return;
-        }
         if (nameField.getText().isBlank()) {
             invalidInputLabel.setText("Name missing!");
             setInvalidInputLabelVisibleAndFormat();
             return;
         }
-        if (systemChoiceBox.getValue().getConstraints().stream()
+        if (system.getScenarios().stream().flatMap(s -> s.getConstraintHolderList().stream())
                 .noneMatch(c -> c.getName().equals(nameField.getText())) ||
                 (editConstraintHolder != null && editConstraintHolder.getName().equals(nameField.getText()))) {
             if (editConstraintHolder == null) {
-                systemChoiceBox.getValue().getConstraints()
-                        .add(new ConstraintHolder(nameField.getText(), commentField.getText(), rootConstraintView.get()
-                                .getConstraint(), quantifierList));
+                if (scenario != null) {
+                    scenario.addConstraint(new ConstraintHolder(nameField.getText(), commentField.getText(),
+                            rootConstraintView.get().getConstraint(), quantifierList));
+                }
             } else {
                 editConstraintHolder.setName(nameField.getText());
                 editConstraintHolder.setComment(commentField.getText());
@@ -185,7 +168,7 @@ public class AddConstraintPopupController {
     @FXML
     private void onAddForAll() throws IOException {
         Quantifier quantifier = getQuantifierFromQuantifierPopup(QuantifierType.FOR_ALL);
-        if(quantifier == null){
+        if (quantifier == null) {
             return;
         }
         quantifierList.add(quantifier);
@@ -197,7 +180,7 @@ public class AddConstraintPopupController {
     @FXML
     private void onAddExists() throws IOException {
         Quantifier quantifier = getQuantifierFromQuantifierPopup(QuantifierType.EXISTS);
-        if(quantifier == null){
+        if (quantifier == null) {
             return;
         }
         quantifierList.add(quantifier);
@@ -211,34 +194,28 @@ public class AddConstraintPopupController {
         Parent root = loader.load();
 
         AddQuantifierPopupController controller = loader.getController();
-        controller.setLists(systemChoiceBox.getValue().getRelations(), quantifierList.stream()
-                .map(Quantifier::getIdentifier).toList());
+        controller.setLists(system.getRelations(),
+                quantifierList.stream().map(Quantifier::getIdentifier).toList());
 
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
 
-        if(controller.getSelectedRelation() == null || controller.getSelectedIdentifier() == null){
+        if (controller.getSelectedRelation() == null || controller.getSelectedIdentifier() == null) {
             return null;
         }
 
         return new Quantifier(type, controller.getSelectedRelation(), controller.getSelectedIdentifier());
     }
 
-    public void setOntologyManagerAndLibraries(OntologyManager ontologyManager) {
-        this.ontologyManager = ontologyManager;
-        libraryChoiceBox.getItems().setAll(ontologyManager.getLibraries());
-    }
-
-    public void setPreselectedLibrary(Library library) {
-        if (ontologyManager != null) {
-            libraryChoiceBox.getSelectionModel().select(library);
-        }
-    }
-
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public void setSystemAndScenario(oSystem system, Scenario scenario) {
+        this.system = system;
+        this.scenario = scenario;
     }
 
     public void addConstrainHolderForEdit(ConstraintHolder constraintHolder) {
@@ -262,13 +239,6 @@ public class AddConstraintPopupController {
         addQuantifierForAllButton.setDisable(true);
         addQuantifierExistsButton.setDisable(true);
         quantifierHBox.setMouseTransparent(true);
-    }
-
-    public void addSystemsAndSetPreselectedSystem(Library library, oSystem system) {
-        if (ontologyManager != null) {
-            systemChoiceBox.getItems().setAll(library.getSystems());
-            systemChoiceBox.getSelectionModel().select(system);
-        }
     }
 
     public void setInvalidInputLabelVisibleAndFormat() {

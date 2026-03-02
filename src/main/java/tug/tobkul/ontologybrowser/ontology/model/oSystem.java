@@ -7,6 +7,7 @@ import org.jgrapht.graph.DefaultEdge;
 import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
 import tug.tobkul.ontologybrowser.ontology.graph.EntityGraphUtil;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.Scenario;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 
@@ -22,7 +23,8 @@ public class oSystem implements PdfContentProvider {
     private String comment;
     private List<Entity> entities;
     private List<Relation> relations;
-    private List<ConstraintHolder> constraintHolderList;
+    private List<ConstraintHolder> constraintHolderList; // unused since introduction of scenarios
+    private List<Scenario> scenarios;
 
     public oSystem() {
     }
@@ -33,6 +35,8 @@ public class oSystem implements PdfContentProvider {
         this.entities = new ArrayList<>();
         this.relations = new ArrayList<>();
         this.constraintHolderList = new ArrayList<>();
+        this.scenarios = new ArrayList<>();
+        scenarios.add(new Scenario("Default"));
     }
 
     @Override
@@ -80,7 +84,20 @@ public class oSystem implements PdfContentProvider {
 
     public void setConstraints(List<ConstraintHolder> constraintHolderList) {
         this.constraintHolderList = constraintHolderList;
-        constraintHolderList.forEach(c -> c.setOuterSystem(this));
+        if(constraintHolderList != null) {
+            constraintHolderList.forEach(c -> c.setOuterSystem(this));
+        }
+    }
+
+    public List<Scenario> getScenarios(){
+        return scenarios;
+    }
+
+    public void setScenarios(List<Scenario> scenarios) {
+        this.scenarios = scenarios;
+        if(scenarios != null) {
+            scenarios.forEach(s -> s.getConstraintHolderList().forEach(c -> c.setOuterSystem(this)));
+        }
     }
 
     public void printDetails(TextFlow textFlow) {
@@ -242,5 +259,26 @@ public class oSystem implements PdfContentProvider {
         }
         result.addAll(resultNoQuant);
         return result.stream().toList();
+    }
+
+    // TODO REMOVE temporary solution to migrate json to scenario schema
+    @JsonIgnore
+    public void migrateToScenarios() {
+
+        if (scenarios == null || scenarios.isEmpty()) {
+
+            scenarios = new ArrayList<>();
+
+            Scenario defaultScenario = new Scenario("Default");
+
+            if (constraintHolderList != null) {
+                defaultScenario.setConstraintHolderList(constraintHolderList);
+            }
+
+            scenarios.add(defaultScenario);
+        }
+
+        // set to null to remove from json
+        constraintHolderList = null;
     }
 }

@@ -11,12 +11,14 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.TextFlow?>
 
-<SplitPane dividerPositions="0.8" orientation="VERTICAL" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.OntologyBrowserController">
+<SplitPane dividerPositions="0.8" orientation="VERTICAL" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tug.tobkul.ontologybrowser.jfxcontroller.OntologyBrowserController">
     <items>
         <BorderPane prefWidth="800.0">
             <top>
@@ -49,7 +51,10 @@
                             <children>
                                 <BorderPane>
                                     <left>
-                                        <Label text="Libraries" BorderPane.alignment="CENTER" />
+                                        <Label text="Libraries" BorderPane.alignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font></Label>
                                     </left>
                                     <right>
                                         <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddLibrary" text="+" BorderPane.alignment="CENTER" />
@@ -65,7 +70,10 @@
                                         <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddSystem" text="+" BorderPane.alignment="CENTER" />
                                     </right>
                                     <left>
-                                        <Label text="Systems" BorderPane.alignment="CENTER" />
+                                        <Label text="Systems" BorderPane.alignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font></Label>
                                     </left>
                                 </BorderPane>
                                 <ListView fx:id="systemListView" editable="true" VBox.vgrow="ALWAYS" />
@@ -80,7 +88,10 @@
                             <children>
                                 <BorderPane>
                                     <left>
-                                        <Label text="Entities" BorderPane.alignment="CENTER" />
+                                        <Label text="Entities" BorderPane.alignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font></Label>
                                     </left>
                                     <right>
                                         <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddEntity" text="+" BorderPane.alignment="CENTER" />
@@ -93,7 +104,10 @@
                             <children>
                                 <BorderPane>
                                     <left>
-                                        <Label text="Relations" BorderPane.alignment="CENTER" />
+                                        <Label text="Relations" BorderPane.alignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font></Label>
                                     </left>
                                     <right>
                                         <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddRelation" text="+" BorderPane.alignment="CENTER" />
@@ -106,13 +120,16 @@
                             <children>
                                 <BorderPane>
                                     <left>
-                                        <Label text="Constraints" BorderPane.alignment="CENTER" />
+                                        <Label text="Scenarios / Constrs." BorderPane.alignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font></Label>
                                     </left>
                                     <right>
-                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddConstraint" text="+" BorderPane.alignment="CENTER" />
+                                        <Button alignment="CENTER" mnemonicParsing="false" onAction="#onAddScenario" text="+" BorderPane.alignment="CENTER" />
                                     </right>
                                 </BorderPane>
-                                <ListView fx:id="constraintListView" editable="true" VBox.vgrow="ALWAYS" />
+                        <TreeView fx:id="scenarioTreeView" editable="true" showRoot="false" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
                     </children>

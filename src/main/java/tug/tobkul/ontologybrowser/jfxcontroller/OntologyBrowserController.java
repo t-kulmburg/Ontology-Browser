@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -25,6 +26,9 @@ import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import tug.tobkul.ontologybrowser.jfxcontroller.attribute.AddAttributePopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.attribute.EditAttributePopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.constraint.AddConstraintPopupController;
+import tug.tobkul.ontologybrowser.jfxcontroller.constraint.AddScenarioPopupController;
+import tug.tobkul.ontologybrowser.jfxcontroller.constraint.EditScenarioPopupController;
+import tug.tobkul.ontologybrowser.jfxcontroller.constraint.ScenarioPopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.entity.AddEntityPopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.entity.EditEntityPopupController;
 import tug.tobkul.ontologybrowser.jfxcontroller.entity.EntityPopupController;
@@ -43,6 +47,7 @@ import tug.tobkul.ontologybrowser.ontology.PdfContentProvider;
 import tug.tobkul.ontologybrowser.ontology.model.*;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.Scenario;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +75,7 @@ public class OntologyBrowserController implements Initializable {
     private ListView<Relation> relationListView;
 
     @FXML
-    private ListView<ConstraintHolder> constraintListView;
+    private TreeView<Object> scenarioTreeView;
 
     @FXML
     private HBox attributesHBox;
@@ -110,7 +115,7 @@ public class OntologyBrowserController implements Initializable {
         initSystemContextEvents();
         initEntityContextEvents();
         initRelationContextEvents();
-        initConstraintContextEvents();
+        initScenarioTreeViewEvents();
         initAttributeContextEvents();
     }
 
@@ -299,50 +304,145 @@ public class OntologyBrowserController implements Initializable {
         });
     }
 
-    private void initConstraintContextEvents() {
-        ContextMenu constraintListViewContextMenu = new ContextMenu();
-        MenuItem constraintListViewAddItem = new MenuItem("Add...");
-        constraintListViewAddItem.setOnAction(actionEvent -> {
-            try {
-                onAddConstraint();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    private void initScenarioTreeViewEvents() {
+        scenarioTreeView.setCellFactory(tv -> new TreeCell<>() {
+
+            private final Label label = new Label();
+            private final Button addButton = new Button("+");
+            private final HBox container = new HBox();
+            private final ContextMenu constraintMenu = new ContextMenu();
+            private final ContextMenu scenarioMenu = new ContextMenu();
+
+            {
+                container.getChildren().addAll(label, addButton);
+                HBox.setHgrow(label, Priority.ALWAYS);
+
+                label.setTextOverrun(OverrunStyle.ELLIPSIS);
+                label.setWrapText(false);
+                label.setMaxWidth(Double.MAX_VALUE);
+
+                container.setSpacing(8);
+                container.setFillHeight(true);
+
+                addButton.setOnAction(e -> {
+                    TreeItem<Object> treeItem = getTreeItem();
+                    if (treeItem != null && treeItem.getValue() instanceof Scenario) {
+                        try {
+                            onAddConstraint((Scenario) treeItem.getValue());
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        buildScenarioTree(systemListView.getSelectionModel().getSelectedItem());
+                    }
+                    e.consume();
+                });
+                MenuItem editConstraintItem = new MenuItem("Edit...");
+                editConstraintItem.setOnAction(e -> {
+                    try {
+                        onEditConstraint((ConstraintHolder) getItem());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+                MenuItem exportConstraintItem = new MenuItem("Export as PDF...");
+                exportConstraintItem.setOnAction(e -> {
+                    try {
+                        onSaveAsPdf((ConstraintHolder) getItem());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+                MenuItem deleteConstraintItem = new MenuItem("Delete...");
+                deleteConstraintItem.setOnAction(e -> {
+                    if (getItem() instanceof ConstraintHolder constraint) {
+                        TreeItem<Object> constraintItem = getTreeItem();
+                        TreeItem<Object> scenarioItem = constraintItem.getParent();
+                        if (scenarioItem != null && scenarioItem.getValue() instanceof Scenario scenario) {
+                            boolean result = showDeletionConfirmationPopup("Constraint", constraint.getName());
+                            if (result) {
+                                scenario.getConstraintHolderList().remove(constraint);
+                                scenarioItem.getChildren().remove(constraintItem);
+
+                            }
+                        }
+                    }
+                });
+                constraintMenu.getItems().addAll(editConstraintItem, exportConstraintItem, deleteConstraintItem);
+
+                MenuItem editScenarioItem = new MenuItem("Edit...");
+                editScenarioItem.setOnAction(e -> {
+                    try {
+                        TreeItem<Object> treeItem = scenarioTreeView.getSelectionModel().getSelectedItem();
+                        if (treeItem != null && treeItem.getValue() instanceof Scenario scenario) {
+                            onEditScenario(scenario);
+                        }
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+                MenuItem deleteScenarioItem = new MenuItem("Delete...");
+                deleteScenarioItem.setOnAction(e -> {
+                    TreeItem<Object> treeItem = scenarioTreeView.getSelectionModel().getSelectedItem();
+                    if (treeItem != null && treeItem.getValue() instanceof Scenario scenario) {
+                        boolean result = showDeletionConfirmationPopup("Scenario", scenario.getName());
+                        if (result) {
+                            systemListView.getSelectionModel().getSelectedItem().getScenarios().remove(scenario);
+                            buildScenarioTree(systemListView.getSelectionModel().getSelectedItem());
+                        }
+                    }
+                });
+
+                scenarioMenu.getItems().addAll(editScenarioItem, deleteScenarioItem);
+            }
+
+            @Override
+            protected void updateItem(Object item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setContextMenu(null);
+                    return;
+                }
+
+                setText(null);
+                setGraphic(container);
+
+                if (item instanceof Scenario scenario) {
+
+                    label.setText(scenario.getName());
+                    label.setStyle("-fx-font-weight: 600;");
+
+                    addButton.setVisible(true);
+                    addButton.setManaged(true);
+                    container.setTranslateX(0);
+
+                    setContextMenu(scenarioMenu);
+
+                } else if (item instanceof ConstraintHolder constraintHolder) {
+
+                    label.setText(constraintHolder.getName());
+                    label.setStyle("");
+
+                    addButton.setVisible(false);
+                    addButton.setManaged(false);
+                    container.setStyle("");
+                    container.setTranslateX(-12);
+                    setContextMenu(constraintMenu);
+                }
+            }
+
+            @Override
+            protected double computePrefWidth(double height) {
+                return scenarioTreeView.getWidth() - 2;
             }
         });
-        constraintListViewContextMenu.getItems().add(constraintListViewAddItem);
 
-        MenuItem constraintListViewEditItem = new MenuItem("Edit...");
-        constraintListViewEditItem.setOnAction(actionEvent -> {
-            try {
-                onEditConstraint();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        constraintListViewContextMenu.getItems().add(constraintListViewEditItem);
-
-        MenuItem constraintListViewExportPdfItem = new MenuItem("Export as PDF...");
-        constraintListViewExportPdfItem.setOnAction(event -> {
-            try {
-                onSaveAsPdf(constraintListView.getSelectionModel().getSelectedItem());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        constraintListViewContextMenu.getItems().add(constraintListViewExportPdfItem);
-
-        MenuItem constraintListViewDeleteItem = new MenuItem("Delete...");
-        constraintListViewDeleteItem.setOnAction(event -> onDeleteConstraint());
-        constraintListViewContextMenu.getItems().add(constraintListViewDeleteItem);
-
-        constraintListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            ConstraintHolder selectedItem = constraintListView.getSelectionModel().getSelectedItem();
-            constraintListViewEvent(selectedItem);
-            if (event.getButton() == MouseButton.SECONDARY &&
-                    constraintListView.getSelectionModel().getSelectedItem() != null) {
-                constraintListViewContextMenu.show(constraintListView, event.getScreenX(), event.getScreenY());
-            } else {
-                constraintListViewContextMenu.hide();
+        scenarioTreeView.setOnMouseClicked(event -> {
+            TreeItem<Object> treeItem = scenarioTreeView.getSelectionModel().getSelectedItem();
+            if (treeItem != null && treeItem.getValue() instanceof Scenario) {
+                treeItem.setExpanded(!treeItem.isExpanded());
             }
         });
     }
@@ -382,8 +482,8 @@ public class OntologyBrowserController implements Initializable {
         systemListView.setItems(null);
         entityListView.setItems(null);
         relationListView.setItems(null);
-        constraintListView.setItems(null);
         attributesListView.setItems(null);
+        scenarioTreeView.setRoot(null);
         activeAttributeHolder = null;
         detailsTextFlow.getChildren().clear();
         attributesTextFlow.getChildren().clear();
@@ -444,7 +544,9 @@ public class OntologyBrowserController implements Initializable {
             if (result.get() == saveAndExit) {
                 onMenuFileSave();
                 return false;
-            } else return result.get() != exitWithoutSaving;
+            } else {
+                return result.get() != exitWithoutSaving;
+            }
         }
         return true;
     }
@@ -457,20 +559,20 @@ public class OntologyBrowserController implements Initializable {
         }
         entityListView.setItems(null);
         relationListView.setItems(null);
-        constraintListView.setItems(null);
+        scenarioTreeView.setRoot(null);
     }
 
     private void systemListViewEvent(oSystem newValue) {
         if (newValue != null) {
             entityListView.setItems(FXCollections.observableList(newValue.getEntities()));
             relationListView.setItems(FXCollections.observableList(newValue.getRelations()));
-            constraintListView.setItems(FXCollections.observableList(newValue.getConstraints()));
+            buildScenarioTree(newValue);
             newValue.printDetails(detailsTextFlow);
             hideAttributePane();
         } else {
             entityListView.setItems(null);
             relationListView.setItems(null);
-            constraintListView.setItems(null);
+            scenarioTreeView.setRoot(null);
         }
 
     }
@@ -478,7 +580,7 @@ public class OntologyBrowserController implements Initializable {
     private void entityListViewEvent(Entity newValue) {
         if (newValue != null) {
             relationListView.getSelectionModel().clearSelection();
-            constraintListView.getSelectionModel().clearSelection();
+            scenarioTreeView.getSelectionModel().clearSelection();
             newValue.printDetails(detailsTextFlow);
             handleAttributes(newValue);
         }
@@ -487,7 +589,7 @@ public class OntologyBrowserController implements Initializable {
     private void relationListViewEvent(Relation newValue) {
         if (newValue != null) {
             entityListView.getSelectionModel().clearSelection();
-            constraintListView.getSelectionModel().clearSelection();
+            scenarioTreeView.getSelectionModel().clearSelection();
             newValue.printDetails(detailsTextFlow);
             handleAttributes(newValue);
         }
@@ -559,8 +661,8 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
-            systemListView.setItems(FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem()
-                    .getSystems()));
+            systemListView.setItems(
+                    FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem().getSystems()));
         }
     }
 
@@ -573,8 +675,7 @@ public class OntologyBrowserController implements Initializable {
         controller.setOntologyManagerAndLibraries(ontologyManager);
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
             controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
+            controller.addSystemsAndSetPreselectedSystem(libraryListView.getSelectionModel().getSelectedItem(),
                     systemListView.getSelectionModel().getSelectedItem());
         }
 
@@ -587,8 +688,8 @@ public class OntologyBrowserController implements Initializable {
         stage.showAndWait();
 
         if (systemListView.getSelectionModel().getSelectedItem() != null) {
-            entityListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
-                    .getEntities()));
+            entityListView.setItems(
+                    FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getEntities()));
         }
     }
 
@@ -602,8 +703,7 @@ public class OntologyBrowserController implements Initializable {
 
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
             controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
+            controller.addSystemsAndSetPreselectedSystem(libraryListView.getSelectionModel().getSelectedItem(),
                     systemListView.getSelectionModel().getSelectedItem());
         }
         if (systemListView.getSelectionModel().getSelectedItem() != null) {
@@ -619,24 +719,41 @@ public class OntologyBrowserController implements Initializable {
         stage.showAndWait();
 
         if (systemListView.getSelectionModel().getSelectedItem() != null) {
-            relationListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
-                    .getRelations()));
+            relationListView.setItems(
+                    FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getRelations()));
         }
     }
 
-    public void onAddConstraint() throws IOException {
+    public void onAddScenario() throws IOException {
+        FXMLLoader loader = new FXMLLoader(ScenarioPopupController.class.getResource("scenarioPopup.fxml"));
+        AddScenarioPopupController controller = new AddScenarioPopupController();
+        loader.setController(controller);
+
+        Parent root = loader.load();
+        controller.setOntologyManagerAndLibraries(ontologyManager);
+        if (libraryListView.getSelectionModel().getSelectedItem() != null) {
+            controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
+            controller.addSystemsAndSetPreselectedSystem(libraryListView.getSelectionModel().getSelectedItem(),
+                    systemListView.getSelectionModel().getSelectedItem());
+        }
+
+        Stage stage = new Stage();
+        stage.setTitle("Add Scenario");
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(new Scene(root));
+
+        stage.showAndWait();
+
+        buildScenarioTree(systemListView.getSelectionModel().getSelectedItem());
+    }
+
+    public void onAddConstraint(Scenario scenario) throws IOException {
         FXMLLoader loader = new FXMLLoader(AddConstraintPopupController.class.getResource("addConstraintPopup.fxml"));
         Parent root = loader.load();
 
         AddConstraintPopupController controller = loader.getController();
-        controller.setOntologyManagerAndLibraries(ontologyManager);
-
-        if (libraryListView.getSelectionModel().getSelectedItem() != null) {
-            controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
-                    systemListView.getSelectionModel().getSelectedItem());
-        }
+        controller.setSystemAndScenario(systemListView.getSelectionModel().getSelectedItem(), scenario);
 
         Stage stage = new Stage();
         controller.setStage(stage);
@@ -644,16 +761,11 @@ public class OntologyBrowserController implements Initializable {
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene(root));
-        stage.getScene().getStylesheets().add(Objects.requireNonNull(
-                        AddConstraintPopupController.class.getResource("styles.css"))
-                .toExternalForm());
+        stage.getScene().getStylesheets()
+                .add(Objects.requireNonNull(AddConstraintPopupController.class.getResource("styles.css"))
+                        .toExternalForm());
 
         stage.showAndWait();
-
-        if (systemListView.getSelectionModel().getSelectedItem() != null) {
-            constraintListView.setItems(FXCollections.observableList(systemListView.getSelectionModel()
-                    .getSelectedItem().getConstraints()));
-        }
     }
 
     public void onAddAttribute() throws IOException {
@@ -696,14 +808,16 @@ public class OntologyBrowserController implements Initializable {
             try {
                 ontologyManager.openFile(selectedFile);
             } catch (JsonParseException e) {
-                String message = e.getLocalizedMessage() +
-                        "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
+                String message =
+                        e.getLocalizedMessage() + "Location: Line " + e.getLocation().getLineNr() + ", Column " +
+                                e.getLocation().getColumnNr();
                 showErrorPopup("Error opening JSON file", "Error: The JSON structure in the file is invalid.", message);
             } catch (JsonMappingException e) {
-                String message = e.getOriginalMessage() +
-                        "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected " +
-                        "format.", message);
+                String message =
+                        e.getOriginalMessage() + "Location: Line " + e.getLocation().getLineNr() + ", Column " +
+                                e.getLocation().getColumnNr();
+                showErrorPopup("Error opening JSON file",
+                        "Error: The file's structure doesn't match the expected " + "format.", message);
             } catch (IOException e) {
                 showErrorPopup("Error opening JSON file", null, e.getLocalizedMessage());
             }
@@ -723,14 +837,16 @@ public class OntologyBrowserController implements Initializable {
             try {
                 ontologyManager.importFile(selectedFile);
             } catch (JsonParseException e) {
-                String message = e.getLocalizedMessage() +
-                        "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
+                String message =
+                        e.getLocalizedMessage() + "Location: Line " + e.getLocation().getLineNr() + ", Column " +
+                                e.getLocation().getColumnNr();
                 showErrorPopup("Error opening JSON file", "Error: The JSON structure in the file is invalid.", message);
             } catch (JsonMappingException e) {
-                String message = e.getOriginalMessage() +
-                        "Location: Line " + e.getLocation().getLineNr() + ", Column " + e.getLocation().getColumnNr();
-                showErrorPopup("Error opening JSON file", "Error: The file's structure doesn't match the expected " +
-                        "format.", message);
+                String message =
+                        e.getOriginalMessage() + "Location: Line " + e.getLocation().getLineNr() + ", Column " +
+                                e.getLocation().getColumnNr();
+                showErrorPopup("Error opening JSON file",
+                        "Error: The file's structure doesn't match the expected " + "format.", message);
             } catch (IOException e) {
                 showErrorPopup("Error opening JSON file", null, e.getLocalizedMessage());
             }
@@ -792,8 +908,8 @@ public class OntologyBrowserController implements Initializable {
     }
 
     private void onDeleteLibrary() {
-        boolean result = showDeletionConfirmationPopup("Library", libraryListView.getSelectionModel().getSelectedItem()
-                .getName());
+        boolean result = showDeletionConfirmationPopup("Library",
+                libraryListView.getSelectionModel().getSelectedItem().getName());
         if (result) {
             libraryListView.getItems().remove(libraryListView.getSelectionModel().getSelectedItem());
         }
@@ -815,14 +931,14 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        systemListView.setItems(FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem()
-                .getSystems()));
+        systemListView.setItems(
+                FXCollections.observableList(libraryListView.getSelectionModel().getSelectedItem().getSystems()));
         systemListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
     }
 
     public void onDeleteSystem() {
-        boolean result = showDeletionConfirmationPopup("System", systemListView.getSelectionModel().getSelectedItem()
-                .getName());
+        boolean result =
+                showDeletionConfirmationPopup("System", systemListView.getSelectionModel().getSelectedItem().getName());
         if (result) {
             systemListView.getItems().remove(systemListView.getSelectionModel().getSelectedItem());
         }
@@ -845,8 +961,8 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        entityListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
-                .getEntities()));
+        entityListView.setItems(
+                FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getEntities()));
         entityListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
     }
 
@@ -866,7 +982,8 @@ public class OntologyBrowserController implements Initializable {
         }
         // Check if entity is part of a constraint
         List<String> constrs = new ArrayList<>();
-        for (ConstraintHolder c : constraintListView.getItems()) {
+        for (ConstraintHolder c : systemListView.getSelectionModel().getSelectedItem().getScenarios().stream()
+                .flatMap(s -> s.getConstraintHolderList().stream()).toList()) {
             if (c.containsEntity(e)) {
                 constrs.add("• " + c.getName() + "\n");
             }
@@ -900,33 +1017,26 @@ public class OntologyBrowserController implements Initializable {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        relationListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
-                .getRelations()));
+        relationListView.setItems(
+                FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem().getRelations()));
         relationListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
     }
 
     public void onDeleteRelation() {
-        boolean result = showDeletionConfirmationPopup("Relation", relationListView.getSelectionModel()
-                .getSelectedItem().getName());
+        boolean result = showDeletionConfirmationPopup("Relation",
+                relationListView.getSelectionModel().getSelectedItem().getName());
         if (result) {
             relationListView.getItems().remove(relationListView.getSelectionModel().getSelectedItem());
         }
     }
 
-    public void onEditConstraint() throws IOException {
+    public void onEditConstraint(ConstraintHolder constraintHolder) throws IOException {
         FXMLLoader loader = new FXMLLoader(AddConstraintPopupController.class.getResource("addConstraintPopup.fxml"));
         Parent root = loader.load();
 
         AddConstraintPopupController controller = loader.getController();
-        controller.setOntologyManagerAndLibraries(ontologyManager);
-
-        if (libraryListView.getSelectionModel().getSelectedItem() != null) {
-            controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
-                    systemListView.getSelectionModel().getSelectedItem());
-        }
-        controller.addConstrainHolderForEdit(constraintListView.getSelectionModel().getSelectedItem());
+        controller.addConstrainHolderForEdit(constraintHolder);
+        controller.setSystemAndScenario(systemListView.getSelectionModel().getSelectedItem(), null);
 
         Stage stage = new Stage();
         controller.setStage(stage);
@@ -934,23 +1044,31 @@ public class OntologyBrowserController implements Initializable {
         stage.setResizable(false);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setScene(new Scene(root));
-        stage.getScene().getStylesheets().add(Objects.requireNonNull(
-                        AddConstraintPopupController.class.getResource("styles.css"))
-                .toExternalForm());
+        stage.getScene().getStylesheets()
+                .add(Objects.requireNonNull(AddConstraintPopupController.class.getResource("styles.css"))
+                        .toExternalForm());
+
+        stage.showAndWait();
+    }
+
+    public void onEditScenario(Scenario scenario) throws IOException {
+        FXMLLoader loader = new FXMLLoader(EditScenarioPopupController.class.getResource("scenarioPopup.fxml"));
+        EditScenarioPopupController controller = new EditScenarioPopupController();
+        loader.setController(controller);
+
+        Parent root = loader.load();
+        controller.setLibrarySystemScenario(libraryListView.getSelectionModel().getSelectedItem(),
+                systemListView.getSelectionModel().getSelectedItem(), scenario);
+
+        Stage stage = new Stage();
+        stage.setTitle("Edit Scenario");
+        stage.setResizable(false);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setScene(new Scene(root));
 
         stage.showAndWait();
 
-        constraintListView.setItems(FXCollections.observableList(systemListView.getSelectionModel().getSelectedItem()
-                .getConstraints()));
-        constraintListView.getSelectionModel().getSelectedItem().printDetails(detailsTextFlow);
-    }
-
-    public void onDeleteConstraint() {
-        boolean result = showDeletionConfirmationPopup("Constraint", constraintListView.getSelectionModel()
-                .getSelectedItem().getName());
-        if (result) {
-            constraintListView.getItems().remove(constraintListView.getSelectionModel().getSelectedItem());
-        }
+        buildScenarioTree(systemListView.getSelectionModel().getSelectedItem());
     }
 
     public void onEditAttribute() throws IOException {
@@ -958,15 +1076,15 @@ public class OntologyBrowserController implements Initializable {
 
         // Check if entity is part of a constraint
         List<String> constrs = new ArrayList<>();
-        for (ConstraintHolder c : constraintListView.getItems()) {
+        for (ConstraintHolder c : systemListView.getSelectionModel().getSelectedItem().getScenarios().stream()
+                .flatMap(s -> s.getConstraintHolderList().stream()).toList()) {
             if (c.containsAttribute(a)) {
                 constrs.add("• " + c.getName() + "\n");
             }
         }
         if (!constrs.isEmpty()) {
             showWarningPopup("Warning", "Attribute is part of a constraint",
-                    "Ensure the following constraints stay valid after modification:\n"
-                            + String.join("", constrs));
+                    "Ensure the following constraints stay valid after modification:\n" + String.join("", constrs));
         }
 
         FXMLLoader loader = new FXMLLoader(EditAttributePopupController.class.getResource("attributePopup.fxml"));
@@ -993,7 +1111,8 @@ public class OntologyBrowserController implements Initializable {
 
         // Check if entity is part of a constraint
         List<String> constrs = new ArrayList<>();
-        for (ConstraintHolder c : constraintListView.getItems()) {
+        for (ConstraintHolder c : systemListView.getSelectionModel().getSelectedItem().getScenarios().stream()
+                .flatMap(s -> s.getConstraintHolderList().stream()).toList()) {
             if (c.containsAttribute(a)) {
                 constrs.add("• " + c.getName() + "\n");
             }
@@ -1013,8 +1132,8 @@ public class OntologyBrowserController implements Initializable {
     }
 
     public void onMenuExportInputModel() throws IOException {
-        FXMLLoader loader = new FXMLLoader(ExportInputModelPopupController.class.getResource("exportInputModelPopup" +
-                ".fxml"));
+        FXMLLoader loader =
+                new FXMLLoader(ExportInputModelPopupController.class.getResource("exportInputModelPopup" + ".fxml"));
         Parent root = loader.load();
 
         ExportInputModelPopupController controller = loader.getController();
@@ -1022,8 +1141,7 @@ public class OntologyBrowserController implements Initializable {
 
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
             controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
+            controller.addSystemsAndSetPreselectedSystem(libraryListView.getSelectionModel().getSelectedItem(),
                     systemListView.getSelectionModel().getSelectedItem(),
                     entityListView.getSelectionModel().getSelectedItem());
         }
@@ -1047,8 +1165,7 @@ public class OntologyBrowserController implements Initializable {
 
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
             controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
+            controller.addSystemsAndSetPreselectedSystem(libraryListView.getSelectionModel().getSelectedItem(),
                     systemListView.getSelectionModel().getSelectedItem(),
                     entityListView.getSelectionModel().getSelectedItem());
         }
@@ -1072,8 +1189,7 @@ public class OntologyBrowserController implements Initializable {
 
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
             controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
+            controller.addSystemsAndSetPreselectedSystem(libraryListView.getSelectionModel().getSelectedItem(),
                     systemListView.getSelectionModel().getSelectedItem(),
                     entityListView.getSelectionModel().getSelectedItem());
         }
@@ -1097,8 +1213,7 @@ public class OntologyBrowserController implements Initializable {
 
         if (libraryListView.getSelectionModel().getSelectedItem() != null) {
             controller.setPreselectedLibrary(libraryListView.getSelectionModel().getSelectedItem());
-            controller.addSystemsAndSetPreselectedSystem(
-                    libraryListView.getSelectionModel().getSelectedItem(),
+            controller.addSystemsAndSetPreselectedSystem(libraryListView.getSelectionModel().getSelectedItem(),
                     systemListView.getSelectionModel().getSelectedItem(),
                     entityListView.getSelectionModel().getSelectedItem());
         }
@@ -1169,5 +1284,28 @@ public class OntologyBrowserController implements Initializable {
             }
             pdf.save(selectedFile.getAbsolutePath());
         }
+    }
+
+    private void buildScenarioTree(oSystem s) {
+        if (s == null) {
+            return;
+        }
+        TreeItem<Object> root = new TreeItem<>();
+        root.setExpanded(true);
+
+        for (Scenario scenario : s.getScenarios()) {
+            TreeItem<Object> scenarioNode = new TreeItem<>(scenario);
+
+            scenarioNode.setExpanded(true);
+
+            for (ConstraintHolder constraintHolder : scenario.getConstraintHolderList()) {
+                scenarioNode.getChildren().add(new TreeItem<>(constraintHolder));
+            }
+
+            root.getChildren().add(scenarioNode);
+        }
+
+        scenarioTreeView.setRoot(root);
+        scenarioTreeView.setShowRoot(false);
     }
 }

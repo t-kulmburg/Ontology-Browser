@@ -4,7 +4,7 @@
   <groupId>tug.tobkul</groupId>
   <artifactId>OntologyBrowser</artifactId>
   <name>OntologyBrowser</name>
-  <version>1.9</version>
+  <version>1.10</version>
   <build>
     <plugins>
       <plugin>
