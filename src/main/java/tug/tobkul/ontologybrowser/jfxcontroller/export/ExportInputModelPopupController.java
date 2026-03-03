@@ -8,10 +8,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.controlsfx.control.CheckComboBox;
 import tug.tobkul.ontologybrowser.inputmodel.InputModelGenerator;
 import tug.tobkul.ontologybrowser.ontology.OntologyManager;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Library;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.Scenario;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
 import java.io.File;
@@ -28,6 +30,9 @@ public class ExportInputModelPopupController {
 
     @FXML
     private ChoiceBox<oSystem> systemChoiceBox;
+
+    @FXML
+    private CheckComboBox<Scenario> scenarioCheckComboBox;
 
     @FXML
     private TextField nameField;
@@ -55,6 +60,15 @@ public class ExportInputModelPopupController {
                 systemChoiceBox.getItems().setAll(new ArrayList<>());
             }
             systemChoiceBox.getSelectionModel().select(null);
+            scenarioCheckComboBox.getItems().setAll(new ArrayList<>());
+        });
+        systemChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                scenarioCheckComboBox.getItems().setAll(newValue.getScenarios());
+            } else {
+                scenarioCheckComboBox.getItems().setAll(new ArrayList<>());
+            }
+            scenarioCheckComboBox.getCheckModel().clearChecks();
         });
     }
 
@@ -89,8 +103,9 @@ public class ExportInputModelPopupController {
             return;
         }
 
-        InputModelGenerator inputModelGenerator = new InputModelGenerator(nameField.getText(),
-                systemChoiceBox.getValue());
+        InputModelGenerator inputModelGenerator =
+                new InputModelGenerator(nameField.getText(), systemChoiceBox.getValue(),
+                        scenarioCheckComboBox.getCheckModel().getCheckedItems());
 
         long startTime = System.nanoTime();
         String model = inputModelGenerator.generate();
@@ -124,8 +139,8 @@ public class ExportInputModelPopupController {
             info.setTitle("Information");
             info.setHeaderText("InputModel generated");
             String message = String.format("Root Entity:\t\t%s\nInteger ϵ:\t\t%s\nRuntime:\t\t%.2f ms (%d ns)",
-                    inputModelGenerator.getRootEntity()
-                    .getName(), inputModelGenerator.getEpsilonInt(), durationMs, durationNs);
+                    inputModelGenerator.getRootEntity().getName(), inputModelGenerator.getEpsilonInt(), durationMs,
+                    durationNs);
             info.setContentText(message);
             info.showAndWait();
             stage.close();

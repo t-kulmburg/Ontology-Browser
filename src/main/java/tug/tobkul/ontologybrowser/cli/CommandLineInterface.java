@@ -34,7 +34,7 @@ public class CommandLineInterface {
             return;
         }
 
-        InputModelGenerator inputModelGenerator = new InputModelGenerator("InputModel", system, true);
+        InputModelGenerator inputModelGenerator = new InputModelGenerator("InputModel", system, system.getScenarios(), true);
         long startTime = System.nanoTime();
         String model = inputModelGenerator.generate();
         long endTime = System.nanoTime();

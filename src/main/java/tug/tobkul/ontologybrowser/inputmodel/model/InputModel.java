@@ -3,10 +3,7 @@ package tug.tobkul.ontologybrowser.inputmodel.model;
 import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.AttributeType;
-import tug.tobkul.ontologybrowser.ontology.model.constraint.CompositeConstraint;
-import tug.tobkul.ontologybrowser.ontology.model.constraint.Constraint;
-import tug.tobkul.ontologybrowser.ontology.model.constraint.ConstraintHolder;
-import tug.tobkul.ontologybrowser.ontology.model.constraint.SimpleConstraint;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.*;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.parameter.Parameter;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.Quantifier;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.quantifier.QuantifierType;
@@ -120,16 +117,15 @@ public class InputModel {
         });
     }
 
-    public void addExpandedConstrains(oSystem system) {
-        Set<String> expandedConstraints = expandConstraintsQuantifiers(system);
-        System.out.println("Expanded Constraints:" + expandedConstraints);
+    public void addExpandedConstrains(Scenario scenario) {
+        Set<String> expandedConstraints = expandConstraintsQuantifiers(scenario);
         C.addAll(expandedConstraints);
     }
 
-    public Set<String> expandConstraintsQuantifiers(oSystem system) {
-        buildConstraintCorrespondenceMap(system);
+    public Set<String> expandConstraintsQuantifiers(Scenario scenario) {
+        buildConstraintCorrespondenceMap(scenario);
         AtomicReference<List<Constraint>> cs =
-                new AtomicReference<>(system.getConstraints().stream().map(ConstraintHolder::getConstraint)
+                new AtomicReference<>(scenario.getConstraintHolderList().stream().map(ConstraintHolder::getConstraint)
                         .collect(Collectors.toList()));
         Set<String> finalConstraints = new LinkedHashSet<>();
 
@@ -157,14 +153,11 @@ public class InputModel {
             }
             finalConstraints.add(constraintAfterQuantifiers);
         });
-        System.out.println("Final Constraints:");
-        System.out.println(finalConstraints);
         return finalConstraints;
     }
 
-    public void buildConstraintCorrespondenceMap(oSystem system) {
-        System.out.println("In buildConstraintCorrespondenceMap");
-        system.getConstraints().forEach(constraint -> {
+    public void buildConstraintCorrespondenceMap(Scenario scenario) {
+        scenario.getConstraintHolderList().forEach(constraint -> {
             if (constraint.getConstraint().isComposite()) {
                 expandCompositeConstraint((CompositeConstraint) constraint.getConstraint());
             } else {
@@ -208,10 +201,8 @@ public class InputModel {
     }
 
     private List<String> getCorrespondingInputParameters(String attribute) {
-        System.out.println("In getCorrespondingInputParameters: " + attribute);
         List<String> correspondingInputParameters = new ArrayList<>();
         for (String k : V.keySet()) {
-            System.out.println(k);
             if (k.endsWith(attribute.replace(".", "_").replaceAll(".*?[∀∃][a-z]", ""))) {
                 correspondingInputParameters.add(k);
             }

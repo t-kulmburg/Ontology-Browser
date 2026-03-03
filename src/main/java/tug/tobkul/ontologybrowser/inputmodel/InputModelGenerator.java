@@ -8,6 +8,7 @@ import tug.tobkul.ontologybrowser.ontology.model.Entity;
 import tug.tobkul.ontologybrowser.ontology.model.Relation;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.Attribute;
 import tug.tobkul.ontologybrowser.ontology.model.attribute.AttributeType;
+import tug.tobkul.ontologybrowser.ontology.model.constraint.Scenario;
 import tug.tobkul.ontologybrowser.ontology.model.constraint.operator.OperatorUtil;
 import tug.tobkul.ontologybrowser.ontology.model.oSystem;
 
@@ -19,23 +20,27 @@ public class InputModelGenerator {
     private final InputModel inputModel;
 
     private final oSystem system;
+    private final List<Scenario> scenarioList;
     private final String name;
     private final boolean isCli;
     private Entity rootEntity;
     private String cliError = "";
 
-    public InputModelGenerator(String name, oSystem system) {
+    public InputModelGenerator(String name, oSystem system, List<Scenario> scenarioList) {
         this.name = name;
         this.system = system;
         this.isCli = false;
         this.inputModel = new InputModel(system);
+        this.scenarioList = scenarioList;
+        System.out.println(scenarioList);
     }
 
-    public InputModelGenerator(String name, oSystem system, boolean isCli) {
+    public InputModelGenerator(String name, oSystem system, List<Scenario> scenarioList, boolean isCli) {
         this.name = name;
         this.system = system;
         this.isCli = isCli;
         this.inputModel = new InputModel(system);
+        this.scenarioList = scenarioList;
     }
 
     private static List<List<String>> transpose(List<List<String>> matrix) {
@@ -86,7 +91,7 @@ public class InputModelGenerator {
             return null;
         }
         inputModel.append(processEntity(rootEntity));
-        inputModel.addExpandedConstrains(system);
+        scenarioList.forEach(scenario -> inputModel.addExpandedConstrains(scenario));
         String ret = "";
         ret += "[System]\nName: " + name + "\n\n";
         ret += inputModel.toString();
