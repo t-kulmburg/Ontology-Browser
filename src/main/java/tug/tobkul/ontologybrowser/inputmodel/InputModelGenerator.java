@@ -32,7 +32,6 @@ public class InputModelGenerator {
         this.isCli = false;
         this.inputModel = new InputModel(system);
         this.scenarioList = scenarioList;
-        System.out.println(scenarioList);
     }
 
     public InputModelGenerator(String name, oSystem system, List<Scenario> scenarioList, boolean isCli) {
